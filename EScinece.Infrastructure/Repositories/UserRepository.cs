@@ -1,26 +1,23 @@
 using EScinece.Domain.Abstraction;
 using EScinece.Domain.Entities;
+using Microsoft.EntityFrameworkCore;
 
 namespace EScinece.Infrastructure.Repositories;
 
-public class UserRepository: IRepository<User>
+public class UserRepository: IUserRepository
 {
-    public List<User> GetAll()
+    
+    public UserRepository(DbContext context, IMapper mapper)
+    {
+        
+    }
+    
+    public Task<User?> Create(User user)
     {
         throw new NotImplementedException();
     }
 
-    public User Create(User entity)
-    {
-        throw new NotImplementedException();
-    }
-
-    public User Update(User entity)
-    {
-        throw new NotImplementedException();
-    }
-
-    public void Delete(User entity)
+    public Task<User?> GetById(Guid userId)
     {
         throw new NotImplementedException();
     }
