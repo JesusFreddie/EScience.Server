@@ -8,6 +8,8 @@ public class ArticleParticipantConfiguration: IEntityTypeConfiguration<ArticlePa
 {
     public void Configure(EntityTypeBuilder<ArticleParticipant> builder)
     {
+        builder.HasKey(a => a.Id);
+        
         builder
             .HasOne(a => a.Account)
             .WithMany(b => b.ArticleParticipants)
