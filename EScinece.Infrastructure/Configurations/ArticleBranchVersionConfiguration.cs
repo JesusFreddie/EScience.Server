@@ -8,6 +8,8 @@ public class ArticleBranchVersionConfiguration: IEntityTypeConfiguration<Article
 {
     public void Configure(EntityTypeBuilder<ArticleBranchVersion> builder)
     {
+        builder.HasKey(a => a.Id);
+        
         builder
             .HasOne(a => a.Creator)
             .WithMany(b => b.ArticleBranchVersions)
