@@ -3,6 +3,8 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+// builder.Services.AddDbContext<EScienceDbContext>();
+
 var app = builder.Build();
 
 if (app.Environment.IsDevelopment())
@@ -13,8 +15,8 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-app.UseCors(
-    x => x.AllowAnyOrigin()
+app.UseCors(x => x
+        .AllowAnyOrigin()
         .AllowAnyMethod()
         .AllowAnyHeader()
         );
