@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace EScinece.Infrastructure.Configurations;
 
-internal class ArticleBranchVersionConfiguration: IEntityTypeConfiguration<ArticleBranchVersion>
+public class ArticleBranchVersionConfiguration : IEntityTypeConfiguration<ArticleBranchVersion>
 {
     public void Configure(EntityTypeBuilder<ArticleBranchVersion> builder)
     {

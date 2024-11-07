@@ -2,8 +2,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-
-// builder.Services.AddDbContext<EScienceDbContext>();
+builder.Services.AddControllers();
 
 var app = builder.Build();
 
@@ -21,4 +20,5 @@ app.UseCors(x => x
         .AllowAnyHeader()
         );
 
+app.MapControllers();
 app.Run();

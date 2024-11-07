@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace EScinece.Infrastructure.Data;
 
-public class EScienceDbContext: DbContext
+public class EScienceDbContext : DbContext
 {
     public DbSet<User> User { get; set; }
     public DbSet<Account> Account { get; set; }
