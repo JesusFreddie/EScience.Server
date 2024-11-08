@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace EScinece.Infrastructure.Configurations;
 
-public class ArticleConfiguration: IEntityTypeConfiguration<Article>
+internal class ArticleConfiguration : IEntityTypeConfiguration<Article>
 {
     public void Configure(EntityTypeBuilder<Article> builder)
     {
@@ -16,7 +16,7 @@ public class ArticleConfiguration: IEntityTypeConfiguration<Article>
             .HasForeignKey<Article>(article => article.CreatorId);
 
         builder
-            .HasMany(acticle => acticle.ArticleBranches)
+            .HasMany(article => article.ArticleBranches)
             .WithOne(branches => branches.Article)
             .HasForeignKey(branches => branches.ArticleId);
     }

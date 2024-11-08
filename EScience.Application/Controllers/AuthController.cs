@@ -15,14 +15,14 @@ public class AuthController: Controller
 
     [Route("login")]
     [HttpPost]
-    public async Task<IActionResult> Login()
+    public IActionResult Login()
     {
         return Ok();
     }
 
     [Route("logout")]
     [HttpPost]
-    public async Task<IActionResult> Logout()
+    public IActionResult Logout()
     {
         return Ok();
     }

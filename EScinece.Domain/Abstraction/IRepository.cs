@@ -1,9 +1,10 @@
 namespace EScinece.Domain.Abstraction;
 
-public interface IRepository<T> where T: BaseEntity
+public interface IRepository<T> where T : BaseEntity
 {
-    public List<T> GetAll();
-    public T Create(T entity);
-    public T Update(T entity);
-    public void Delete(T entity);
+    public Task<T?> GetById(Guid id);
+    public Task<List<T>> GetAll();
+    public Task Create(T entity);
+    public Task<T> Update(T entity);
+    public Task<Guid> Delete(T entity);
 }

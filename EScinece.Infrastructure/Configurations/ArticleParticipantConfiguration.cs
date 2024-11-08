@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace EScinece.Infrastructure.Configurations;
 
-public class ArticleParticipantConfiguration: IEntityTypeConfiguration<ArticleParticipant>
+internal class ArticleParticipantConfiguration : IEntityTypeConfiguration<ArticleParticipant>
 {
     public void Configure(EntityTypeBuilder<ArticleParticipant> builder)
     {
