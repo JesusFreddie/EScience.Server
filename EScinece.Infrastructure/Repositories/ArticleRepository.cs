@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace EScinece.Infrastructure.Repositories;
 
-public class ArticleRepository : IRepository<Article>
+public class ArticleRepository : IRepository<Article>, IPaginations<Article>
 {
     private readonly EScienceDbContext _context;
     
@@ -36,9 +36,21 @@ public class ArticleRepository : IRepository<Article>
         return articles;
     }
 
-    public Task<Article> Create(Article entity)
+    public async Task Create(Article entity)
     {
-        throw new NotImplementedException();
+        var article = new Article
+        {
+            CreatedOn = entity.CreatedOn,
+            ArticleBranches = entity.ArticleBranches,
+            Creator = entity.Creator,
+            Description = entity.Description,
+            Title = entity.Title,
+            ArticleParticipants = entity.ArticleParticipants,
+            CreatorId = entity.CreatorId
+        };
+        
+        await _context.Article.AddAsync(article);
+        await _context.SaveChangesAsync();
     }
 
     public Task<Article> Update(Article entity)
@@ -49,5 +61,14 @@ public class ArticleRepository : IRepository<Article>
     public Task<Guid> Delete(Article entity)
     {
         throw new NotImplementedException();
+    }
+
+    public async Task<List<Article>> GetByPage(int pageNumber, int pageSize)
+    {
+        return await _context.Article
+            .AsNoTracking()
+            .Skip((pageNumber - 1) * pageSize)
+            .Take(pageSize)
+            .ToListAsync();
     }
 }
