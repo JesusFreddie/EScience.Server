@@ -1,4 +1,7 @@
+using EScinece.Domain.Abstraction;
 using EScinece.Infrastructure.Data;
+using EScinece.Infrastructure.Repositories;
+using EScinece.Infrastructure.Services;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -12,6 +15,10 @@ builder.Services.AddDbContext<EScienceDbContext>(options =>
 {
     options.UseNpgsql(configuration.GetConnectionString(nameof(EScienceDbContext)));
 });
+
+builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<IPasswordHasher, PasswordHasher>();
 
 var app = builder.Build();
 

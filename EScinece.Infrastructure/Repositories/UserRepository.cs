@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace EScinece.Infrastructure.Repositories;
 
-internal class UserRepository: IUserRepository
+public class UserRepository: IUserRepository
 {
     public Task<User?> Create(User user)
     {

@@ -2,8 +2,7 @@ using EScinece.Domain.Abstraction;
 using EScinece.Domain.DTOs;
 using EScinece.Domain.Entities;
 
-
-namespace EScinece.Infrastructure.Service;
+namespace EScinece.Infrastructure.Services;
 
 public class UserService: IUserService
 {
@@ -13,12 +12,18 @@ public class UserService: IUserService
     public UserService(IUserRepository userRepository, IPasswordHasher passwordHasher)
     {
         _userRepository = userRepository;
+        _passwordHasher = passwordHasher;
     }
     
-    public async Task Register(UserRegusterDto userReguster)
+    public async Task<Result<User?, Exception>> Register(UserRegusterDto userReguster)
     {
         var hashedPassword = _passwordHasher.Generate(userReguster.Password);
-        
-        var user = new User();
+
+        if (string.IsNullOrEmpty(userReguster.Email))
+        {
+            return new ArgumentNullException("Email is required AAAAAAAAAAAAAAAAAA");
+        }
+
+        return new User();
     }
 }

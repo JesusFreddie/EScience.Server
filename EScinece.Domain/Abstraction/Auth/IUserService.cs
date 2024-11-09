@@ -1,8 +1,9 @@
 using EScinece.Domain.DTOs;
+using EScinece.Domain.Entities;
 
 namespace EScinece.Domain.Abstraction;
 
 public interface IUserService
 {
-    public Task Register(UserRegusterDto request);
+    public Task<Result<User?, Exception>> Register(UserRegusterDto request);
 }

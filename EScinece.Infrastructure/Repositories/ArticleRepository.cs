@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace EScinece.Infrastructure.Repositories;
 
-internal class ArticleRepository : IRepository<Article>, IPaginations<Article>
+public class ArticleRepository : IRepository<Article>, IPaginations<Article>
 {
     private readonly EScienceDbContext _context;
     

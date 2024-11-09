@@ -1,6 +1,6 @@
 using EScinece.Domain.Abstraction;
 
-namespace EScinece.Infrastructure.Service;
+namespace EScinece.Infrastructure.Services;
 
 public class PasswordHasher : IPasswordHasher
 {
