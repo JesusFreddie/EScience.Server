@@ -3,16 +3,20 @@
   "WorkspaceRootPath": "J:\\developer\\EScience\\server\\EScience\\",
   "Documents": [
     {
+      "AbsoluteMoniker": "D:0:0:{7035F33B-659A-4772-8C80-110B4CA93A16}|EScinece.Infrastructure\\EScinece.Infrastructure.csproj|j:\\developer\\escience\\server\\escience\\escinece.infrastructure\\service\\userservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{7035F33B-659A-4772-8C80-110B4CA93A16}|EScinece.Infrastructure\\EScinece.Infrastructure.csproj|solutionrelative:escinece.infrastructure\\service\\userservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{7035F33B-659A-4772-8C80-110B4CA93A16}|EScinece.Infrastructure\\EScinece.Infrastructure.csproj|j:\\developer\\escience\\server\\escience\\escinece.infrastructure\\escinece.infrastructure.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|",
+      "RelativeMoniker": "D:0:0:{7035F33B-659A-4772-8C80-110B4CA93A16}|EScinece.Infrastructure\\EScinece.Infrastructure.csproj|solutionrelative:escinece.infrastructure\\escinece.infrastructure.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{AA639D1A-4C76-41C8-BD8C-018E067F4EFC}|EScinece.Domain\\EScinece.Domain.csproj|j:\\developer\\escience\\server\\escience\\escinece.domain\\entities\\account.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{AA639D1A-4C76-41C8-BD8C-018E067F4EFC}|EScinece.Domain\\EScinece.Domain.csproj|solutionrelative:escinece.domain\\entities\\account.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
       "AbsoluteMoniker": "D:0:0:{AA639D1A-4C76-41C8-BD8C-018E067F4EFC}|EScinece.Domain\\EScinece.Domain.csproj|j:\\developer\\escience\\server\\escience\\escinece.domain\\entities\\article.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{AA639D1A-4C76-41C8-BD8C-018E067F4EFC}|EScinece.Domain\\EScinece.Domain.csproj|solutionrelative:escinece.domain\\entities\\article.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{44985D2A-276E-46D4-8164-97F14E7EA3AC}|EScience.Application\\EScience.Application.csproj|j:\\developer\\escience\\server\\escience\\escience.application\\escience.application.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|",
-      "RelativeMoniker": "D:0:0:{44985D2A-276E-46D4-8164-97F14E7EA3AC}|EScience.Application\\EScience.Application.csproj|solutionrelative:escience.application\\escience.application.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{44985D2A-276E-46D4-8164-97F14E7EA3AC}|EScience.Application\\EScience.Application.csproj|j:\\developer\\escience\\server\\escience\\escience.application\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{44985D2A-276E-46D4-8164-97F14E7EA3AC}|EScience.Application\\EScience.Application.csproj|solutionrelative:escience.application\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     }
   ],
   "DocumentGroupContainers": [
@@ -22,7 +26,7 @@
       "DocumentGroups": [
         {
           "DockedWidth": 358,
-          "SelectedChildIndex": 18,
+          "SelectedChildIndex": 19,
           "Children": [
             {
               "$type": "Bookmark",
@@ -98,40 +102,54 @@
             },
             {
               "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "EScinece.Infrastructure",
+              "DocumentMoniker": "J:\\developer\\EScience\\server\\EScience\\EScinece.Infrastructure\\EScinece.Infrastructure.csproj",
+              "RelativeDocumentMoniker": "EScinece.Infrastructure\\EScinece.Infrastructure.csproj",
+              "ToolTip": "J:\\developer\\EScience\\server\\EScience\\EScinece.Infrastructure\\EScinece.Infrastructure.csproj",
+              "RelativeToolTip": "EScinece.Infrastructure\\EScinece.Infrastructure.csproj",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAABMAAAAAAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000758|",
+              "WhenOpened": "2024-11-09T08:53:16.704Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
               "DocumentIndex": 0,
+              "Title": "UserService.cs",
+              "DocumentMoniker": "J:\\developer\\EScience\\server\\EScience\\EScinece.Infrastructure\\Service\\UserService.cs",
+              "RelativeDocumentMoniker": "EScinece.Infrastructure\\Service\\UserService.cs",
+              "ToolTip": "J:\\developer\\EScience\\server\\EScience\\EScinece.Infrastructure\\Service\\UserService.cs*",
+              "RelativeToolTip": "EScinece.Infrastructure\\Service\\UserService.cs*",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAEAAAAbAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-11-09T08:52:45.312Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "Account.cs",
+              "DocumentMoniker": "J:\\developer\\EScience\\server\\EScience\\EScinece.Domain\\Entities\\Account.cs",
+              "RelativeDocumentMoniker": "EScinece.Domain\\Entities\\Account.cs",
+              "ToolTip": "J:\\developer\\EScience\\server\\EScience\\EScinece.Domain\\Entities\\Account.cs",
+              "RelativeToolTip": "EScinece.Domain\\Entities\\Account.cs",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAABIAAAABAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-11-08T14:23:15.659Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
               "Title": "Article.cs",
               "DocumentMoniker": "J:\\developer\\EScience\\server\\EScience\\EScinece.Domain\\Entities\\Article.cs",
               "RelativeDocumentMoniker": "EScinece.Domain\\Entities\\Article.cs",
               "ToolTip": "J:\\developer\\EScience\\server\\EScience\\EScinece.Domain\\Entities\\Article.cs",
               "RelativeToolTip": "EScinece.Domain\\Entities\\Article.cs",
-              "ViewState": "AQIAAAAAAAAAAAAAAAAAAA8AAAABAAAA",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2024-11-06T10:45:07.385Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 1,
-              "Title": "EScience.Application.csproj",
-              "DocumentMoniker": "J:\\developer\\EScience\\server\\EScience\\EScience.Application\\EScience.Application.csproj",
-              "RelativeDocumentMoniker": "EScience.Application\\EScience.Application.csproj",
-              "ToolTip": "J:\\developer\\EScience\\server\\EScience\\EScience.Application\\EScience.Application.csproj",
-              "RelativeToolTip": "EScience.Application\\EScience.Application.csproj",
               "ViewState": "AQIAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000758|",
-              "WhenOpened": "2024-11-06T10:44:25.816Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 2,
-              "Title": "Program.cs",
-              "DocumentMoniker": "J:\\developer\\EScience\\server\\EScience\\EScience.Application\\Program.cs",
-              "RelativeDocumentMoniker": "EScience.Application\\Program.cs",
-              "ToolTip": "J:\\developer\\EScience\\server\\EScience\\EScience.Application\\Program.cs",
-              "RelativeToolTip": "EScience.Application\\Program.cs",
-              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAUAAAAfAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2024-11-06T10:44:00.535Z"
+              "WhenOpened": "2024-11-08T14:23:15.064Z"
             }
           ]
         }

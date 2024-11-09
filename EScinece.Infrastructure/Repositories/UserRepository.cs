@@ -4,14 +4,8 @@ using Microsoft.EntityFrameworkCore;
 
 namespace EScinece.Infrastructure.Repositories;
 
-public class UserRepository: IUserRepository
+internal class UserRepository: IUserRepository
 {
-    
-    public UserRepository(DbContext context, IMapper mapper)
-    {
-        
-    }
-    
     public Task<User?> Create(User user)
     {
         throw new NotImplementedException();
