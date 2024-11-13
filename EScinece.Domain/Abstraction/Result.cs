@@ -2,30 +2,34 @@ namespace EScinece.Domain.Abstraction;
 
 public readonly struct Result<TValue, TError>
 {
-    private readonly TValue _value;
-    private readonly TError _error;
+    private readonly bool _success;
+    public readonly TValue Value;
+    public readonly TError Error;
 
-    public bool IsSuccess { get; }
-    
-    private Result(TValue value)
+    private Result(TValue v, TError e, bool success)
     {
-        IsSuccess = true;
-        _value = value;
-        _error = default;
+        Value = v;
+        Error = e;
+        _success = success;
     }
 
-    private Result(TError error)
+    public bool IsOk => _success;
+
+    public static Result<TValue, TError> Ok(TValue v)
     {
-        IsSuccess = false;
-        _value = default;
-        _error = error;
+        return new(v, default(TError), true);
     }
-    
-    public static implicit operator Result<TValue, TError>(TValue value) => new(value);
-    public static implicit operator Result<TValue, TError>(TError error) => new(error);
-    
-    public TResult Match<TResult>(
-        Func<TValue, TResult> success,
-        Func<TError, TResult> failure) =>
-            IsSuccess ? success(_value) : failure(_error);
+
+    public static Result<TValue, TError> Err(TError e)
+    {
+        return new(default(TValue), e, false);
+    }
+
+    public static implicit operator Result<TValue, TError>(TValue v) => new(v, default(TError), true);
+    public static implicit operator Result<TValue, TError>(TError e) => new(default(TValue), e, false);
+
+    public R Match<R>(
+        Func<TValue, R> success,
+        Func<TError, R> failure) =>
+        _success ? success(Value) : failure(Error);
 }

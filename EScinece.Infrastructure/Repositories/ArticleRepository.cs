@@ -38,18 +38,7 @@ public class ArticleRepository : IRepository<Article>, IPaginations<Article>
 
     public async Task Create(Article entity)
     {
-        var article = new Article
-        {
-            CreatedOn = entity.CreatedOn,
-            ArticleBranches = entity.ArticleBranches,
-            Creator = entity.Creator,
-            Description = entity.Description,
-            Title = entity.Title,
-            ArticleParticipants = entity.ArticleParticipants,
-            CreatorId = entity.CreatorId
-        };
-        
-        await _context.Article.AddAsync(article);
+        await _context.Article.AddAsync(entity);
         await _context.SaveChangesAsync();
     }
 

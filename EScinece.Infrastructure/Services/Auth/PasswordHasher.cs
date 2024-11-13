@@ -10,7 +10,7 @@ public class PasswordHasher : IPasswordHasher
     }
 
     public bool Verify(string password, string hash)
-    {   
+    {
         return BCrypt.Net.BCrypt.EnhancedVerify(password, hash);
     }
 }

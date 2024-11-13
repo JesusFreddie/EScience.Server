@@ -13,4 +13,15 @@ public class ArticleParticipant: BaseEntity
     
     public ICollection<ArticleBranch> ArticleBranches { get; set; } =  new List<ArticleBranch>();
     public ICollection<ArticleBranchVersion> ArticleBranchVersions { get; set; } = new List<ArticleBranchVersion>();
+
+    private ArticleParticipant(Account account, Article article)
+    {
+        Account = account;
+        Article = article;
+    }
+
+    public static Result<ArticleParticipant, string> Create(Account account, Article article)
+    {
+        return new ArticleParticipant(account, article);
+    }
 }

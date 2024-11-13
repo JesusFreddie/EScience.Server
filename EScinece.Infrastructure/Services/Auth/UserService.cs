@@ -3,7 +3,7 @@ using EScinece.Domain.DTOs;
 using EScinece.Domain.Entities;
 
 namespace EScinece.Infrastructure.Services;
-
+ 
 public class UserService: IUserService
 {
     private readonly IUserRepository _userRepository;
@@ -15,15 +15,15 @@ public class UserService: IUserService
         _passwordHasher = passwordHasher;
     }
     
-    public async Task<Result<User?, Exception>> Register(UserRegusterDto userReguster)
+    public async Task<Result<User?, string>> Register(UserRegisterDto userRegister)
     {
-        var hashedPassword = _passwordHasher.Generate(userReguster.Password);
+        var hashedPassword = _passwordHasher.Generate(userRegister.Password);
 
-        if (string.IsNullOrEmpty(userReguster.Email))
-        {
-            return new ArgumentNullException("Email is required AAAAAAAAAAAAAAAAAA");
-        }
+        var result = User.Create(userRegister.Email, hashedPassword);
 
-        return new User();
+        if (!result.IsOk)
+            return result.Error;
+
+        return result;
     }
 }

@@ -5,5 +5,5 @@ namespace EScinece.Domain.Abstraction;
 public interface IUserRepository
 {
     public Task<User?> Create(User user);
-    public Task<User?> GetById(Guid userId);
+    public Task<User?> GetByEmail(string email);
 }

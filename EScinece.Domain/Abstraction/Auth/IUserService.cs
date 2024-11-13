@@ -5,5 +5,5 @@ namespace EScinece.Domain.Abstraction;
 
 public interface IUserService
 {
-    public Task<Result<User?, Exception>> Register(UserRegusterDto request);
+    public Task<Result<User?, string>> Register(UserRegisterDto request);
 }
