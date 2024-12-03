@@ -5,5 +5,6 @@ namespace EScinece.Domain.Abstraction;
 
 public interface IUserService
 {
-    public Task<Result<User?, string>> Register(UserRegisterDto request);
+    public Task<Result<User, string>> Create(UserDto user);
+    public Task<bool> Delete(Guid id);
 }

@@ -5,24 +5,31 @@ using Microsoft.EntityFrameworkCore;
 
 namespace EScinece.Infrastructure.Repositories;
 
-public class UserRepository: IUserRepository
+public class UserRepository(EScienceDbContext context) : IUserRepository
 {
-    private readonly EScienceDbContext _context;
-    
-    public UserRepository(EScienceDbContext context)
-    {
-        _context = context;
-    }
-    
     public async Task<User?> Create(User user)
     {
-        await _context.User.AddAsync(user);
-        await _context.SaveChangesAsync();
+        await context.User.AddAsync(user);
+        await context.SaveChangesAsync();
         return user;
     }
 
-    public Task<User?> GetByEmail(string email)
+    public async Task<User?> GetByEmail(string email)
     {
-        throw new NotImplementedException();
+        return await context
+            .User
+            .AsNoTracking()
+            .FirstOrDefaultAsync(u => u.Email == email);
+    }
+
+    public async Task<bool> Delete(Guid id)
+    {
+        var user = await context.User.FindAsync(id);
+        if (user is null)
+            return false;
+        
+        context.User.Remove(user);
+        await context.SaveChangesAsync();
+        return true;
     }
 }

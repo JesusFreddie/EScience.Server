@@ -1,6 +1,8 @@
+
+using EScience.Application.Requests;
+using EScience.Application.Responses;
 using EScinece.Domain.Abstraction;
 using EScinece.Domain.DTOs;
-using EScinece.Domain.Entities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -19,11 +21,13 @@ public class AuthController: Controller
 
     [Route("register")]
     [HttpPost]
-    public async Task<ActionResult<User?>> Register([FromBody] UserRegisterDto data)
+    public async Task<ActionResult<RegisterResponseDto>> Register([FromBody] RegisterRequestDto data)
     {
-        var result = await _userService.Register(data);
+        var user = new UserDto(Email: data.Email, Password: data.Password);
         
-        return result.Match<ActionResult<User?>>((user) => Ok(), error => BadRequest(error));
+        var result = await _userService.Create(user);
+        
+        return result.Match<ActionResult<RegisterResponseDto>>(user => Ok(user), error => BadRequest(error));
     }
     
     [Route("login")]

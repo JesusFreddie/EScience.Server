@@ -12,6 +12,7 @@ internal class UserConfiguration : IEntityTypeConfiguration<User>
 
         builder
             .HasOne(user => user.Account)
-            .WithOne(account => account.User);
+            .WithOne(account => account.User)
+            .HasForeignKey<Account>(account => account.UserId);
     }
 }
