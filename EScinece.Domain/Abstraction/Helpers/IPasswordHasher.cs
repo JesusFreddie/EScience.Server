@@ -1,4 +1,4 @@
-namespace EScinece.Domain.Abstraction;
+namespace EScinece.Domain.Abstraction.Helpers;
 
 public interface IPasswordHasher
 {

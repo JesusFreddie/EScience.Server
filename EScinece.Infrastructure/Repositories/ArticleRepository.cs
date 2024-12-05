@@ -5,15 +5,8 @@ using Microsoft.EntityFrameworkCore;
 
 namespace EScinece.Infrastructure.Repositories;
 
-public class ArticleRepository : IRepository<Article>, IPaginations<Article>
+public class ArticleRepository(EScienceDbContext _context) : IRepository<Article>, IPaginations<Article>
 {
-    private readonly EScienceDbContext _context;
-    
-    public ArticleRepository(EScienceDbContext context)
-    {
-        _context = context;
-    }
-
     public Task<Article?> GetById(Guid id)
     {
         var article = _context

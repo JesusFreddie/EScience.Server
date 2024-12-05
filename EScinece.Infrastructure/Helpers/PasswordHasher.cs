@@ -1,6 +1,6 @@
-using EScinece.Domain.Abstraction;
+using EScinece.Domain.Abstraction.Helpers;
 
-namespace EScinece.Infrastructure.Services;
+namespace EScinece.Infrastructure.Helpers;
 
 public class PasswordHasher : IPasswordHasher
 {

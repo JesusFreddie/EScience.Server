@@ -1,5 +1,8 @@
-using EScinece.Domain.Abstraction;
+using EScinece.Domain.Abstraction.Helpers;
+using EScinece.Domain.Abstraction.Repositories;
+using EScinece.Domain.Abstraction.Services;
 using EScinece.Infrastructure.Data;
+using EScinece.Infrastructure.Helpers;
 using EScinece.Infrastructure.Repositories;
 using EScinece.Infrastructure.Services;
 using Microsoft.EntityFrameworkCore;

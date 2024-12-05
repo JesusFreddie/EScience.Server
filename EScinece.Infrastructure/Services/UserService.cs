@@ -1,28 +1,25 @@
 using EScinece.Domain.Abstraction;
+using EScinece.Domain.Abstraction.Helpers;
+using EScinece.Domain.Abstraction.Repositories;
+using EScinece.Domain.Abstraction.Services;
 using EScinece.Domain.DTOs;
 using EScinece.Domain.Entities;
 using Microsoft.Extensions.Logging;
-using System.Text.RegularExpressions;
 
 namespace EScinece.Infrastructure.Services;
 
-public class UserService: IUserService
+public class UserService(
+    IUserRepository userRepository,
+    IPasswordHasher passwordHasher,
+    ILogger<UserService> logger
+    ) : IUserService
 {
-    private readonly IUserRepository _userRepository;
-    private readonly IPasswordHasher _passwordHasher;
-    private readonly ILogger<UserService> _logger;
     
-    public UserService(
-        IUserRepository userRepository, 
-        IPasswordHasher passwordHasher,
-        ILogger<UserService> logger)
-    {
-        _userRepository = userRepository;
-        _passwordHasher = passwordHasher;
-        _logger = logger;
-    }
-    
-    public async Task<Result<UserDto, string>> Create(UserDto userRegister)
+    private readonly ILogger<UserService> _logger = logger;
+    private readonly IUserRepository _userRepository = userRepository;
+    private readonly IPasswordHasher _passwordHasher = passwordHasher;
+
+    public async Task<Result<User, string>> Create(UserDto userRegister)
     {
         try
         {
@@ -42,19 +39,16 @@ public class UserService: IUserService
             var hashedPassword = _passwordHasher.Generate(userRegister.Password);
             var result = User.Create(userRegister.Email, hashedPassword);
         
-            if (!result.IsOk)
+            if (!result.onSuccess)
             {
                 _logger.LogError("Ошибка при создании пользователя: {Error}", result.Error);
                 return result.Error;
             }
         
-            await _userRepository.Create(result.Value!);
+            var user = await _userRepository.Create(result.Value!);
             _logger.LogInformation("Успешно создан новый пользователь: {Email}", userRegister.Email);
 
-            return new UserDto(
-                Id: result.Value.Id,
-                Email: result.Value.Email
-            );
+            return user;
         }
         catch (Exception ex)
         {
@@ -81,4 +75,13 @@ public class UserService: IUserService
         }
     }
 
+    public Task<User?> FindById(string id)
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task<User?> FindByEmail(string email)
+    {
+        throw new NotImplementedException();
+    }
 }

@@ -1,4 +1,4 @@
-using EScinece.Domain.Abstraction;
+using EScinece.Domain.Abstraction.Repositories;
 using EScinece.Domain.Entities;
 using EScinece.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
@@ -7,7 +7,7 @@ namespace EScinece.Infrastructure.Repositories;
 
 public class UserRepository(EScienceDbContext context) : IUserRepository
 {
-    public async Task<User?> Create(User user)
+    public async Task<User> Create(User user)
     {
         await context.User.AddAsync(user);
         await context.SaveChangesAsync();

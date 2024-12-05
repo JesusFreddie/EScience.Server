@@ -13,7 +13,7 @@ public readonly struct Result<TValue, TError>
         _success = success;
     }
 
-    public bool IsOk => _success;
+    public bool onSuccess => _success;
 
     public static Result<TValue, TError> Ok(TValue v)
     {
