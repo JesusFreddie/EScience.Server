@@ -13,7 +13,7 @@ public class ArticleBranch: BaseEntity
     public Guid CreatorId { get; set; }
     public ArticleParticipant Creator { get; set; }
     
-    public ICollection<ArticleBranchVersion> ArticleBranchVersions { get; set; }
+    public ICollection<ArticleBranchVersion> ArticleBranchVersions { get; set; } = new List<ArticleBranchVersion>();
 
     private ArticleBranch(string name, Article article, ArticleParticipant creator)
     {

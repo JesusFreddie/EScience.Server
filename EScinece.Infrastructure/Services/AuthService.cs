@@ -3,14 +3,20 @@ using EScinece.Domain.Abstraction.Helpers;
 using EScinece.Domain.Abstraction.Services;
 using EScinece.Domain.DTOs;
 using EScinece.Domain.Entities;
+using EScinece.Infrastructure.Helpers;
 
 namespace EScinece.Infrastructure.Services;
 
-public class AuthService(IUserService userService, IAccountService accountService, IPasswordHasher passwordHasher) : IAuthService
+public class AuthService(
+    IUserService userService, 
+    IAccountService accountService, 
+    IPasswordHasher passwordHasher, 
+    IJwtProvider jwtProvider) : IAuthService
 {
     private readonly IUserService _userService = userService;
     private readonly IAccountService _accountService = accountService;
     private readonly IPasswordHasher _passwordHasher = passwordHasher;
+    private readonly IJwtProvider _jwtProvider = jwtProvider;
 
     private static class ErrorMessage
     {
@@ -22,12 +28,16 @@ public class AuthService(IUserService userService, IAccountService accountServic
         var account = await _accountService.FindByEmail(data.Email);
 
         if (account == null)
-        {
             return ErrorMessage.InvalidDataLogin;
-        }
 
-        var result = _passwordHasher.Verify(password: data.Password, data.Password);
-        throw new Exception();
+        var isVetifyPass = _passwordHasher.Verify(password: data.Password, data.Password);
+
+        if (!isVetifyPass)
+            return ErrorMessage.InvalidDataLogin;
+
+        var token = _jwtProvider.GenerateToken(account.User);
+
+        return "";
     }
 
     public async Task<Result<AccountDto, string>> Register(AuthDto data)

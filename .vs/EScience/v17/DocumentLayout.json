@@ -1,16 +1,7 @@
 {
   "Version": 1,
   "WorkspaceRootPath": "J:\\developer\\EScience\\server\\EScience\\",
-  "Documents": [
-    {
-      "AbsoluteMoniker": "D:0:0:{44985D2A-276E-46D4-8164-97F14E7EA3AC}|EScience.Application\\EScience.Application.csproj|j:\\developer\\escience\\server\\escience\\escience.application\\escience.application.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|",
-      "RelativeMoniker": "D:0:0:{44985D2A-276E-46D4-8164-97F14E7EA3AC}|EScience.Application\\EScience.Application.csproj|solutionrelative:escience.application\\escience.application.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{7035F33B-659A-4772-8C80-110B4CA93A16}|EScinece.Infrastructure\\EScinece.Infrastructure.csproj|j:\\developer\\escience\\server\\escience\\escinece.infrastructure\\services\\authservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{7035F33B-659A-4772-8C80-110B4CA93A16}|EScinece.Infrastructure\\EScinece.Infrastructure.csproj|solutionrelative:escinece.infrastructure\\services\\authservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    }
-  ],
+  "Documents": [],
   "DocumentGroupContainers": [
     {
       "Orientation": 0,
@@ -18,7 +9,7 @@
       "DocumentGroups": [
         {
           "DockedWidth": 358,
-          "SelectedChildIndex": 18,
+          "SelectedChildIndex": -1,
           "Children": [
             {
               "$type": "Bookmark",
@@ -91,32 +82,6 @@
             {
               "$type": "Bookmark",
               "Name": "ST:1:0:{e8b06f52-6d01-11d2-aa7d-00c04f990343}"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 0,
-              "Title": "EScience.Application",
-              "DocumentMoniker": "J:\\developer\\EScience\\server\\EScience\\EScience.Application\\EScience.Application.csproj",
-              "RelativeDocumentMoniker": "EScience.Application\\EScience.Application.csproj",
-              "ToolTip": "J:\\developer\\EScience\\server\\EScience\\EScience.Application\\EScience.Application.csproj",
-              "RelativeToolTip": "EScience.Application\\EScience.Application.csproj",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAcAAAAKAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000758|",
-              "WhenOpened": "2024-12-05T16:12:25.752Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 1,
-              "Title": "AuthService.cs",
-              "DocumentMoniker": "J:\\developer\\EScience\\server\\EScience\\EScinece.Infrastructure\\Services\\AuthService.cs",
-              "RelativeDocumentMoniker": "EScinece.Infrastructure\\Services\\AuthService.cs",
-              "ToolTip": "J:\\developer\\EScience\\server\\EScience\\EScinece.Infrastructure\\Services\\AuthService.cs",
-              "RelativeToolTip": "EScinece.Infrastructure\\Services\\AuthService.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2024-12-05T15:20:10.644Z",
-              "EditorCaption": ""
             }
           ]
         }
