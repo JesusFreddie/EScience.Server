@@ -3,32 +3,16 @@
   "WorkspaceRootPath": "J:\\developer\\EScience\\server\\EScience\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{849E28C0-6A76-4DA2-9728-21C285C73368}|Solution Items{849E28C0-6A76-4DA2-9728-21C285C73368}|J:\\developer\\EScience\\server\\EScience\\docker-compose.yml||{8B382828-6202-11D1-8870-0000F87579D2}",
-      "RelativeMoniker": "D:0:0:{849E28C0-6A76-4DA2-9728-21C285C73368}|Solution Items{849E28C0-6A76-4DA2-9728-21C285C73368}|solutionrelative:docker-compose.yml||{8B382828-6202-11D1-8870-0000F87579D2}"
+      "AbsoluteMoniker": "D:0:0:{7035F33B-659A-4772-8C80-110B4CA93A16}|EScinece.Infrastructure\\EScinece.Infrastructure.csproj|j:\\developer\\escience\\server\\escience\\escinece.infrastructure\\services\\authservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{7035F33B-659A-4772-8C80-110B4CA93A16}|EScinece.Infrastructure\\EScinece.Infrastructure.csproj|solutionrelative:escinece.infrastructure\\services\\authservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{44985D2A-276E-46D4-8164-97F14E7EA3AC}|EScience.Application\\EScience.Application.csproj|j:\\developer\\escience\\server\\escience\\escience.application\\controllers\\authcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{44985D2A-276E-46D4-8164-97F14E7EA3AC}|EScience.Application\\EScience.Application.csproj|solutionrelative:escience.application\\controllers\\authcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{7035F33B-659A-4772-8C80-110B4CA93A16}|EScinece.Infrastructure\\EScinece.Infrastructure.csproj|j:\\developer\\escience\\server\\escience\\escinece.infrastructure\\services\\userservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{7035F33B-659A-4772-8C80-110B4CA93A16}|EScinece.Infrastructure\\EScinece.Infrastructure.csproj|solutionrelative:escinece.infrastructure\\services\\userservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{7035F33B-659A-4772-8C80-110B4CA93A16}|EScinece.Infrastructure\\EScinece.Infrastructure.csproj|j:\\developer\\escience\\server\\escience\\escinece.infrastructure\\services\\accountservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{7035F33B-659A-4772-8C80-110B4CA93A16}|EScinece.Infrastructure\\EScinece.Infrastructure.csproj|solutionrelative:escinece.infrastructure\\services\\accountservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{7035F33B-659A-4772-8C80-110B4CA93A16}|EScinece.Infrastructure\\EScinece.Infrastructure.csproj|j:\\developer\\escience\\server\\escience\\escinece.infrastructure\\repositories\\accountrepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{7035F33B-659A-4772-8C80-110B4CA93A16}|EScinece.Infrastructure\\EScinece.Infrastructure.csproj|solutionrelative:escinece.infrastructure\\repositories\\accountrepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{7035F33B-659A-4772-8C80-110B4CA93A16}|EScinece.Infrastructure\\EScinece.Infrastructure.csproj|j:\\developer\\escience\\server\\escience\\escinece.infrastructure\\helpers\\jwtoptions.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{7035F33B-659A-4772-8C80-110B4CA93A16}|EScinece.Infrastructure\\EScinece.Infrastructure.csproj|solutionrelative:escinece.infrastructure\\helpers\\jwtoptions.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{7035F33B-659A-4772-8C80-110B4CA93A16}|EScinece.Infrastructure\\EScinece.Infrastructure.csproj|j:\\developer\\escience\\server\\escience\\escinece.infrastructure\\repositories\\articlerepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{7035F33B-659A-4772-8C80-110B4CA93A16}|EScinece.Infrastructure\\EScinece.Infrastructure.csproj|solutionrelative:escinece.infrastructure\\repositories\\articlerepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{7035F33B-659A-4772-8C80-110B4CA93A16}|EScinece.Infrastructure\\EScinece.Infrastructure.csproj|j:\\developer\\escience\\server\\escience\\escinece.infrastructure\\services\\authservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{7035F33B-659A-4772-8C80-110B4CA93A16}|EScinece.Infrastructure\\EScinece.Infrastructure.csproj|solutionrelative:escinece.infrastructure\\services\\authservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     }
   ],
   "DocumentGroupContainers": [
@@ -38,7 +22,7 @@
       "DocumentGroups": [
         {
           "DockedWidth": 358,
-          "SelectedChildIndex": 18,
+          "SelectedChildIndex": 19,
           "Children": [
             {
               "$type": "Bookmark",
@@ -114,93 +98,41 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 0,
-              "Title": "docker-compose.yml",
-              "DocumentMoniker": "J:\\developer\\EScience\\server\\EScience\\docker-compose.yml",
-              "RelativeDocumentMoniker": "docker-compose.yml",
-              "ToolTip": "J:\\developer\\EScience\\server\\EScience\\docker-compose.yml",
-              "RelativeToolTip": "docker-compose.yml",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAABAAAAAFAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003775|",
-              "WhenOpened": "2024-12-08T19:20:44.476Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
               "DocumentIndex": 2,
               "Title": "AccountService.cs",
               "DocumentMoniker": "J:\\developer\\EScience\\server\\EScience\\EScinece.Infrastructure\\Services\\AccountService.cs",
               "RelativeDocumentMoniker": "EScinece.Infrastructure\\Services\\AccountService.cs",
               "ToolTip": "J:\\developer\\EScience\\server\\EScience\\EScinece.Infrastructure\\Services\\AccountService.cs",
               "RelativeToolTip": "EScinece.Infrastructure\\Services\\AccountService.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAB8AAAAFAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2024-12-08T18:54:26.795Z",
+              "WhenOpened": "2024-12-10T16:02:01.195Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 4,
-              "Title": "JwtOptions.cs",
-              "DocumentMoniker": "J:\\developer\\EScience\\server\\EScience\\EScinece.Infrastructure\\Helpers\\JwtOptions.cs",
-              "RelativeDocumentMoniker": "EScinece.Infrastructure\\Helpers\\JwtOptions.cs",
-              "ToolTip": "J:\\developer\\EScience\\server\\EScience\\EScinece.Infrastructure\\Helpers\\JwtOptions.cs",
-              "RelativeToolTip": "EScinece.Infrastructure\\Helpers\\JwtOptions.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2024-12-08T18:53:21.953Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 5,
-              "Title": "ArticleRepository.cs",
-              "DocumentMoniker": "J:\\developer\\EScience\\server\\EScience\\EScinece.Infrastructure\\Repositories\\ArticleRepository.cs",
-              "RelativeDocumentMoniker": "EScinece.Infrastructure\\Repositories\\ArticleRepository.cs",
-              "ToolTip": "J:\\developer\\EScience\\server\\EScience\\EScinece.Infrastructure\\Repositories\\ArticleRepository.cs",
-              "RelativeToolTip": "EScinece.Infrastructure\\Repositories\\ArticleRepository.cs",
-              "ViewState": "AgIAABMAAAAAAAAAAAAYwAAAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2024-12-08T18:49:36.846Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 3,
-              "Title": "AccountRepository.cs",
-              "DocumentMoniker": "J:\\developer\\EScience\\server\\EScience\\EScinece.Infrastructure\\Repositories\\AccountRepository.cs",
-              "RelativeDocumentMoniker": "EScinece.Infrastructure\\Repositories\\AccountRepository.cs",
-              "ToolTip": "J:\\developer\\EScience\\server\\EScience\\EScinece.Infrastructure\\Repositories\\AccountRepository.cs",
-              "RelativeToolTip": "EScinece.Infrastructure\\Repositories\\AccountRepository.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2024-12-08T18:49:33.537Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 6,
+              "DocumentIndex": 0,
               "Title": "AuthService.cs",
               "DocumentMoniker": "J:\\developer\\EScience\\server\\EScience\\EScinece.Infrastructure\\Services\\AuthService.cs",
               "RelativeDocumentMoniker": "EScinece.Infrastructure\\Services\\AuthService.cs",
               "ToolTip": "J:\\developer\\EScience\\server\\EScience\\EScinece.Infrastructure\\Services\\AuthService.cs",
               "RelativeToolTip": "EScinece.Infrastructure\\Services\\AuthService.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "ViewState": "AgIAACcAAAAAAAAAAAAcwD4AAAA4AAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2024-12-08T18:42:52.067Z",
+              "WhenOpened": "2024-12-10T15:43:44.228Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
               "DocumentIndex": 1,
-              "Title": "AuthController.cs",
-              "DocumentMoniker": "J:\\developer\\EScience\\server\\EScience\\EScience.Application\\Controllers\\AuthController.cs",
-              "RelativeDocumentMoniker": "EScience.Application\\Controllers\\AuthController.cs",
-              "ToolTip": "J:\\developer\\EScience\\server\\EScience\\EScience.Application\\Controllers\\AuthController.cs",
-              "RelativeToolTip": "EScience.Application\\Controllers\\AuthController.cs",
-              "ViewState": "AgIAAAwAAAAAAAAAAAAAACgAAAAAAAAAAAAAAA==",
+              "Title": "UserService.cs",
+              "DocumentMoniker": "J:\\developer\\EScience\\server\\EScience\\EScinece.Infrastructure\\Services\\UserService.cs",
+              "RelativeDocumentMoniker": "EScinece.Infrastructure\\Services\\UserService.cs",
+              "ToolTip": "J:\\developer\\EScience\\server\\EScience\\EScinece.Infrastructure\\Services\\UserService.cs",
+              "RelativeToolTip": "EScinece.Infrastructure\\Services\\UserService.cs",
+              "ViewState": "AgIAAAsAAAAAAAAAAAAIwCEAAAAkAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2024-12-08T18:42:32.587Z",
+              "WhenOpened": "2024-12-10T15:43:29.175Z",
               "EditorCaption": ""
             }
           ]

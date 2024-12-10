@@ -7,7 +7,7 @@ using System.Security.Claims;
 using EScinece.Domain.Entities;
 
 namespace EScinece.Infrastructure.Helpers;
-internal class JwtProvider(IOptions<JwtOptions> options) : IJwtProvider
+public class JwtProvider(IOptions<JwtOptions> options) : IJwtProvider
 {
     private readonly JwtOptions _options = options.Value;
     public string GenerateToken(User user)

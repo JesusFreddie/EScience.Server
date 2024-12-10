@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace EScinece.Infrastructure.Helpers;
-internal class JwtOptions
+public class JwtOptions
 {
     public string SecretKey { get; set; } = string.Empty;
     public int ExpitesHours { get; set; } = 0;
