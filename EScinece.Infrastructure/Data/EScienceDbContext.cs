@@ -1,32 +1,42 @@
-using EScinece.Domain.Entities;
-using EScinece.Infrastructure.Configurations;
-using Microsoft.EntityFrameworkCore;
+using System.Data;
+using Dapper;
+using Npgsql;
 
 namespace EScinece.Infrastructure.Data;
 
-public class EScienceDbContext : DbContext
+public class EScienceDbContext(string connectionString) : IEScienceDbContext
 {
-    public DbSet<User> User { get; set; }
-    public DbSet<Account> Account { get; set; }
-    public DbSet<Article> Article { get; set; }
-    public DbSet<ArticleBranch> ArticleBranch { get; set; }
-    public DbSet<ArticleBranchVersion> ArticleBranchVersion { get; set; }
-    public DbSet<ArticleParticipant> ArticleParticipant { get; set; }
-    
-    public EScienceDbContext(DbContextOptions<EScienceDbContext> options) : base(options)
+    private readonly string _connectionString = connectionString;
+
+    public async Task<IDbConnection> CreateConnectionAsync(CancellationToken token = default)
     {
-        
+        var connection = new NpgsqlConnection(_connectionString);
+        await connection.OpenAsync(token);
+        return connection;
     }
 
-    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    private async Task _initTables()
     {
-        modelBuilder.ApplyConfiguration(new AccountConfiguration());
-        modelBuilder.ApplyConfiguration(new UserConfiguration());
-        modelBuilder.ApplyConfiguration(new ArticleConfiguration());
-        modelBuilder.ApplyConfiguration(new ArticleBranchConfiguration());
-        modelBuilder.ApplyConfiguration(new ArticleBranchVersionConfiguration());
-        modelBuilder.ApplyConfiguration(new ArticleParticipantConfiguration());
+        await _initUsers();
         
-        base.OnModelCreating(modelBuilder);
+        async Task _initUsers()
+        {
+            var sql = $"""
+                CREATE TABLE IF NOT EXISTS Accounts (
+                    Id SERIAL PRIMARY KEY, 
+                    Name VARCHAR(255),
+                    Role INTEGER, 
+                    UserId UUID NOT NULL,
+                    CONSTRAINT fk_accounts_users FOREIGN KEY (UserId) REFERENCES Users(Id)
+                );
+                CREATE INDEX IF NOT EXISTS accounts_users ON Accounts (UserId);
+                """;
+            await (await CreateConnectionAsync()).ExecuteAsync(sql);
+        }
     }
+}
+
+public interface IEScienceDbContext
+{
+    Task<IDbConnection> CreateConnectionAsync(CancellationToken token = default);
 }

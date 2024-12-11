@@ -106,8 +106,7 @@
               "RelativeToolTip": "EScinece.Infrastructure\\Services\\AccountService.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAB8AAAAFAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2024-12-10T16:02:01.195Z",
-              "EditorCaption": ""
+              "WhenOpened": "2024-12-10T16:02:01.195Z"
             },
             {
               "$type": "Document",
@@ -117,7 +116,7 @@
               "RelativeDocumentMoniker": "EScinece.Infrastructure\\Services\\AuthService.cs",
               "ToolTip": "J:\\developer\\EScience\\server\\EScience\\EScinece.Infrastructure\\Services\\AuthService.cs",
               "RelativeToolTip": "EScinece.Infrastructure\\Services\\AuthService.cs",
-              "ViewState": "AgIAACcAAAAAAAAAAAAcwD4AAAA4AAAAAAAAAA==",
+              "ViewState": "AgIAACQAAAAAAAAAAAAcwD4AAAAeAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2024-12-10T15:43:44.228Z",
               "EditorCaption": ""
@@ -132,8 +131,7 @@
               "RelativeToolTip": "EScinece.Infrastructure\\Services\\UserService.cs",
               "ViewState": "AgIAAAsAAAAAAAAAAAAIwCEAAAAkAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2024-12-10T15:43:29.175Z",
-              "EditorCaption": ""
+              "WhenOpened": "2024-12-10T15:43:29.175Z"
             }
           ]
         }

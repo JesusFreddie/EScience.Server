@@ -17,7 +17,6 @@ public class AccountService(AccountRepository accountRepository, IUserService us
         {
             return "Name is required";
         }
-        
 
         var account = Account.Create(data.Name, data.User, data.Role);
 

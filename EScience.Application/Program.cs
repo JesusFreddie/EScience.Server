@@ -5,7 +5,6 @@ using EScinece.Infrastructure.Data;
 using EScinece.Infrastructure.Helpers;
 using EScinece.Infrastructure.Repositories;
 using EScinece.Infrastructure.Services;
-using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 var configuration = builder.Configuration;
@@ -14,10 +13,7 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddControllers();
 
-builder.Services.AddDbContext<EScienceDbContext>(options =>
-{
-    options.UseNpgsql(configuration.GetConnectionString(nameof(EScienceDbContext)));
-});
+builder.Services.AddSingleton<IEScienceDbContext>(_ = new EScienceDbContext(configuration.GetConnectionString(nameof(EScienceDbContext))!));
 
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IAccountRepository, AccountRepository>();

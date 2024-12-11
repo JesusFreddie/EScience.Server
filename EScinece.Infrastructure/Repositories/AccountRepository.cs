@@ -9,9 +9,7 @@ public class AccountRepository(EScienceDbContext _context) : IAccountRepository
 {
     public async Task<Account> Create(Account account)
     {
-        await _context.Account.AddAsync(account);
-        await _context.SaveChangesAsync();
-        return account;
+        throw new NotImplementedException();
     }
 
     public Task<Account> Update(Account account)
@@ -21,19 +19,11 @@ public class AccountRepository(EScienceDbContext _context) : IAccountRepository
 
     public async Task<bool> Delete(Guid id)
     {
-        var account = await _context.Account.FindAsync(id);
-        if (account is null)
-        {
-            return false;
-        }
-
-        _context.Account.Remove(account);
-        await _context.SaveChangesAsync();
-        return true;
+        throw new NotImplementedException();
     }
 
     public async Task<Account?> GetByUserId(Guid id)
     {
-        return await _context.Account.FindAsync(id);
+        throw new NotImplementedException();
     }
 }
