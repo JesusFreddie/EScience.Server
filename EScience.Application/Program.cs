@@ -14,10 +14,7 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddControllers();
 
-builder.Services.AddDbContext<EScienceDbContext>(options =>
-{
-    options.UseNpgsql(configuration.GetConnectionString(nameof(EScienceDbContext)));
-});
+builder.Services.AddDbContext<EScienceDbContext>();
 
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IAccountRepository, AccountRepository>();

@@ -1,21 +1,30 @@
 using EScinece.Domain.Entities;
 using EScinece.Infrastructure.Configurations;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 
 namespace EScinece.Infrastructure.Data;
 
 public class EScienceDbContext : DbContext
 {
-    public DbSet<User> User { get; set; }
-    public DbSet<Account> Account { get; set; }
-    public DbSet<Article> Article { get; set; }
-    public DbSet<ArticleBranch> ArticleBranch { get; set; }
-    public DbSet<ArticleBranchVersion> ArticleBranchVersion { get; set; }
-    public DbSet<ArticleParticipant> ArticleParticipant { get; set; }
+    private readonly IConfiguration _configuration;
+    public DbSet<User> User { get; init; }
+    public DbSet<Account> Account { get; init; }
+    public DbSet<Article> Article { get; init; }
+    public DbSet<ArticleBranch> ArticleBranch { get; init; }
+    public DbSet<ArticleBranchVersion> ArticleBranchVersion { get; init; }
+    public DbSet<ArticleParticipant> ArticleParticipant { get; init; }
     
-    public EScienceDbContext(DbContextOptions<EScienceDbContext> options) : base(options)
+    public EScienceDbContext(IConfiguration configuration)
     {
+        _configuration = configuration;
+    }
+
+    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+    {
+        optionsBuilder.UseNpgsql(_configuration.GetConnectionString(nameof(EScienceDbContext)));
         
+        base.OnConfiguring(optionsBuilder);
     }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)

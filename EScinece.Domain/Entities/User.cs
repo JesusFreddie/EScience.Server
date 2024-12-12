@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations;
 using EScinece.Domain.Abstraction;
 
 namespace EScinece.Domain.Entities;
@@ -8,12 +9,14 @@ public class User: BaseEntity
     {
         public const string EmailRequired = "Email обязателен для заполнения";
         public const string PasswordRequired = "Пароль обязателен для заполнения";
-        public const string InvalidEmail = "Некорректный формат email";
     }
 
+    [Required]
     public string Email { get; private set; }
+    [Required]
     public string HashedPassword { get; private set; }
     public Account? Account { get; set; }
+    public Guid AccountId { get; set; }
     
     private User(string email, string hashedPassword)
     {
@@ -36,6 +39,4 @@ public class User: BaseEntity
         
         return new User(email.Trim(), hashedPassword);
     }
-
-    
 }

@@ -1,4 +1,5 @@
 using EScinece.Domain.Abstraction;
+using EScinece.Domain.Abstraction.Repositories;
 using EScinece.Domain.Abstraction.Services;
 using EScinece.Domain.DTOs;
 using EScinece.Domain.Entities;
@@ -6,9 +7,9 @@ using EScinece.Infrastructure.Repositories;
 
 namespace EScinece.Infrastructure.Services;
 
-public class AccountService(AccountRepository accountRepository, IUserService userService) : IAccountService
+public class AccountService(IAccountRepository accountRepository, IUserService userService) : IAccountService
 {
-    private readonly AccountRepository _accountRepository = accountRepository;
+    private readonly IAccountRepository _accountRepository = accountRepository;
     private readonly IUserService _userService = userService;
 
     public async Task<Result<Account, string>> Create(AccountDto data)
