@@ -1,6 +1,7 @@
 using EScinece.Domain.Entities;
 using EScinece.Infrastructure.Configurations;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.Extensions.Configuration;
 
 namespace EScinece.Infrastructure.Data;
@@ -14,6 +15,7 @@ public class EScienceDbContext : DbContext
     public DbSet<ArticleBranch> ArticleBranch { get; init; }
     public DbSet<ArticleBranchVersion> ArticleBranchVersion { get; init; }
     public DbSet<ArticleParticipant> ArticleParticipant { get; init; }
+    public DbSet<TypeArticle> TypeArticle { get; init; }
     
     public EScienceDbContext(IConfiguration configuration)
     {
@@ -35,6 +37,7 @@ public class EScienceDbContext : DbContext
         modelBuilder.ApplyConfiguration(new ArticleBranchConfiguration());
         modelBuilder.ApplyConfiguration(new ArticleBranchVersionConfiguration());
         modelBuilder.ApplyConfiguration(new ArticleParticipantConfiguration());
+        modelBuilder.ApplyConfiguration(new TypeArticleConfiguration());
         
         base.OnModelCreating(modelBuilder);
     }

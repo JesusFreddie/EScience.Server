@@ -1,3 +1,3 @@
 namespace EScience.Application.Responses;
 
-public record RegisterResponseDto(string Email);
+public record struct RegisterResponseDto(string Email);

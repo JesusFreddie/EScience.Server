@@ -1,11 +1,10 @@
 using EScinece.Domain.DTOs;
-using EScinece.Domain.Entities;
 
 namespace EScinece.Domain.Abstraction.Services;
 
 public interface IAccountService
 {
-    public Task<Result<Account, string>> Create(AccountDto data);
-    public Task<Account?> FindById(Guid id);
-    public Task<Account?> FindByEmail(string email);
+    public Task<Result<AccountDto, string>> Create(Guid userId, string name);
+    public Task<AccountDto?> GetById(Guid id);
+    public Task<AccountDto?> GetByEmail(string email);
 }

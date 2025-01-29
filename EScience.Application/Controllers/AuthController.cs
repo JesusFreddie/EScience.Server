@@ -1,41 +1,49 @@
 using EScience.Application.Requests;
-using EScience.Application.Responses;
+using EScinece.Domain.Abstraction.ErrorMessages;
 using EScinece.Domain.Abstraction.Services;
-using EScinece.Domain.DTOs;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 
 namespace EScience.Application.Controllers;
 
 [AllowAnonymous]
 [ApiController]
-[Route("[controller]")]
-public class AuthController(IUserService userService): Controller
+[Route("auth")]
+public class AuthController(IAuthService authService): ControllerBase
 {
-    private readonly IUserService _userService = userService;
-
+    private readonly IAuthService _authService = authService;
+    
     [Route("register")]
     [HttpPost]
-    public async Task<ActionResult<RegisterResponseDto>> Register([FromBody] RegisterRequestDto data)
+    public async Task<IActionResult> Register([FromBody] RegisterRequestDto req)
     {
-        var user = new UserDto(Guid.Empty, Email: data.Email, Password: data.Password);
-        
-        var result = await _userService.Create(user);
-        
-        return result.Match<ActionResult<RegisterResponseDto>>(
-            user =>
-            {
-                var response = new RegisterResponseDto(Email: user.Email);
-                return Ok(response);
-            }, 
-            error => BadRequest(error)
+        var result = await _authService.Register(
+            email: req.Email, 
+            password: req.Password, 
+            name: req.Name
             );
+        
+        if (!result.onSuccess)
+            return BadRequest(result.Error);
+        
+        return Ok();
     }
     
     [Route("login")]
     [HttpPost]
-    public IActionResult Login()
+    public async Task<IActionResult> Login([FromBody] LoginRequestDto req)
     {
+        var token = await _authService.Login(
+            email: req.Email,
+            password: req.Password
+            );
+
+        if (string.IsNullOrEmpty(token))
+            return BadRequest(AuthErrorMessage.InvalidDataLogin);
+
+        HttpContext.Response.Cookies.Append("access-token", token);
+        
         return Ok();
     }
 

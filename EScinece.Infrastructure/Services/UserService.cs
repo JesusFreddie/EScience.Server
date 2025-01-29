@@ -19,19 +19,19 @@ public class UserService(
     private readonly IUserRepository _userRepository = userRepository;
     private readonly IPasswordHasher _passwordHasher = passwordHasher;
 
-    public async Task<Result<User, string>> Create(UserDto userRegister)
+    public async Task<Result<UserDto, string>> Create(string email, string password)
     {
         try
         {
-            var existingUser = await _userRepository.GetByEmail(userRegister.Email);
+            var existingUser = await _userRepository.GetByEmail(email);
             if (existingUser != null)
             {
-                _logger.LogWarning("Попытка регистрации с существующим email: {Email}", userRegister.Email);
+                _logger.LogWarning("Попытка регистрации с существующим email: {Email}", email);
                 return "Пользователь с таким email уже существует";
             }
 
-            var hashedPassword = _passwordHasher.Generate(userRegister.Password);
-            var result = User.Create(userRegister.Email, hashedPassword);
+            var hashedPassword = _passwordHasher.Generate(password);
+            var result = User.Create(email, hashedPassword);
         
             if (!result.onSuccess)
             {
@@ -40,9 +40,12 @@ public class UserService(
             }
         
             var user = await _userRepository.Create(result.Value!);
-            _logger.LogInformation("Успешно создан новый пользователь: {Email}", userRegister.Email);
+            _logger.LogInformation("Успешно создан новый пользователь: {Email}", email);
 
-            return user;
+            return new UserDto(
+                Id: user.Id,
+                Email: user.Email
+                );
         }
         catch (Exception ex)
         {
@@ -56,13 +59,38 @@ public class UserService(
         return await _userRepository.Delete(id);
     }
 
-    public Task<User?> FindById(string id)
+    public async Task<UserDto?> GetById(Guid id)
     {
-        throw new NotImplementedException();
+        var user = await _userRepository.GetById(id);
+        if (user is null)
+            return null;
+        
+        return new UserDto(
+            Id: user.Id,
+            Email: user.Email);
     }
 
-    public Task<User?> FindByEmail(string email)
+    public async Task<UserDto?> GetByEmail(string email)
     {
-        throw new NotImplementedException();
+        var user = await _userRepository.GetByEmail(email);
+        if (user is null)
+            return null;
+        
+        return new UserDto(
+            Id: user.Id,
+            Email: user.Email);
+    }
+
+    public async Task<Guid?> VerifyPass(string email, string password)
+    {
+        var user = await _userRepository.GetByEmail(email);
+        
+        if (user is null)
+            return null;
+
+        if (!_passwordHasher.Verify(password, user.HashedPassword))
+            return null;
+        
+        return user.Id;
     }
 }

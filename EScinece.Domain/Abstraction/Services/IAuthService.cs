@@ -5,6 +5,6 @@ namespace EScinece.Domain.Abstraction.Services;
 
 public interface IAuthService
 {
-    Task<string> Login(AuthDto data);
-    Task<Result<AccountDto, string>> Register(AuthDto data);
+    Task<string> Login(string email, string password);
+    Task<Result<AccountDto, string>> Register(string email, string password, string name);
 }

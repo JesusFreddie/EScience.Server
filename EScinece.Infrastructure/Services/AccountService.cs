@@ -1,9 +1,9 @@
 using EScinece.Domain.Abstraction;
+using EScinece.Domain.Abstraction.ErrorMessages;
 using EScinece.Domain.Abstraction.Repositories;
 using EScinece.Domain.Abstraction.Services;
 using EScinece.Domain.DTOs;
 using EScinece.Domain.Entities;
-using EScinece.Infrastructure.Repositories;
 
 namespace EScinece.Infrastructure.Services;
 
@@ -12,15 +12,14 @@ public class AccountService(IAccountRepository accountRepository, IUserService u
     private readonly IAccountRepository _accountRepository = accountRepository;
     private readonly IUserService _userService = userService;
 
-    public async Task<Result<Account, string>> Create(AccountDto data)
+    public async Task<Result<AccountDto, string>> Create(Guid userId, string name)
     {
-        if (string.IsNullOrWhiteSpace(data.Name))
+        if (string.IsNullOrWhiteSpace(name))
         {
-            return "Name is required";
+            return AccountErrorMessage.NameIsRequired;
         }
-        
 
-        var account = Account.Create(data.Name, data.User, data.Role);
+        var account = Account.Create(name, userId);
 
         if (!account.onSuccess)
         {
@@ -29,21 +28,44 @@ public class AccountService(IAccountRepository accountRepository, IUserService u
 
         var createResult = await _accountRepository.Create(account.Value);
 
-        return createResult;
+        return new AccountDto(
+            Id: createResult.Id,
+            Role: createResult.Role,
+            UserId: userId,
+            Name: name
+            );
     }
 
-    public async Task<Account?> FindByEmail(string email)
+    public async Task<AccountDto?> GetById(Guid id)
     {
-        var user = await _userService.FindByEmail(email);
-
-        if (user == null)
+        var account = await _accountRepository.GetById(id);
+        if (account == null)
             return null;
 
-        return await _accountRepository.GetByUserId(user.Id);
+        return new AccountDto(
+            Id: account.Id,
+            Role: account.Role,
+            UserId: account.UserId,
+            Name: account.Name
+            );
     }
 
-    public Task<Account?> FindById(Guid id)
+    public async Task<AccountDto?> GetByEmail(string email)
     {
-        throw new NotImplementedException();
+        var user = await _userService.GetByEmail(email);
+        if (user is null)
+            return null;
+
+        var account = await _accountRepository.GetByUserId(user.Id);
+
+        if (account is null)
+            return null;
+
+        return new AccountDto(
+            Id: account.Id,
+            Role: account.Role,
+            Name: account.Name,
+            UserId: user.Id
+        );
     }
 }

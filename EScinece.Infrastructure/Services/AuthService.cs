@@ -1,4 +1,5 @@
 using EScinece.Domain.Abstraction;
+using EScinece.Domain.Abstraction.ErrorMessages;
 using EScinece.Domain.Abstraction.Helpers;
 using EScinece.Domain.Abstraction.Services;
 using EScinece.Domain.DTOs;
@@ -17,57 +18,34 @@ public class AuthService(
 {
     private readonly IUserService _userService = userService;
     private readonly IAccountService _accountService = accountService;
-    private readonly IPasswordHasher _passwordHasher = passwordHasher;
     private readonly IJwtProvider _jwtProvider = jwtProvider;
     private readonly ILogger<IAuthService> _logger = logger;
 
-    private static class ErrorMessage
+    public async Task<string> Login(string email, string password)
     {
-        public const string InvalidDataLogin = "Invalid data login";
-        public const string InvalidPassword = "Invalid password";
-        public const string InvalidEmail = "Invalid email";
-        public const string InvalidUsername = "Invalid username";
+        var userId = await _userService.VerifyPass(email, password);
+        
+        if (userId is null)
+            return string.Empty;
+        
+        var token = _jwtProvider.GenerateToken(userId.Value);
+
+        return token;
     }
 
-    public async Task<string> Login(AuthDto data)
+    public async Task<Result<AccountDto, string>> Register(string email, string password, string name)
     {
-        var account = await _accountService.FindByEmail(data.Email);
-
-        if (account == null)
-            return ErrorMessage.InvalidDataLogin;
-
-        var isVetifyPass = _passwordHasher.Verify(password: data.Password, data.Password);
-
-        if (!isVetifyPass)
-            return ErrorMessage.InvalidDataLogin;
-
-        var token = _jwtProvider.GenerateToken(account.User);
-
-        return "";
-    }
-
-    public async Task<Result<AccountDto, string>> Register(AuthDto data)
-    {
-        var validationResult = ValidateRegisterData(data);
+        var validationResult = ValidateRegisterData(email, password, name);
         
         if (!string.IsNullOrWhiteSpace(validationResult))
             return validationResult;
-        
-        var user = await _userService.Create(new UserDto(
-            Email: data.Email,
-            Password: data.Password,
-            Id: Guid.Empty
-        ));
 
+        var user = await _userService.Create(email, password);
+        
         if (!user.onSuccess)
             return user.Error;
-
-        var accountResult = await _accountService.Create(new AccountDto(
-            User: user.Value,
-            Name: data.Name,
-            Id: Guid.Empty,
-            Role: Role.USER
-        ));
+        
+        var accountResult = await _accountService.Create(user.Value.Id, name);
 
         if (!accountResult.onSuccess)
         {
@@ -75,33 +53,27 @@ public class AuthService(
             return accountResult.Error;
         }
 
-        var account = accountResult.Value;
-
-        return new AccountDto(
-            Id: account.Id,
-            User: account.User,
-            Role: account.Role,
-            Name: account.Name);
+        return accountResult.Value;
     }
 
-    private string ValidateRegisterData(AuthDto data)
+    private string ValidateRegisterData(string email, string password, string name)
     {
-        if (!IsValidEmail(data.Email))
+        if (!IsValidEmail(email))
         {
-            _logger.LogWarning("Incorrect email: {Email}", data.Email);
-            return ErrorMessage.InvalidEmail;
+            _logger.LogWarning("Incorrect email: {Email}", email);
+            return AuthErrorMessage.InvalidEmail;
         }
 
-        if (string.IsNullOrWhiteSpace(data.Password))
+        if (string.IsNullOrWhiteSpace(password))
         {
-            _logger.LogWarning("Incorrect password: {Password}", data.Password);
-            return ErrorMessage.InvalidPassword;
+            _logger.LogWarning("Incorrect password: {Password}", password);
+            return AuthErrorMessage.PasswordIsRequired;
         }
 
-        if (string.IsNullOrWhiteSpace(data.Name))
+        if (string.IsNullOrWhiteSpace(name))
         {
-            _logger.LogWarning("Incorrect name: {Name}", data.Name);
-            return ErrorMessage.InvalidUsername;
+            _logger.LogWarning("Incorrect name: {Name}", name);
+            return AuthErrorMessage.NameIsRequired;
         }
 
         return "";

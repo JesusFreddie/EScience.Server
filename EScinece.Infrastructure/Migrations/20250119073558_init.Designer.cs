@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace EScinece.Infrastructure.Migrations
 {
     [DbContext(typeof(EScienceDbContext))]
-    [Migration("20241110054421_update-user")]
-    partial class updateuser
+    [Migration("20250119073558_init")]
+    partial class init
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -41,8 +41,8 @@ namespace EScinece.Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<byte>("Role")
-                        .HasColumnType("smallint");
+                    b.Property<int>("Role")
+                        .HasColumnType("integer");
 
                     b.Property<Guid>("UserId")
                         .HasColumnType("uuid");
@@ -71,6 +71,9 @@ namespace EScinece.Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<bool>("IsPrivate")
+                        .HasColumnType("boolean");
+
                     b.Property<DateTime>("ModifiedOn")
                         .HasColumnType("timestamp with time zone");
 
@@ -78,7 +81,12 @@ namespace EScinece.Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<Guid>("TypeArticleId")
+                        .HasColumnType("uuid");
+
                     b.HasKey("Id");
+
+                    b.HasIndex("TypeArticleId");
 
                     b.ToTable("Article");
                 });
@@ -133,7 +141,6 @@ namespace EScinece.Infrastructure.Migrations
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("Text")
-                        .IsRequired()
                         .HasColumnType("text");
 
                     b.HasKey("Id");
@@ -181,6 +188,30 @@ namespace EScinece.Infrastructure.Migrations
                     b.ToTable("ArticleParticipant");
                 });
 
+            modelBuilder.Entity("EScinece.Domain.Entities.TypeArticle", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("CreatedOn")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime>("ModifiedOn")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Name")
+                        .IsUnique();
+
+                    b.ToTable("TypeArticle");
+                });
+
             modelBuilder.Entity("EScinece.Domain.Entities.User", b =>
                 {
                     b.Property<Guid>("Id")
@@ -215,6 +246,17 @@ namespace EScinece.Infrastructure.Migrations
                         .IsRequired();
 
                     b.Navigation("User");
+                });
+
+            modelBuilder.Entity("EScinece.Domain.Entities.Article", b =>
+                {
+                    b.HasOne("EScinece.Domain.Entities.TypeArticle", "TypeArticle")
+                        .WithMany()
+                        .HasForeignKey("TypeArticleId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("TypeArticle");
                 });
 
             modelBuilder.Entity("EScinece.Domain.Entities.ArticleBranch", b =>
@@ -289,7 +331,8 @@ namespace EScinece.Infrastructure.Migrations
 
                     b.Navigation("ArticleParticipants");
 
-                    b.Navigation("Creator");
+                    b.Navigation("Creator")
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("EScinece.Domain.Entities.ArticleBranch", b =>

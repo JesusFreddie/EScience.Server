@@ -32,4 +32,21 @@ public class UserRepository(EScienceDbContext context) : IUserRepository
         await context.SaveChangesAsync();
         return true;
     }
+    
+    public async Task<User?> GetById(Guid id)
+    {
+        return await context.User.FindAsync(id);
+    }
+
+    public Task<List<User>> GetAll()
+    {
+        throw new NotImplementedException();
+    }
+
+    
+
+    public Task<User> Update(User entity)
+    {
+        throw new NotImplementedException();
+    }
 }

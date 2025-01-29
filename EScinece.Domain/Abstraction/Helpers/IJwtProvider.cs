@@ -1,7 +1,8 @@
-﻿using EScinece.Domain.Entities;
+﻿using EScinece.Domain.DTOs;
+using EScinece.Domain.Entities;
 
 namespace EScinece.Infrastructure.Helpers;
 public interface IJwtProvider
 {
-    string GenerateToken(User user);
+    string GenerateToken(Guid userId);
 }

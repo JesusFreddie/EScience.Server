@@ -12,19 +12,17 @@ namespace EScinece.Infrastructure.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
-                name: "Article",
+                name: "TypeArticle",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
-                    Title = table.Column<string>(type: "text", nullable: false),
-                    Description = table.Column<string>(type: "text", nullable: false),
-                    CreatorId = table.Column<Guid>(type: "uuid", nullable: false),
+                    Name = table.Column<string>(type: "text", nullable: false),
                     CreatedOn = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     ModifiedOn = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Article", x => x.Id);
+                    table.PrimaryKey("PK_TypeArticle", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -34,7 +32,6 @@ namespace EScinece.Infrastructure.Migrations
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
                     Email = table.Column<string>(type: "text", nullable: false),
                     HashedPassword = table.Column<string>(type: "text", nullable: false),
-                    Salt = table.Column<string>(type: "text", nullable: false),
                     CreatedOn = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     ModifiedOn = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
                 },
@@ -44,12 +41,36 @@ namespace EScinece.Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Article",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    Title = table.Column<string>(type: "text", nullable: false),
+                    Description = table.Column<string>(type: "text", nullable: false),
+                    IsPrivate = table.Column<bool>(type: "boolean", nullable: false),
+                    CreatorId = table.Column<Guid>(type: "uuid", nullable: false),
+                    TypeArticleId = table.Column<Guid>(type: "uuid", nullable: false),
+                    CreatedOn = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    ModifiedOn = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Article", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Article_TypeArticle_TypeArticleId",
+                        column: x => x.TypeArticleId,
+                        principalTable: "TypeArticle",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Account",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
                     Name = table.Column<string>(type: "text", nullable: false),
-                    Role = table.Column<byte>(type: "smallint", nullable: false),
+                    Role = table.Column<int>(type: "integer", nullable: false),
                     UserId = table.Column<Guid>(type: "uuid", nullable: false),
                     CreatedOn = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     ModifiedOn = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
@@ -132,7 +153,7 @@ namespace EScinece.Infrastructure.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
-                    Text = table.Column<string>(type: "text", nullable: false),
+                    Text = table.Column<string>(type: "text", nullable: true),
                     CreatorId = table.Column<Guid>(type: "uuid", nullable: false),
                     ArticleBranchId = table.Column<Guid>(type: "uuid", nullable: false),
                     CreatedOn = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
@@ -160,6 +181,11 @@ namespace EScinece.Infrastructure.Migrations
                 table: "Account",
                 column: "UserId",
                 unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Article_TypeArticleId",
+                table: "Article",
+                column: "TypeArticleId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_ArticleBranch_ArticleId",
@@ -196,6 +222,12 @@ namespace EScinece.Infrastructure.Migrations
                 name: "IX_ArticleParticipant_ArticleId1",
                 table: "ArticleParticipant",
                 column: "ArticleId1");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_TypeArticle_Name",
+                table: "TypeArticle",
+                column: "Name",
+                unique: true);
         }
 
         /// <inheritdoc />
@@ -218,6 +250,9 @@ namespace EScinece.Infrastructure.Migrations
 
             migrationBuilder.DropTable(
                 name: "User");
+
+            migrationBuilder.DropTable(
+                name: "TypeArticle");
         }
     }
 }

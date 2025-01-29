@@ -3,16 +3,12 @@
   "WorkspaceRootPath": "J:\\developer\\EScience\\server\\EScience\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{7035F33B-659A-4772-8C80-110B4CA93A16}|EScinece.Infrastructure\\EScinece.Infrastructure.csproj|j:\\developer\\escience\\server\\escience\\escinece.infrastructure\\services\\authservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{7035F33B-659A-4772-8C80-110B4CA93A16}|EScinece.Infrastructure\\EScinece.Infrastructure.csproj|solutionrelative:escinece.infrastructure\\services\\authservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{44985D2A-276E-46D4-8164-97F14E7EA3AC}|EScience.Application\\EScience.Application.csproj|j:\\developer\\escience\\server\\escience\\escience.application\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{44985D2A-276E-46D4-8164-97F14E7EA3AC}|EScience.Application\\EScience.Application.csproj|solutionrelative:escience.application\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{7035F33B-659A-4772-8C80-110B4CA93A16}|EScinece.Infrastructure\\EScinece.Infrastructure.csproj|j:\\developer\\escience\\server\\escience\\escinece.infrastructure\\services\\userservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{7035F33B-659A-4772-8C80-110B4CA93A16}|EScinece.Infrastructure\\EScinece.Infrastructure.csproj|solutionrelative:escinece.infrastructure\\services\\userservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{7035F33B-659A-4772-8C80-110B4CA93A16}|EScinece.Infrastructure\\EScinece.Infrastructure.csproj|j:\\developer\\escience\\server\\escience\\escinece.infrastructure\\services\\accountservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{7035F33B-659A-4772-8C80-110B4CA93A16}|EScinece.Infrastructure\\EScinece.Infrastructure.csproj|solutionrelative:escinece.infrastructure\\services\\accountservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{7035F33B-659A-4772-8C80-110B4CA93A16}|EScinece.Infrastructure\\EScinece.Infrastructure.csproj|j:\\developer\\escience\\server\\escience\\escinece.infrastructure\\repositories\\articleparticipantrepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{7035F33B-659A-4772-8C80-110B4CA93A16}|EScinece.Infrastructure\\EScinece.Infrastructure.csproj|solutionrelative:escinece.infrastructure\\repositories\\articleparticipantrepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     }
   ],
   "DocumentGroupContainers": [
@@ -98,41 +94,28 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 2,
-              "Title": "AccountService.cs",
-              "DocumentMoniker": "J:\\developer\\EScience\\server\\EScience\\EScinece.Infrastructure\\Services\\AccountService.cs",
-              "RelativeDocumentMoniker": "EScinece.Infrastructure\\Services\\AccountService.cs",
-              "ToolTip": "J:\\developer\\EScience\\server\\EScience\\EScinece.Infrastructure\\Services\\AccountService.cs",
-              "RelativeToolTip": "EScinece.Infrastructure\\Services\\AccountService.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAB8AAAAFAAAAAAAAAA==",
+              "DocumentIndex": 1,
+              "Title": "ArticleParticipantRepository.cs",
+              "DocumentMoniker": "J:\\developer\\EScience\\server\\EScience\\EScinece.Infrastructure\\Repositories\\ArticleParticipantRepository.cs",
+              "RelativeDocumentMoniker": "EScinece.Infrastructure\\Repositories\\ArticleParticipantRepository.cs",
+              "ToolTip": "J:\\developer\\EScience\\server\\EScience\\EScinece.Infrastructure\\Repositories\\ArticleParticipantRepository.cs",
+              "RelativeToolTip": "EScinece.Infrastructure\\Repositories\\ArticleParticipantRepository.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAYAAABkAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2024-12-10T16:02:01.195Z",
+              "WhenOpened": "2025-01-16T16:28:27.229Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
               "DocumentIndex": 0,
-              "Title": "AuthService.cs",
-              "DocumentMoniker": "J:\\developer\\EScience\\server\\EScience\\EScinece.Infrastructure\\Services\\AuthService.cs",
-              "RelativeDocumentMoniker": "EScinece.Infrastructure\\Services\\AuthService.cs",
-              "ToolTip": "J:\\developer\\EScience\\server\\EScience\\EScinece.Infrastructure\\Services\\AuthService.cs",
-              "RelativeToolTip": "EScinece.Infrastructure\\Services\\AuthService.cs",
-              "ViewState": "AgIAACcAAAAAAAAAAAAcwD4AAAA4AAAAAAAAAA==",
+              "Title": "Program.cs",
+              "DocumentMoniker": "J:\\developer\\EScience\\server\\EScience\\EScience.Application\\Program.cs",
+              "RelativeDocumentMoniker": "EScience.Application\\Program.cs",
+              "ToolTip": "J:\\developer\\EScience\\server\\EScience\\EScience.Application\\Program.cs*",
+              "RelativeToolTip": "EScience.Application\\Program.cs*",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABQAAAA+AAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2024-12-10T15:43:44.228Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 1,
-              "Title": "UserService.cs",
-              "DocumentMoniker": "J:\\developer\\EScience\\server\\EScience\\EScinece.Infrastructure\\Services\\UserService.cs",
-              "RelativeDocumentMoniker": "EScinece.Infrastructure\\Services\\UserService.cs",
-              "ToolTip": "J:\\developer\\EScience\\server\\EScience\\EScinece.Infrastructure\\Services\\UserService.cs",
-              "RelativeToolTip": "EScinece.Infrastructure\\Services\\UserService.cs",
-              "ViewState": "AgIAAAsAAAAAAAAAAAAIwCEAAAAkAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2024-12-10T15:43:29.175Z",
+              "WhenOpened": "2025-01-16T16:28:03.197Z",
               "EditorCaption": ""
             }
           ]
