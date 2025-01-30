@@ -9,13 +9,11 @@ namespace EScience.Application.Controllers;
 [Route("account")]
 public class AccountController(IAccountService accountService) : ControllerBase
 {
-    private readonly IAccountService _accountService = accountService;
-    
-    [Authorize]
+    [AllowAnonymous]
     [HttpGet]
     public async Task<ActionResult<AccountDto>> GetAccount([FromQuery(Name = "id")] Guid id)
     {
-        var account = await _accountService.GetById(id);
+        var account = await accountService.GetById(id);
         return Ok(account);
     }
 }

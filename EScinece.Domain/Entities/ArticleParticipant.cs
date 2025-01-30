@@ -5,12 +5,10 @@ namespace EScinece.Domain.Entities;
 
 public class ArticleParticipant: BaseEntity
 {
-    [ForeignKey("Account")]
     public Guid AccountId { get; set; }
     public Account Account { get; set; }
     public bool IsAccepted { get; set; } = false;
     
-    [ForeignKey("Article")]
     public Guid ArticleId { get; set; }
     public Article Article { get; set; }
     

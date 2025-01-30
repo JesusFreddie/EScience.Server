@@ -26,11 +26,11 @@ public class AccountService(IAccountRepository accountRepository, IUserService u
             return account.Error;
         }
 
-        var createResult = await _accountRepository.Create(account.Value);
+        await _accountRepository.Create(account.Value);
 
         return new AccountDto(
-            Id: createResult.Id,
-            Role: createResult.Role,
+            Id: account.Value.Id,
+            Role: account.Value.Role,
             UserId: userId,
             Name: name
             );
@@ -39,9 +39,10 @@ public class AccountService(IAccountRepository accountRepository, IUserService u
     public async Task<AccountDto?> GetById(Guid id)
     {
         var account = await _accountRepository.GetById(id);
-        if (account == null)
+        
+        if (account is null)
             return null;
-
+        
         return new AccountDto(
             Id: account.Id,
             Role: account.Role,

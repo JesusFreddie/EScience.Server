@@ -12,13 +12,11 @@ namespace EScience.Application.Controllers;
 [Route("auth")]
 public class AuthController(IAuthService authService): ControllerBase
 {
-    private readonly IAuthService _authService = authService;
-    
     [Route("register")]
     [HttpPost]
     public async Task<IActionResult> Register([FromBody] RegisterRequestDto req)
     {
-        var result = await _authService.Register(
+        var result = await authService.Register(
             email: req.Email, 
             password: req.Password, 
             name: req.Name
@@ -34,7 +32,7 @@ public class AuthController(IAuthService authService): ControllerBase
     [HttpPost]
     public async Task<IActionResult> Login([FromBody] LoginRequestDto req)
     {
-        var token = await _authService.Login(
+        var token = await authService.Login(
             email: req.Email,
             password: req.Password
             );

@@ -1,44 +1,36 @@
-using EScinece.Domain.Entities;
-using EScinece.Infrastructure.Configurations;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Migrations;
-using Microsoft.Extensions.Configuration;
+using System.Data;
+using Npgsql;
 
 namespace EScinece.Infrastructure.Data;
 
-public class EScienceDbContext : DbContext
+public class EScienceDbContext(string connectionString) : IDbConnectionFactory
 {
-    private readonly IConfiguration _configuration;
-    public DbSet<User> User { get; init; }
-    public DbSet<Account> Account { get; init; }
-    public DbSet<Article> Article { get; init; }
-    public DbSet<ArticleBranch> ArticleBranch { get; init; }
-    public DbSet<ArticleBranchVersion> ArticleBranchVersion { get; init; }
-    public DbSet<ArticleParticipant> ArticleParticipant { get; init; }
-    public DbSet<TypeArticle> TypeArticle { get; init; }
-    
-    public EScienceDbContext(IConfiguration configuration)
+    public async Task<IDbConnection> CreateConnectionAsync(CancellationToken token = default)
     {
-        _configuration = configuration;
-    }
+        try
+        {
+            var connection = new NpgsqlConnection(connectionString);
+            await connection.OpenAsync(token);
 
-    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-    {
-        optionsBuilder.UseNpgsql(_configuration.GetConnectionString(nameof(EScienceDbContext)));
-        
-        base.OnConfiguring(optionsBuilder);
+            return connection;
+        }
+        catch (NpgsqlException ex)
+        {
+            throw new DbConnectionException($"Failed to connect to the database: {ex.Message}", ex);
+        }
+        catch (Exception ex)
+        {
+            throw new DbConnectionException($"An unexpected error occurred while creating a database connection: {ex.Message}", ex);
+        }
     }
+}
 
-    protected override void OnModelCreating(ModelBuilder modelBuilder)
-    {
-        modelBuilder.ApplyConfiguration(new AccountConfiguration());
-        modelBuilder.ApplyConfiguration(new UserConfiguration());
-        modelBuilder.ApplyConfiguration(new ArticleConfiguration());
-        modelBuilder.ApplyConfiguration(new ArticleBranchConfiguration());
-        modelBuilder.ApplyConfiguration(new ArticleBranchVersionConfiguration());
-        modelBuilder.ApplyConfiguration(new ArticleParticipantConfiguration());
-        modelBuilder.ApplyConfiguration(new TypeArticleConfiguration());
-        
-        base.OnModelCreating(modelBuilder);
-    }
+public interface IDbConnectionFactory
+{
+    Task<IDbConnection> CreateConnectionAsync(CancellationToken token = default);
+}
+
+public class DbConnectionException : Exception
+{
+    public DbConnectionException(string message, Exception innerException) : base(message, innerException) {}
 }

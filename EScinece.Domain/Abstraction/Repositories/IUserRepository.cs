@@ -5,5 +5,4 @@ namespace EScinece.Domain.Abstraction.Repositories;
 public interface IUserRepository : IRepository<User>
 {
     public Task<User?> GetByEmail(string email);
-    public Task<bool> Delete(Guid id);
 }

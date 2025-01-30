@@ -1,49 +1,47 @@
+using Dapper;
 using EScinece.Domain.Abstraction.Repositories;
 using EScinece.Domain.Entities;
 using EScinece.Infrastructure.Data;
-using Microsoft.EntityFrameworkCore;
 
 namespace EScinece.Infrastructure.Repositories;
 
-public class UserRepository(EScienceDbContext context) : IUserRepository
+public class UserRepository(IDbConnectionFactory connectionFactory) : IUserRepository
 {
-    public async Task<User> Create(User user)
+    public async Task<IEnumerable<User>> GetAll()
     {
-        await context.User.AddAsync(user);
-        await context.SaveChangesAsync();
-        return user;
+        using var connection = await connectionFactory.CreateConnectionAsync();
+        return await connection.QueryAsync<User>("SELECT * FROM users");
+    }
+
+    public async Task Create(User user)
+    {
+        using var connection = await connectionFactory.CreateConnectionAsync();
+        await connection.ExecuteAsync(
+            """
+            INSERT INTO users (id, email, hashed_password)
+            VALUES (@Id, @Email, @HashedPassword)
+            """, user);
     }
 
     public async Task<User?> GetByEmail(string email)
     {
-        return await context
-            .User
-            .AsNoTracking()
-            .FirstOrDefaultAsync(u => u.Email == email);
+        using var connection = await connectionFactory.CreateConnectionAsync();
+        var user = await connection.QueryFirstAsync<User>(
+            "SELECT * FROM users WHERE email LIKE @email", new { email });
+        return user;
     }
 
     public async Task<bool> Delete(Guid id)
     {
-        var user = await context.User.FindAsync(id);
-        if (user is null)
-            return false;
-        
-        context.User.Remove(user);
-        await context.SaveChangesAsync();
-        return true;
+        throw new NotImplementedException();
     }
     
     public async Task<User?> GetById(Guid id)
     {
-        return await context.User.FindAsync(id);
+        using var connection = await connectionFactory.CreateConnectionAsync();
+        return await connection.QueryFirstAsync<User>(
+            "SELECT * FROM users WHERE id = @id", new { id });
     }
-
-    public Task<List<User>> GetAll()
-    {
-        throw new NotImplementedException();
-    }
-
-    
 
     public Task<User> Update(User entity)
     {

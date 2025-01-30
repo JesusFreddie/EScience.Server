@@ -43,12 +43,12 @@ public class ArticleService(
             return article.Error;
         }
         
-        var articleSaved = await _articleRepository.Create(article.Value);
+        await _articleRepository.Create(article.Value);
 
         return new ArticleDto(
-            Id: articleSaved.Id,
-            Title: articleSaved.Title,
-            Description: articleSaved.Description,
+            Id: article.Value.Id,
+            Title: article.Value.Title,
+            Description: article.Value.Description,
             CreatorId: creator.Value.Id,
             TypeArticleId: typeArticleId
             );

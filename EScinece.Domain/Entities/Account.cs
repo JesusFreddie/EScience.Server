@@ -12,8 +12,7 @@ public class Account: BaseEntity
     
     public string Name { get; set; }
     public Role Role { get; set; } = Role.USER;
-    
-    [ForeignKey("Account")]
+ 
     public Guid UserId { get; set; }
     
     public User User { get; set; }

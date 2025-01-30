@@ -9,13 +9,11 @@ public class User: BaseEntity
     public const int MaxPasswordLength = 100;
     public const int MinPasswordLength = 6;
 
-    [Required]
     public string Email { get; private set; }
-    
-    [Required]
     public string HashedPassword { get; private set; }
-    
     public Account? Account { get; set; }
+    
+    public User() {}
     
     private User(string email, string hashedPassword)
     {

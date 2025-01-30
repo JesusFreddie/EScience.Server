@@ -1,15 +1,12 @@
 using EScience.Application.Extensions;
-using EScinece.Domain.Abstraction;
 using EScinece.Domain.Abstraction.Helpers;
 using EScinece.Domain.Abstraction.Repositories;
 using EScinece.Domain.Abstraction.Services;
-using EScinece.Domain.Entities;
 using EScinece.Infrastructure.Data;
 using EScinece.Infrastructure.Helpers;
 using EScinece.Infrastructure.Repositories;
 using EScinece.Infrastructure.Services;
 using Microsoft.AspNetCore.CookiePolicy;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -23,8 +20,10 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddControllers();
 
-builder.Services.AddDbContext<EScienceDbContext>(options => options.UseNpgsql(configuration.GetConnectionString(nameof(EScienceDbContext))));
+builder.Services.AddSingleton<IDbConnectionFactory>(
+    _ => new EScienceDbContext(configuration.GetConnectionString(nameof(EScienceDbContext))!));
 builder.Services.AddStackExchangeRedisCache(options => options.Configuration = "localhost:6380");
+Dapper.DefaultTypeMap.MatchNamesWithUnderscores = true;
 
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IAccountRepository, AccountRepository>();

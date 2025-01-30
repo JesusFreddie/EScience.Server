@@ -1,62 +1,62 @@
-using System;
 using System.Text.Json;
+using Dapper;
 using EScinece.Domain.Abstraction.Repositories;
 using EScinece.Domain.Entities;
 using EScinece.Infrastructure.Data;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Distributed;
 
 namespace EScinece.Infrastructure.Repositories;
 
-public class AccountRepository(EScienceDbContext context, IDistributedCache cache) : IAccountRepository
+public class AccountRepository(IDbConnectionFactory connectionFactory, IDistributedCache cache) : IAccountRepository
 {
-    private readonly EScienceDbContext _context = context;
-    private readonly IDistributedCache _cache = cache;
-    public async Task<Account> Create(Account account)
+    public async Task Create(Account account)
     {
-        await _context.Account.AddAsync(account);
-        await _context.SaveChangesAsync();
-        return account;
+        using var connection = await connectionFactory.CreateConnectionAsync();
+        await connection.ExecuteAsync(
+            """
+            INSERT INTO accounts (id, name, role, user_id)
+            VALUES (@id, @name, @role, @userId)
+            """, account);
+        
+        await cache.SetStringAsync("account:" + account.Id, JsonSerializer.Serialize(account),
+            new DistributedCacheEntryOptions
+        {
+            AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(1)
+        });
     }
 
     public async Task<Guid> Update(Guid id, string? name)
     {
-        await _context.Account
-            .Where(a => a.Id == id)
-            .ExecuteUpdateAsync(
-                a => a
-                    .SetProperty(c => c.Name, name)
-                );
-        await _cache.RemoveAsync("account" + id.ToString());
-        return id;
+        throw new NotImplementedException();
     }
 
     public async Task<Guid> Delete(Guid id)
     {
-        await _context.Account
-            .Where(a => a.Id == id)
-            .ExecuteDeleteAsync();
-        return id;
+        throw new NotImplementedException();
     }
 
     public async Task<Account?> GetByUserId(Guid id)
     {
-        return await _context.Account.FindAsync(id);
+        using var connection = await connectionFactory.CreateConnectionAsync();
+        return await connection.QueryFirstAsync<Account>(
+            "SELECT * FROM accounts WHERE user_id = @userId", new { UserId = id });
     }
 
     public async Task<Account?> GetById(Guid id)
     {
-        // var accountCache = await _cache.GetStringAsync("account:" + id.ToString());
-        // if (accountCache is not null)
-        // {
-        //     return JsonSerializer.Deserialize<Account>(accountCache);
-        // }
+        var accountCache = await cache.GetStringAsync("account:" + id);
+        if (accountCache is not null)
+        {
+            return JsonSerializer.Deserialize<Account>(accountCache);
+        }
+        
+        using var connection = await connectionFactory.CreateConnectionAsync();
+        var account = await connection.QueryFirstAsync<Account>("SELECT * FROM accounts WHERE Id = @id", new { id });
+        await cache.SetStringAsync("account:" + id, JsonSerializer.Serialize<Account>(account), new DistributedCacheEntryOptions
+        {
+            AbsoluteExpirationRelativeToNow = TimeSpan.FromSeconds(10)
+        });
 
-        var account = await _context.Account.FindAsync(id);
-        // await _cache.SetStringAsync("account:" + id.ToString(), JsonSerializer.Serialize(account), new DistributedCacheEntryOptions
-        // {
-        //     AbsoluteExpirationRelativeToNow = TimeSpan.FromSeconds(10)
-        // });
         return account;
     }
 }
