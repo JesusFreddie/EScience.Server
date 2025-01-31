@@ -26,7 +26,7 @@ public class UserRepository(IDbConnectionFactory connectionFactory) : IUserRepos
     public async Task<User?> GetByEmail(string email)
     {
         using var connection = await connectionFactory.CreateConnectionAsync();
-        var user = await connection.QueryFirstAsync<User>(
+        var user = await connection.QueryFirstOrDefaultAsync<User>(
             "SELECT * FROM users WHERE email LIKE @email", new { email });
         return user;
     }
@@ -39,7 +39,7 @@ public class UserRepository(IDbConnectionFactory connectionFactory) : IUserRepos
     public async Task<User?> GetById(Guid id)
     {
         using var connection = await connectionFactory.CreateConnectionAsync();
-        return await connection.QueryFirstAsync<User>(
+        return await connection.QueryFirstOrDefaultAsync<User>(
             "SELECT * FROM users WHERE id = @id", new { id });
     }
 

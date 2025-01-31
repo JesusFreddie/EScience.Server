@@ -20,8 +20,10 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddControllers();
 
-builder.Services.AddSingleton<IDbConnectionFactory>(
-    _ => new EScienceDbContext(configuration.GetConnectionString(nameof(EScienceDbContext))!));
+builder.Services.AddScoped<IDbConnectionFactory, EScienceDbContext>(provider => 
+    new EScienceDbContext(
+        provider.GetRequiredService<ILogger<EScienceDbContext>>(),
+        configuration.GetConnectionString(nameof(EScienceDbContext))!));
 builder.Services.AddStackExchangeRedisCache(options => options.Configuration = "localhost:6380");
 Dapper.DefaultTypeMap.MatchNamesWithUnderscores = true;
 
