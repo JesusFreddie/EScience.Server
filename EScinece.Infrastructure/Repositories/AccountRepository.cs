@@ -4,10 +4,13 @@ using EScinece.Domain.Abstraction.Repositories;
 using EScinece.Domain.Entities;
 using EScinece.Infrastructure.Data;
 using Microsoft.Extensions.Caching.Distributed;
+using Microsoft.Extensions.Logging;
+using Npgsql;
+using StackExchange.Redis;
 
 namespace EScinece.Infrastructure.Repositories;
 
-public class AccountRepository(IDbConnectionFactory connectionFactory, IDistributedCache cache) : IAccountRepository
+public class AccountRepository(IDbConnectionFactory connectionFactory, IDistributedCache cache, ILogger<AccountRepository> logger) : IAccountRepository
 {
     public async Task Create(Account account)
     {
@@ -49,16 +52,57 @@ public class AccountRepository(IDbConnectionFactory connectionFactory, IDistribu
         {
             return JsonSerializer.Deserialize<Account>(accountCache);
         }
+
+        Account? account;
+
+        try
+        {
+            using var connection = await connectionFactory.CreateConnectionAsync();
+            account =
+                await connection.QueryFirstOrDefaultAsync<Account>("SELECT * FROM accounts WHERE Id = @id", new { id });
+        }
+        catch (NpgsqlException ex)
+        {
+            logger.LogError("Произошла ошибка sql зпроса получения account", ex);
+            throw new Exception(ex.Message, ex);
+        }
+        catch (DbConnectionException ex)
+        {
+            logger.LogError("Ошибка соединения при получении account", ex);
+            throw new Exception(ex.Message, ex);
+        }
+        catch (Exception ex)
+        {
+            logger.LogError("Произошла неизвестная ошибка при получении account", ex);
+            throw new Exception("Произошла неизвестная ошибка при получении account", ex);
+        }
         
-        using var connection = await connectionFactory.CreateConnectionAsync();
-        var account = await connection.QueryFirstOrDefaultAsync<Account>("SELECT * FROM accounts WHERE Id = @id", new { id });
         if (account is null)
             return null;
-        
-        await cache.SetStringAsync("account:" + id, JsonSerializer.Serialize<Account>(account), new DistributedCacheEntryOptions
+
+        try
         {
-            AbsoluteExpirationRelativeToNow = TimeSpan.FromSeconds(10)
-        });
+            await cache.SetStringAsync("account:" + id, JsonSerializer.Serialize<Account>(account),
+                new DistributedCacheEntryOptions
+                {
+                    AbsoluteExpirationRelativeToNow = TimeSpan.FromSeconds(10)
+                });
+        }
+        catch (RedisConnectionException ex)
+        {
+            logger.LogError("Ошибка соединения с redis");
+            throw new Exception(ex.Message, ex);
+        }
+        catch (RedisException ex)
+        {
+            logger.LogError("Произошла ошибка redis", ex);
+            throw new Exception(ex.Message, ex);
+        }
+        catch (Exception ex)
+        {
+            logger.LogError("Произошла неизвестная ошибка при запись account в redis");
+            throw new Exception(ex.Message, ex);
+        }
 
         return account;
     }

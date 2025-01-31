@@ -30,13 +30,13 @@ public class EScienceDbContext : IDbConnectionFactory, IDisposable, IAsyncDispos
         }
         catch (NpgsqlException ex)
         {
-            _logger.LogError($"Failed to connect to the database: {ex.Message}", ex);
-            throw new DbConnectionException($"Failed to connect to the database: {ex.Message}", ex);
+            _logger.LogError($"Не удалось подключиться к базе данных {ex.Message}", ex);
+            throw new DbConnectionException($"Не удалось подключиться к базе данных {ex.Message}", ex);
         }
         catch (Exception ex)
         {
-            _logger.LogError($"An unexpected error occurred while creating a database connection: {ex.Message}", ex);
-            throw new DbConnectionException($"An unexpected error occurred while creating a database connection: {ex.Message}", ex);
+            _logger.LogError($"При создании подключения к базе данных произошла непредвиденная ошибка: {ex.Message}", ex);
+            throw new DbConnectionException($"При создании подключения к базе данных произошла непредвиденная ошибка: {ex.Message}", ex);
         }
     }
 
