@@ -38,7 +38,7 @@ public class AccountRepository(IDbConnectionFactory connectionFactory, IDistribu
     public async Task<Account?> GetByUserId(Guid id)
     {
         using var connection = await connectionFactory.CreateConnectionAsync();
-        return await connection.QueryFirstAsync<Account>(
+        return await connection.QueryFirstOrDefaultAsync<Account>(
             "SELECT * FROM accounts WHERE user_id = @userId", new { UserId = id });
     }
 
@@ -51,7 +51,10 @@ public class AccountRepository(IDbConnectionFactory connectionFactory, IDistribu
         }
         
         using var connection = await connectionFactory.CreateConnectionAsync();
-        var account = await connection.QueryFirstAsync<Account>("SELECT * FROM accounts WHERE Id = @id", new { id });
+        var account = await connection.QueryFirstOrDefaultAsync<Account>("SELECT * FROM accounts WHERE Id = @id", new { id });
+        if (account is null)
+            return null;
+        
         await cache.SetStringAsync("account:" + id, JsonSerializer.Serialize<Account>(account), new DistributedCacheEntryOptions
         {
             AbsoluteExpirationRelativeToNow = TimeSpan.FromSeconds(10)

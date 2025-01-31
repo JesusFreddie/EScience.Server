@@ -14,6 +14,8 @@ public class AccountController(IAccountService accountService) : ControllerBase
     public async Task<ActionResult<AccountDto>> GetAccount([FromQuery(Name = "id")] Guid id)
     {
         var account = await accountService.GetById(id);
-        return Ok(account);
+        if (account is null)
+            return NotFound();
+        return account;
     }
 }

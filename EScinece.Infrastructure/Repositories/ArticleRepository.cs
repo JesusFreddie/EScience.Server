@@ -12,7 +12,7 @@ public class ArticleRepository(IDbConnectionFactory connectionFactory, IDistribu
     public async Task<Article?> GetById(Guid id)
     {
         using var connection = await connectionFactory.CreateConnectionAsync();
-        return await connection.QueryFirstAsync<Article>(
+        return await connection.QueryFirstOrDefaultAsync<Article>(
             "SELECT * FROM articles WHERE id = @id", new { id });
     }
 
@@ -32,6 +32,7 @@ public class ArticleRepository(IDbConnectionFactory connectionFactory, IDistribu
     {
         using var connection = await connectionFactory.CreateConnectionAsync();
         return await connection.QueryAsync<Article>("SELECT * FROM articles");
+        
     }
 
     public async Task Create(Article entity)
