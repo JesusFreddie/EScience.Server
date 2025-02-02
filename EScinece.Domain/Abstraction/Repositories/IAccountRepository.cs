@@ -3,11 +3,8 @@ using EScinece.Domain.Entities;
 
 namespace EScinece.Domain.Abstraction.Repositories;
 
-public interface IAccountRepository
+public interface IAccountRepository : IRepository<Account>
 {
-    Task Create(Account account);
-    Task<Guid> Update(Guid id, string? name);
-    Task<Guid> Delete(Guid id);
-    Task<Account?> GetById(Guid id);
     Task<Account?> GetByUserId(Guid id);
+    public Task<Guid?> Update(Guid id, string? name);
 }

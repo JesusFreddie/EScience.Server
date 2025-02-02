@@ -4,10 +4,15 @@ using EScinece.Domain.Abstraction.Repositories;
 using EScinece.Domain.Abstraction.Services;
 using EScinece.Domain.DTOs;
 using EScinece.Domain.Entities;
+using Microsoft.Extensions.Logging;
 
 namespace EScinece.Infrastructure.Services;
 
-public class AccountService(IAccountRepository accountRepository, IUserService userService) : IAccountService
+public class AccountService(
+    IAccountRepository accountRepository, 
+    IUserService userService,
+    ILogger<AccountService> logger
+    ) : IAccountService
 {
     private readonly IAccountRepository _accountRepository = accountRepository;
     private readonly IUserService _userService = userService;
@@ -26,7 +31,15 @@ public class AccountService(IAccountRepository accountRepository, IUserService u
             return account.Error;
         }
 
-        await _accountRepository.Create(account.Value);
+        try
+        {
+            await _accountRepository.Create(account.Value);
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Произошла серверная ошибка создания аккаунта");
+            throw new Exception("Произошла серверная ошибка создания аккаунта");
+        }
 
         return new AccountDto(
             Id: account.Value.Id,
@@ -38,7 +51,15 @@ public class AccountService(IAccountRepository accountRepository, IUserService u
 
     public async Task<AccountDto?> GetById(Guid id)
     {
-        var account = await _accountRepository.GetById(id);
+        Account? account;
+        try
+        {
+            account = await _accountRepository.GetById(id);
+        }
+        catch
+        {
+            throw new Exception(AccountErrorMessage.ServerErrorGetAccount);
+        }
         
         if (account is null)
             return null;
@@ -53,20 +74,28 @@ public class AccountService(IAccountRepository accountRepository, IUserService u
 
     public async Task<AccountDto?> GetByEmail(string email)
     {
-        var user = await _userService.GetByEmail(email);
-        if (user is null)
-            return null;
+        try
+        {
+            var user = await _userService.GetByEmail(email);
+            if (user is null)
+                return null;
 
-        var account = await _accountRepository.GetByUserId(user.Id);
+            var account = await _accountRepository.GetByUserId(user.Id);
 
-        if (account is null)
-            return null;
+            if (account is null)
+                return null;
 
-        return new AccountDto(
-            Id: account.Id,
-            Role: account.Role,
-            Name: account.Name,
-            UserId: user.Id
-        );
+            return new AccountDto(
+                Id: account.Id,
+                Role: account.Role,
+                Name: account.Name,
+                UserId: user.Id
+            );
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Произошла серверная ошибка получения аккаунта");
+            throw new Exception("Произошла серверная ошибка получения аккаунта");
+        }
     }
 }

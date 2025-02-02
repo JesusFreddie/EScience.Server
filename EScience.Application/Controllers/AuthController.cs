@@ -16,26 +16,41 @@ public class AuthController(IAuthService authService): ControllerBase
     [HttpPost]
     public async Task<IActionResult> Register([FromBody] RegisterRequestDto req)
     {
-        var result = await authService.Register(
-            email: req.Email, 
-            password: req.Password, 
-            name: req.Name
+        try
+        {
+            var result = await authService.Register(
+                email: req.Email, 
+                password: req.Password, 
+                name: req.Name
             );
         
-        if (!result.onSuccess)
-            return BadRequest(result.Error);
+            if (!result.onSuccess)
+                return BadRequest(result.Error);
         
-        return Ok();
+            return Ok();
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, ex.Message);
+        }
     }
     
     [Route("login")]
     [HttpPost]
     public async Task<IActionResult> Login([FromBody] LoginRequestDto req)
     {
-        var token = await authService.Login(
-            email: req.Email,
-            password: req.Password
+        string token;
+        try
+        {
+            token = await authService.Login(
+                email: req.Email,
+                password: req.Password
             );
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, ex.Message);
+        }
 
         if (string.IsNullOrEmpty(token))
             return BadRequest(AuthErrorMessage.InvalidDataLogin);

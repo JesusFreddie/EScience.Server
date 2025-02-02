@@ -8,6 +8,7 @@ using EScinece.Infrastructure.Repositories;
 using EScinece.Infrastructure.Services;
 using Microsoft.AspNetCore.CookiePolicy;
 using Microsoft.Extensions.Options;
+using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
 var services = builder.Services;
@@ -26,6 +27,11 @@ builder.Services.AddScoped<IDbConnectionFactory, EScienceDbContext>(provider =>
         configuration.GetConnectionString(nameof(EScienceDbContext))!));
 builder.Services.AddStackExchangeRedisCache(options => options.Configuration = "localhost:6380");
 Dapper.DefaultTypeMap.MatchNamesWithUnderscores = true;
+
+Log.Logger = new LoggerConfiguration()
+    .MinimumLevel.Debug()
+    .WriteTo.File("logs/escience.log", rollingInterval: RollingInterval.Day)
+    .CreateLogger();
 
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IAccountRepository, AccountRepository>();

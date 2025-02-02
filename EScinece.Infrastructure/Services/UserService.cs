@@ -31,7 +31,7 @@ public class UserService(
         
             if (!result.onSuccess && result.Value is null)
             {
-                logger.LogError("Ошибка при создании пользователя: {Error}", result.Error);
+                logger.LogWarning("Ошибка при создании пользователя: {Error}", result.Error);
                 return result.Error;
             }
         
@@ -52,41 +52,73 @@ public class UserService(
 
     public async Task<bool> Delete(Guid id)
     {
-        return await userRepository.Delete(id);
+        try
+        {
+            return await userRepository.Delete(id);
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Произошла серверная ошибка удаления пользователя");
+            throw new Exception("Произошла серверная ошибка удаления пользователя");
+        }
     }
 
     public async Task<UserDto?> GetById(Guid id)
     {
-        var user = await userRepository.GetById(id);
-        if (user is null)
-            return null;
+        try
+        {
+            var user = await userRepository.GetById(id);
+            if (user is null)
+                return null;
         
-        return new UserDto(
-            Id: user.Id,
-            Email: user.Email);
+            return new UserDto(
+                Id: user.Id,
+                Email: user.Email);
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Произошла серверная ошибка получения пользователя");
+            throw new Exception("Произошла серверная ошибка получения пользователя");
+        }
     }
 
     public async Task<UserDto?> GetByEmail(string email)
     {
-        var user = await userRepository.GetByEmail(email);
-        if (user is null)
-            return null;
+        try
+        {
+            var user = await userRepository.GetByEmail(email);
+            if (user is null)
+                return null;
         
-        return new UserDto(
-            Id: user.Id,
-            Email: user.Email);
+            return new UserDto(
+                Id: user.Id,
+                Email: user.Email);
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Произошла серверная ошибка получения пользователя");
+            throw new Exception("Произошла серверная ошибка получения пользователя");
+        }
     }
 
     public async Task<Guid?> VerifyPass(string email, string password)
     {
-        var user = await userRepository.GetByEmail(email);
+        try
+        {
+            var user = await userRepository.GetByEmail(email);
         
-        if (user is null)
-            return null;
+            if (user is null)
+                return null;
 
-        if (!passwordHasher.Verify(password, user.HashedPassword))
-            return null;
+            if (!passwordHasher.Verify(password, user.HashedPassword))
+                return null;
         
-        return user.Id;
+            return user.Id;
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Произошла ошибка проверки пароля");
+            throw new Exception("Произошла ошибка проверки пароля");
+        }
     }
 }

@@ -17,14 +17,15 @@ public class ArticleParticipant: BaseEntity
 
     public ArticleParticipant() {}
     
-    private ArticleParticipant(Account account, Article article)
+    private ArticleParticipant(Guid accountId, Guid articleId)
     {
-        Account = account;
-        Article = article;
+        Id = Guid.NewGuid();
+        AccountId = accountId;
+        ArticleId = articleId;
     }
 
-    public static Result<ArticleParticipant, string> Create(Account account, Article article)
+    public static Result<ArticleParticipant, string> Create(Guid accountId, Guid articleId)
     {
-        return new ArticleParticipant(account, article);
+        return new ArticleParticipant(accountId, articleId);
     }
 }

@@ -4,65 +4,109 @@ using EScinece.Domain.Abstraction.Repositories;
 using EScinece.Domain.Entities;
 using EScinece.Infrastructure.Data;
 using Microsoft.Extensions.Caching.Distributed;
+using Microsoft.Extensions.Logging;
+using Npgsql;
+using StackExchange.Redis;
 
 namespace EScinece.Infrastructure.Repositories;
 
-public class ArticleRepository(IDbConnectionFactory connectionFactory, IDistributedCache cache) : IArticleRepository
+public class ArticleRepository(
+    IDbConnectionFactory connectionFactory, 
+    IDistributedCache cache,
+    ILogger<ArticleRepository> logger
+    ) : IArticleRepository
 {
-    public async Task<Article?> GetById(Guid id)
-    {
-        using var connection = await connectionFactory.CreateConnectionAsync();
-        return await connection.QueryFirstOrDefaultAsync<Article>(
-            "SELECT * FROM articles WHERE id = @id", new { id });
-    }
+    public async Task<Article?> GetById(Guid id) =>
+        await ExecuteWithExceptionHandlingAsync(async () =>
+        {
+            using var connection = await connectionFactory.CreateConnectionAsync();
+            return await connection.QueryFirstOrDefaultAsync<Article>(
+                "SELECT * FROM articles WHERE id = @id", new { id });
+        });
 
     public async Task<IEnumerable<Article>> GetAllByArticleParticipantId(Guid id)
     {
         throw new NotImplementedException();
     }
 
-    public async Task<IEnumerable<Article>> GetAllByArticleParticipantIdInCreator(Guid id)
-    {
-        using var connection = await connectionFactory.CreateConnectionAsync();
-        return await connection.QueryAsync<Article>(
-            "SELECT * FROM articles WHERE creator_id = @id", new { id });
-    }
-
-    public async Task<IEnumerable<Article>> GetAll()
-    {
-        using var connection = await connectionFactory.CreateConnectionAsync();
-        return await connection.QueryAsync<Article>("SELECT * FROM articles");
-        
-    }
-
-    public async Task Create(Article entity)
-    {
-        using var connection = await connectionFactory.CreateConnectionAsync();
-        await connection.ExecuteAsync(
-            """
-            INSERT INTO articles (id, title, description, is_private, creator_id, type_article_id)
-            VALUES (@Id, @Title, @Description, @IsPrivate, @CreatorId, @TypeArticleId)
-            """, entity);
-
-        await cache.SetStringAsync("article:" + entity.Id, JsonSerializer.Serialize(entity), 
-            new DistributedCacheEntryOptions
+    public async Task<IEnumerable<Article>> GetAllByArticleParticipantIdInCreator(Guid id) =>
+        await ExecuteWithExceptionHandlingAsync(async () =>
         {
-            AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(1)
+            using var connection = await connectionFactory.CreateConnectionAsync();
+            return await connection.QueryAsync<Article>(
+                "SELECT * FROM articles WHERE creator_id = @id", new { id });
         });
-    }
 
-    public async Task<Article> Update(Article entity)
+    public async Task<IEnumerable<Article>> GetAll() =>
+        await ExecuteWithExceptionHandlingAsync(async () =>
+        {
+            using var connection = await connectionFactory.CreateConnectionAsync();
+            return await connection.QueryAsync<Article>("SELECT * FROM articles");
+        });
+
+    public async Task Create(Article entity) =>
+        await ExecuteWithExceptionHandlingAsync(async () =>
+        {
+            using var connection = await connectionFactory.CreateConnectionAsync();
+            await connection.ExecuteAsync(
+                """
+                INSERT INTO articles (id, title, description, is_private, creator_id, type_article_id)
+                VALUES (@Id, @Title, @Description, @IsPrivate, @CreatorId, @TypeArticleId)
+                """, entity);
+
+            await cache.SetStringAsync("article:" + entity.Id, JsonSerializer.Serialize(entity),
+                new DistributedCacheEntryOptions
+                {
+                    AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(1)
+                });
+
+            return Task.CompletedTask;
+        });
+
+    public async Task<Guid?> Update(Article entity)
     {
         throw new NotImplementedException();
     }
 
-    public async Task<bool> Delete(Guid id)
-    {
-        throw new NotImplementedException();
-    }
+    public async Task<bool> Delete(Guid id) =>
+        await ExecuteWithExceptionHandlingAsync(async () =>
+        {
+            using var connection = await connectionFactory.CreateConnectionAsync();
+            var result = await connection.ExecuteAsync(
+                "DELETE FROM articles WHERE id = @id", new { id });
+            return result > 0;
+        });
 
     public async Task<List<Article>> GetByPage(int pageNumber, int pageSize)
     {
         throw new NotImplementedException();
+    }
+
+    private async Task<T> ExecuteWithExceptionHandlingAsync<T>(Func<Task<T>> func)
+    {
+        try
+        {
+            return await func();
+        }
+        catch (NpgsqlException ex)
+        {
+            logger.LogError("Произошла ошибка SQL-запроса", ex);
+            throw new Exception("Ошибка SQL-запроса: " + ex.Message, ex);
+        }
+        catch (RedisConnectionException ex)
+        {
+            logger.LogError("Ошибка соединения с Redis", ex);
+            throw new Exception("Ошибка соединения с Redis: " + ex.Message, ex);
+        }
+        catch (DbConnectionException ex)
+        {
+            logger.LogError("Ошибка соединения", ex);
+            throw new Exception("Ошибка соединения: " + ex.Message, ex);
+        }
+        catch (Exception ex)
+        {
+            logger.LogError("Неизвестная ошибка", ex);
+            throw new Exception("Неизвестная ошибка: " + ex.Message, ex);
+        }
     }
 }

@@ -5,20 +5,24 @@ using EScinece.Domain.Entities;
 using EScinece.Infrastructure.Data;
 using Microsoft.Extensions.Logging;
 using Npgsql;
+using StackExchange.Redis;
 
 namespace EScinece.Infrastructure.Repositories;
 
-public class UserRepository(IDbConnectionFactory connectionFactory, ILogger<UserRepository> logger) : IUserRepository
+public class UserRepository(
+    IDbConnectionFactory connectionFactory, 
+    ILogger<UserRepository> logger
+    ) : IUserRepository
 {
-    public async Task<IEnumerable<User>> GetAll()
-    {
-        using var connection = await connectionFactory.CreateConnectionAsync();
-        return await connection.QueryAsync<User>("SELECT * FROM users");
-    }
+    public async Task<IEnumerable<User>> GetAll() =>
+        await ExecuteWithExceptionHandlingAsync(async () =>
+        {
+            using var connection = await connectionFactory.CreateConnectionAsync();
+            return await connection.QueryAsync<User>("SELECT * FROM users");
+        });
 
-    public async Task Create(User user)
-    {
-        try
+    public async Task Create(User user) =>
+        await ExecuteWithExceptionHandlingAsync(async () =>
         {
             using var connection = await connectionFactory.CreateConnectionAsync();
             await connection.ExecuteAsync(
@@ -26,69 +30,64 @@ public class UserRepository(IDbConnectionFactory connectionFactory, ILogger<User
                 INSERT INTO users (id, email, hashed_password)
                 VALUES (@Id, @Email, @HashedPassword)
                 """, user);
-        }
-        catch (NpgsqlException ex)
-        {
-            logger.LogError("Произошла ошибка sql зпроса создания user", ex);
-            throw new Exception(ex.Message, ex);
-        }
-        catch (DbConnectionException ex)
-        {
-            throw new Exception(ex.Message, ex);
-        }
-        catch (Exception ex)
-        {
-            logger.LogError("Произошла ошибка при создании user", ex);
-            throw new Exception("Произошла ошибка при создании user", ex);
-        }
-    }
+            return Task.CompletedTask;
+        });
 
-    public async Task<User?> GetByEmail(string email)
-    {
-        try
+    public async Task<User?> GetByEmail(string email) =>
+        await ExecuteWithExceptionHandlingAsync(async () =>
         {
             using var connection = await connectionFactory.CreateConnectionAsync();
             var user = await connection.QueryFirstOrDefaultAsync<User>(
                 "SELECT * FROM users WHERE email = @email", new { email });
             return user;
-        }
-        catch (DbConnectionException ex)
-        {
-            throw new Exception(ex.Message, ex);
-        }
-        catch (Exception ex)
-        {
-            logger.LogError("Произошла ошибка при получении пользователей по email", ex);
-            throw new Exception("Произошла ошибка при получении пользователей по email", ex);
-        }
-    }
+        });
 
-    public async Task<bool> Delete(Guid id)
-    {
-        throw new NotImplementedException();
-    }
-    
-    public async Task<User?> GetById(Guid id)
-    {
-        try
+    public async Task<bool> Delete(Guid id) => 
+        await ExecuteWithExceptionHandlingAsync(async () =>
+        {
+            using var connection = await connectionFactory.CreateConnectionAsync();
+            var result = await connection.ExecuteAsync("DELETE FROM users WHERE id = @id", new { id });
+            return result > 0;
+        });
+
+    public async Task<User?> GetById(Guid id) =>
+        await ExecuteWithExceptionHandlingAsync(async () =>
         {
             using var connection = await connectionFactory.CreateConnectionAsync();
             return await connection.QueryFirstOrDefaultAsync<User>(
                 "SELECT * FROM users WHERE id = @id", new { id });
+        });
+
+    public Task<Guid?> Update(User entity)
+    {
+        throw new NotImplementedException();
+    }
+
+    private async Task<T> ExecuteWithExceptionHandlingAsync<T>(Func<Task<T>> func)
+    {
+        try
+        {
+            return await func();
+        }
+        catch (NpgsqlException ex)
+        {
+            logger.LogError("Произошла ошибка SQL-запроса", ex);
+            throw new Exception("Ошибка SQL-запроса: " + ex.Message, ex);
+        }
+        catch (RedisConnectionException ex)
+        {
+            logger.LogError("Ошибка соединения с Redis", ex);
+            throw new Exception("Ошибка соединения с Redis: " + ex.Message, ex);
         }
         catch (DbConnectionException ex)
         {
-            throw new Exception(ex.Message, ex);
+            logger.LogError("Ошибка соединения", ex);
+            throw new Exception("Ошибка соединения: " + ex.Message, ex);
         }
         catch (Exception ex)
         {
-            logger.LogError("Произошла ошибка при получении пользователей по id", ex);
-            throw new Exception("Произошла ошибка при получении пользователей по id", ex);
+            logger.LogError("Неизвестная ошибка", ex);
+            throw new Exception("Неизвестная ошибка: " + ex.Message, ex);
         }
-    }
-
-    public Task<User> Update(User entity)
-    {
-        throw new NotImplementedException();
     }
 }
