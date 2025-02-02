@@ -18,7 +18,7 @@ public class UserRepository(
         await ExecuteWithExceptionHandlingAsync(async () =>
         {
             using var connection = await connectionFactory.CreateConnectionAsync();
-            return await connection.QueryAsync<User>("SELECT * FROM users");
+            return await connection.QueryAsync<User>("SELECT * FROM users WHERE deleted_at IS NULL");
         });
 
     public async Task Create(User user) =>
@@ -38,7 +38,7 @@ public class UserRepository(
         {
             using var connection = await connectionFactory.CreateConnectionAsync();
             var user = await connection.QueryFirstOrDefaultAsync<User>(
-                "SELECT * FROM users WHERE email = @email", new { email });
+                "SELECT * FROM users WHERE email = @email AND deleted_at IS NULL", new { email });
             return user;
         });
 
@@ -50,18 +50,22 @@ public class UserRepository(
             return result > 0;
         });
 
+    public async Task<bool> SoftDelete(Guid id) =>
+        await ExecuteWithExceptionHandlingAsync(async () =>
+        {
+            using var connection = await connectionFactory.CreateConnectionAsync();
+            var result = await connection.ExecuteAsync(
+                "UPDATE users SET deleted_at = NOW() WHERE id = @id", new { id });
+            return result > 0;
+        });
+
     public async Task<User?> GetById(Guid id) =>
         await ExecuteWithExceptionHandlingAsync(async () =>
         {
             using var connection = await connectionFactory.CreateConnectionAsync();
             return await connection.QueryFirstOrDefaultAsync<User>(
-                "SELECT * FROM users WHERE id = @id", new { id });
+                "SELECT * FROM users WHERE id = @id AND deleted_at IS NULL", new { id });
         });
-
-    public Task<Guid?> Update(User entity)
-    {
-        throw new NotImplementedException();
-    }
 
     private async Task<T> ExecuteWithExceptionHandlingAsync<T>(Func<Task<T>> func)
     {

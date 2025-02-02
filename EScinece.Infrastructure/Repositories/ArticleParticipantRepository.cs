@@ -20,7 +20,7 @@ public class ArticleParticipantRepository(
         await ExecuteWithExceptionHandlingAsync(async () =>
         {
             using var connection = await connectionFactory.CreateConnectionAsync();
-            return await connection.QueryAsync<ArticleParticipant>("SELECT * FROM article_participants");
+            return await connection.QueryAsync<ArticleParticipant>("SELECT * FROM article_participants WHERE deleted_at IS NULL");
         });
 
     public async Task Create(ArticleParticipant articleParticipant) =>
@@ -41,11 +41,6 @@ public class ArticleParticipantRepository(
             return Task.CompletedTask;
         });
 
-    public Task<Guid?> Update(ArticleParticipant entity)
-    {
-        throw new NotImplementedException();
-    }
-
     public async Task<ArticleParticipant?> GetById(Guid id) =>
         await ExecuteWithExceptionHandlingAsync(async () =>
         {
@@ -56,7 +51,7 @@ public class ArticleParticipantRepository(
 
             using var connection = await connectionFactory.CreateConnectionAsync();
             return await connection.QueryFirstAsync<ArticleParticipant>(
-                "SELECT * FROM article_participants WHERE id = @id", new { id });
+                "SELECT * FROM article_participants WHERE id = @id AND deleted_at IS NULL", new { id });
         });
 
     public async Task<bool> Delete(Guid id) =>
@@ -65,6 +60,15 @@ public class ArticleParticipantRepository(
             using var connection = await connectionFactory.CreateConnectionAsync();
             var result = await connection.ExecuteAsync(
                 "DELETE FROM article_participants WHERE id = @id", new { id });
+            return result > 0;
+        });
+
+    public async Task<bool> SoftDelete(Guid id) =>
+        await ExecuteWithExceptionHandlingAsync(async () =>
+        {
+            using var connection = await connectionFactory.CreateConnectionAsync();
+            var result = await connection.ExecuteAsync(
+                "UPDATE article_participants SET deleted_at = NOW() WHERE id = @id", new { id });
             return result > 0;
         });
 

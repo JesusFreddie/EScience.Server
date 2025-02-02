@@ -21,7 +21,7 @@ public class ArticleRepository(
         {
             using var connection = await connectionFactory.CreateConnectionAsync();
             return await connection.QueryFirstOrDefaultAsync<Article>(
-                "SELECT * FROM articles WHERE id = @id", new { id });
+                "SELECT * FROM articles WHERE id = @id AND deleted_at IS NULL", new { id });
         });
 
     public async Task<IEnumerable<Article>> GetAllByArticleParticipantId(Guid id)
@@ -34,14 +34,14 @@ public class ArticleRepository(
         {
             using var connection = await connectionFactory.CreateConnectionAsync();
             return await connection.QueryAsync<Article>(
-                "SELECT * FROM articles WHERE creator_id = @id", new { id });
+                "SELECT * FROM articles WHERE creator_id = @id AND deleted_at IS NULL", new { id });
         });
 
     public async Task<IEnumerable<Article>> GetAll() =>
         await ExecuteWithExceptionHandlingAsync(async () =>
         {
             using var connection = await connectionFactory.CreateConnectionAsync();
-            return await connection.QueryAsync<Article>("SELECT * FROM articles");
+            return await connection.QueryAsync<Article>("SELECT * FROM articles WHERE deleted_at IS NULL");
         });
 
     public async Task Create(Article entity) =>
@@ -63,17 +63,21 @@ public class ArticleRepository(
             return Task.CompletedTask;
         });
 
-    public async Task<Guid?> Update(Article entity)
-    {
-        throw new NotImplementedException();
-    }
-
     public async Task<bool> Delete(Guid id) =>
         await ExecuteWithExceptionHandlingAsync(async () =>
         {
             using var connection = await connectionFactory.CreateConnectionAsync();
             var result = await connection.ExecuteAsync(
                 "DELETE FROM articles WHERE id = @id", new { id });
+            return result > 0;
+        });
+
+    public async Task<bool> SoftDelete(Guid id) =>
+        await ExecuteWithExceptionHandlingAsync(async () =>
+        {
+            using var connection = await connectionFactory.CreateConnectionAsync();
+            var result = await connection.ExecuteAsync(
+                "UPDATE articles SET deleted_at = NOW() WHERE id = @id", new { id });
             return result > 0;
         });
 

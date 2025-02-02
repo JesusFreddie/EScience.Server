@@ -20,7 +20,7 @@ public class AccountRepository(
         await ExecuteWithExceptionHandlingAsync(async () =>
         {
             using var connection = await connectionFactory.CreateConnectionAsync();
-            return await connection.QueryAsync<Account>("SELECT * FROM accounts");
+            return await connection.QueryAsync<Account>("SELECT * FROM accounts WHERE deleted_at IS NULL");
         });
 
     public async Task Create(Account account) =>
@@ -59,23 +59,35 @@ public class AccountRepository(
             if (updateSet.Count == 0)
                 return null;
 
-            var sql = $"UPDATE accounts SET {string.Join(", ", updateSet)}  WHERE id = @id";
+            var sql = $"UPDATE accounts SET {string.Join(", ", updateSet)}  WHERE id = @id AND deleted_at IS NULL";
             var result = await connection.ExecuteAsync(sql, new { id, name });
 
             return result > 0 ? id : null;
         });
 
-    public async Task<bool> Delete(Guid id)
-    {
-        throw new NotImplementedException();
-    }
+    public async Task<bool> Delete(Guid id) =>
+        await ExecuteWithExceptionHandlingAsync(async () =>
+        {
+            using var connection = await connectionFactory.CreateConnectionAsync();
+            var result = await connection.ExecuteAsync($"DELETE FROM accounts WHERE id = @id", new { id });
+            return result > 0;
+        });
+
+    public async Task<bool> SoftDelete(Guid id) =>
+        await ExecuteWithExceptionHandlingAsync(async () =>
+        {
+            using var connection = await connectionFactory.CreateConnectionAsync();
+            var result = await connection.ExecuteAsync(
+                "UPDATE accounts SET deleted_at = NOW() WHERE id = @id", new { id });
+            return result > 0;
+        });
 
     public async Task<Account?> GetByUserId(Guid id) =>
         await ExecuteWithExceptionHandlingAsync(async () =>
         {
             using var connection = await connectionFactory.CreateConnectionAsync();
             return await connection.QueryFirstOrDefaultAsync<Account>(
-                "SELECT * FROM accounts WHERE user_id = @userId", new { userId = id });
+                "SELECT * FROM accounts WHERE user_id = @userId AND deleted_at IS NULL", new { userId = id });
         });
 
     public async Task<Account?> GetById(Guid id) =>
@@ -89,7 +101,8 @@ public class AccountRepository(
 
             using var connection = await connectionFactory.CreateConnectionAsync();
             var account = await connection
-                .QueryFirstOrDefaultAsync<Account>("SELECT * FROM accounts WHERE Id = @id", new { id });
+                .QueryFirstOrDefaultAsync<Account>(
+                    "SELECT * FROM accounts WHERE Id = @id AND deleted_at IS NULL", new { id });
 
             if (account is null)
                 return null;
