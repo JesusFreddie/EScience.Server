@@ -75,4 +75,9 @@ app.MapControllers();
 app.UseAuthentication();
 app.UseAuthorization();
 
+app.MapGet("get", () =>
+{
+    return Results.Ok("OK");
+}).RequireAuthorization("AdminPolicy").AllowAnonymous();
+
 app.Run();

@@ -1,5 +1,4 @@
-﻿version: '3.9'
-
+﻿
 services:
   db:
     container_name: postgres
@@ -23,3 +22,4 @@ services:
       - db_redis:/data
 volumes:
   db:
+  db_redis:

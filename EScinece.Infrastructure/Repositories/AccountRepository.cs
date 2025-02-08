@@ -29,8 +29,8 @@ public class AccountRepository(
             using var connection = await connectionFactory.CreateConnectionAsync();
             await connection.ExecuteAsync(
                 """
-                INSERT INTO accounts (id, name, role, user_id)
-                VALUES (@id, @name, @role, @userId)
+                INSERT INTO accounts (id, name, user_id, role_id)
+                VALUES (@id, @name, @userId, @roleId)
                 """, account);
 
             await cache.SetStringAsync("account:" + account.Id, JsonSerializer.Serialize(account),
@@ -124,22 +124,22 @@ public class AccountRepository(
         }
         catch (NpgsqlException ex)
         {
-            logger.LogError("Произошла ошибка SQL-запроса", ex);
+            logger.LogError(ex, "Произошла ошибка SQL-запроса");
             throw new Exception("Ошибка SQL-запроса: " + ex.Message, ex);
         }
         catch (RedisConnectionException ex)
         {
-            logger.LogError("Ошибка соединения с Redis", ex);
+            logger.LogError(ex, "Ошибка соединения с Redis");
             throw new Exception("Ошибка соединения с Redis: " + ex.Message, ex);
         }
         catch (DbConnectionException ex)
         {
-            logger.LogError("Ошибка соединения", ex);
+            logger.LogError(ex, "Ошибка соединения");
             throw new Exception("Ошибка соединения: " + ex.Message, ex);
         }
         catch (Exception ex)
         {
-            logger.LogError("Неизвестная ошибка", ex);
+            logger.LogError(ex, "Неизвестная ошибка");
             throw new Exception("Неизвестная ошибка: " + ex.Message, ex);
         }
     }

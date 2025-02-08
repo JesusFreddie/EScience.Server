@@ -11,7 +11,9 @@ public class Account: BaseEntity
     public const int NameMinLength = 2;
     
     public string Name { get; set; }
-    public Role Role { get; set; } = Role.USER;
+    
+    public int RoleId { get; set; }
+    public Role Role { get; set; }
  
     public Guid UserId { get; set; }
     
@@ -19,26 +21,21 @@ public class Account: BaseEntity
     
     public ICollection<ArticleParticipant> ArticleParticipants { get; set; } =  new List<ArticleParticipant>();
     
-    private Account(string name, Guid userId, Role role = Role.USER)
+    private Account(string name, Guid userId, int roleId = 1)
     {
+        Id = Guid.NewGuid();
         Name = name;
         UserId = userId;
-        Role = role;
+        RoleId = roleId;
     }
 
     public Account() {}
     
-    public static Result<Account, string> Create(string name, Guid userId, Role role = Role.USER)
+    public static Result<Account, string> Create(string name, Guid userId, int roleId = 1)
     {
         if (string.IsNullOrEmpty(name))
             return AccountErrorMessage.NameIsRequired;
 
-        return new Account(name, userId, role);
+        return new Account(name, userId, roleId);
     }
-}
-
-public enum Role: int
-{
-    ADMIN,
-    USER
 }

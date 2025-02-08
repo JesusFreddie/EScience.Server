@@ -4,54 +4,58 @@ using EScinece.Domain.Abstraction.Repositories;
 using EScinece.Domain.Abstraction.Services;
 using EScinece.Domain.DTOs;
 using EScinece.Domain.Entities;
+using Microsoft.Extensions.Logging;
 
 namespace EScinece.Infrastructure.Services;
 
 public class ArticleService(
     IArticleRepository articleRepository,
-    IArticleParticipantService articleParticipantService
+    IArticleParticipantService articleParticipantService,
+    ILogger<ArticleService> logger
     ) : IArticleService
 {
-    private readonly IArticleRepository _articleRepository = articleRepository;
-    private readonly IArticleParticipantService _articleParticipantService = articleParticipantService;
     
     public async Task<Result<ArticleDto, string>> Create(string title, string description, Guid accountId, Guid typeArticleId)
     {
-        var validate = IsValidate(title, description);
-
-        if (!string.IsNullOrEmpty(validate))
-            return validate;
-        
-        var creatorId = Guid.NewGuid();
-        var articleId = Guid.NewGuid();
-        
-        var creator = await _articleParticipantService.Create(accountId, typeArticleId, creatorId);
-        
-        if (!creator.onSuccess)
-            return creator.Error;
-
-        var article = Article.Create(
-            title: title,
-            description: description,
-            creatorId: creator.Value.Id,
-            typeArticleId: typeArticleId,
-            id: articleId);
-
-        if (!article.onSuccess)
+        try
         {
-            await _articleParticipantService.Delete(creator.Value.Id);
-            return article.Error;
-        }
-        
-        await _articleRepository.Create(article.Value);
+            var validate = IsValidate(title, description);
 
-        return new ArticleDto(
-            Id: article.Value.Id,
-            Title: article.Value.Title,
-            Description: article.Value.Description,
-            CreatorId: creator.Value.Id,
-            TypeArticleId: typeArticleId
+            if (!string.IsNullOrEmpty(validate))
+                return validate;
+
+            var article = Article.Create(
+                title: title,
+                description: description,
+                typeArticleId: typeArticleId);
+
+            if (!article.onSuccess)
+            {
+                return article.Error;
+            }
+
+            await articleRepository.Create(article.Value);
+
+            var creator = await articleParticipantService.Create(accountId, typeArticleId);
+
+            if (!creator.onSuccess)
+            {
+                await articleRepository.Delete(article.Value.Id);
+                return creator.Error;
+            }
+
+            return new ArticleDto(
+                Id: article.Value.Id,
+                Title: article.Value.Title,
+                Description: article.Value.Description,
+                TypeArticleId: typeArticleId
             );
+        }
+        catch (Exception e)
+        {
+            logger.LogError(e, e.Message);
+            throw new Exception("Произошла серверная ошибка при создании статьи");
+        }
     }
 
     public Task<ICollection<ArticleDto>> GetAllByArticleParticipantId(Guid id)

@@ -12,7 +12,7 @@ public class ArticleParticipantService(
     IArticleParticipantRepository articleParticipantRepository,
     ILogger<ArticleParticipantRepository> logger) : IArticleParticipantService
 {
-    public async Task<Result<ArticleParticipantDto, string>> Create(Guid accountId, Guid articleId, Guid? id)
+    public async Task<Result<ArticleParticipantDto, string>> Create(Guid accountId, Guid articleId)
     {
         try
         {

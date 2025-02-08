@@ -13,9 +13,17 @@ public static class ApiExtensions
         IOptions<JwtOptions> jwtOptions)
     {
         services
-            .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+            .AddAuthentication(options =>
+            {
+                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultSignInScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            })
             .AddJwtBearer(JwtBearerDefaults.AuthenticationScheme, options =>
             {
+                options.RequireHttpsMetadata = false;
+                options.SaveToken = true;
+                
                 options.TokenValidationParameters = new()
                 {
                     ValidateIssuer = false,
@@ -35,6 +43,12 @@ public static class ApiExtensions
                 };
             });
         
-        services.AddAuthorization();
+        services.AddAuthorization(options =>
+        {
+            options.AddPolicy("AdminPolicy", policy =>
+            {
+                policy.RequireClaim("Admin", "true");
+            });
+        });
     }
 }
