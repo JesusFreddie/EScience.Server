@@ -1,11 +1,11 @@
+using EScience.Application.Configuration;
 using EScience.Application.Extensions;
+using EScience.Application.Handlers;
 using EScinece.Domain.Abstraction.Helpers;
-using EScinece.Domain.Abstraction.Repositories;
-using EScinece.Domain.Abstraction.Services;
 using EScinece.Infrastructure.Data;
 using EScinece.Infrastructure.Helpers;
-using EScinece.Infrastructure.Repositories;
-using EScinece.Infrastructure.Services;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.CookiePolicy;
 using Microsoft.Extensions.Options;
 using Serilog;
@@ -33,16 +33,10 @@ Log.Logger = new LoggerConfiguration()
     .WriteTo.File("logs/escience.log", rollingInterval: RollingInterval.Day)
     .CreateLogger();
 
-builder.Services.AddScoped<IUserRepository, UserRepository>();
-builder.Services.AddScoped<IAccountRepository, AccountRepository>();
-builder.Services.AddScoped<IArticleRepository, ArticleRepository>();
-builder.Services.AddScoped<IArticleParticipantRepository, ArticleParticipantRepository>();
+builder.Services.AddScoped<IAuthorizationHandler, ArticleAuthorizationHandler>();
 
-builder.Services.AddScoped<IUserService, UserService>();
-builder.Services.AddScoped<IAuthService, AuthService>();
-builder.Services.AddScoped<IAccountService, AccountService>();
-builder.Services.AddScoped<IArticleParticipantService, ArticleParticipantService>();
-builder.Services.AddScoped<IArticleService, ArticleService>();
+builder.Services.AddRepositories();
+builder.Services.AddServices();
 
 builder.Services.AddScoped<IPasswordHasher, PasswordHasher>();
 builder.Services.AddScoped<IJwtProvider, JwtProvider>();
@@ -74,10 +68,5 @@ app.MapControllers();
 
 app.UseAuthentication();
 app.UseAuthorization();
-
-app.MapGet("get", () =>
-{
-    return Results.Ok("OK");
-}).RequireAuthorization("AdminPolicy").AllowAnonymous();
 
 app.Run();

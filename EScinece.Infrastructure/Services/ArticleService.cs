@@ -15,7 +15,11 @@ public class ArticleService(
     ) : IArticleService
 {
     
-    public async Task<Result<ArticleDto, string>> Create(string title, string description, Guid accountId, Guid typeArticleId)
+    public async Task<Result<ArticleDto, string>> Create(
+        string title, 
+        string description, 
+        Guid accountId, 
+        Guid typeArticleId)
     {
         try
         {
@@ -36,20 +40,31 @@ public class ArticleService(
 
             await articleRepository.Create(article.Value);
 
-            var creator = await articleParticipantService.Create(accountId, typeArticleId);
+            try
+            {
+                var creator = await articleParticipantService.Create(
+                    accountId, 
+                    typeArticleId,
+                    ArticlePermissionLevel.AUTHOR);
 
-            if (!creator.onSuccess)
+                if (!creator.onSuccess)
+                {
+                    await articleRepository.Delete(article.Value.Id);
+                    return creator.Error;
+                }
+
+                return new ArticleDto(
+                    Id: article.Value.Id,
+                    Title: article.Value.Title,
+                    Description: article.Value.Description,
+                    TypeArticleId: typeArticleId
+                );
+            }
+            catch
             {
                 await articleRepository.Delete(article.Value.Id);
-                return creator.Error;
+                throw;
             }
-
-            return new ArticleDto(
-                Id: article.Value.Id,
-                Title: article.Value.Title,
-                Description: article.Value.Description,
-                TypeArticleId: typeArticleId
-            );
         }
         catch (Exception e)
         {

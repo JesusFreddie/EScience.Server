@@ -98,4 +98,24 @@ public class AccountService(
             throw new Exception("Произошла серверная ошибка получения аккаунта");
         }
     }
+
+    public async Task<AccountDto?> GetByUserId(Guid id)
+    {
+        try
+        {
+            var account = await _accountRepository.GetByUserId(id);
+            if (account is null)
+                return null;
+            
+            return new AccountDto(
+                Id: account.Id,
+                UserId: account.UserId,
+                Role: account.Role,
+                Name: account.Name);
+        }
+        catch
+        {
+            throw new Exception(AccountErrorMessage.ServerErrorGetAccount);
+        }
+    }
 }

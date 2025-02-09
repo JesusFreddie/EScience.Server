@@ -11,21 +11,24 @@ public class ArticleParticipant: BaseEntity
     
     public Guid ArticleId { get; set; }
     public Article Article { get; set; }
+
+    public ArticlePermissionLevel PermissionLevel { get; set; }
     
     public ICollection<ArticleBranch> ArticleBranches { get; set; } =  new List<ArticleBranch>();
     public ICollection<ArticleBranchVersion> ArticleBranchVersions { get; set; } = new List<ArticleBranchVersion>();
 
     public ArticleParticipant() {}
     
-    private ArticleParticipant(Guid accountId, Guid articleId)
+    private ArticleParticipant(Guid accountId, Guid articleId, ArticlePermissionLevel permissionLevel = ArticlePermissionLevel.READER)
     {
         Id = Guid.NewGuid();
         AccountId = accountId;
         ArticleId = articleId;
+        PermissionLevel = permissionLevel;
     }
 
-    public static Result<ArticleParticipant, string> Create(Guid accountId, Guid articleId)
+    public static Result<ArticleParticipant, string> Create(Guid accountId, Guid articleId, ArticlePermissionLevel permissionLevel = ArticlePermissionLevel.READER)
     {
-        return new ArticleParticipant(accountId, articleId);
+        return new ArticleParticipant(accountId, articleId, permissionLevel);
     }
 }

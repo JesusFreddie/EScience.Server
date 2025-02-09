@@ -1,4 +1,7 @@
 using System.Text;
+using EScience.Application.Configuration;
+using EScience.Application.Handlers;
+using EScinece.Domain.Entities;
 using EScinece.Infrastructure.Helpers;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.Options;
@@ -13,12 +16,7 @@ public static class ApiExtensions
         IOptions<JwtOptions> jwtOptions)
     {
         services
-            .AddAuthentication(options =>
-            {
-                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-                options.DefaultSignInScheme = JwtBearerDefaults.AuthenticationScheme;
-                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-            })
+            .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             .AddJwtBearer(JwtBearerDefaults.AuthenticationScheme, options =>
             {
                 options.RequireHttpsMetadata = false;
@@ -45,10 +43,7 @@ public static class ApiExtensions
         
         services.AddAuthorization(options =>
         {
-            options.AddPolicy("AdminPolicy", policy =>
-            {
-                policy.RequireClaim("Admin", "true");
-            });
+            options.AddArticlePolicies();
         });
     }
 }

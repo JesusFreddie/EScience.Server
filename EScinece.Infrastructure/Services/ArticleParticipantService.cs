@@ -12,11 +12,14 @@ public class ArticleParticipantService(
     IArticleParticipantRepository articleParticipantRepository,
     ILogger<ArticleParticipantRepository> logger) : IArticleParticipantService
 {
-    public async Task<Result<ArticleParticipantDto, string>> Create(Guid accountId, Guid articleId)
+    public async Task<Result<ArticleParticipantDto, string>> Create(
+        Guid accountId, 
+        Guid articleId, 
+        ArticlePermissionLevel permissionLevel = ArticlePermissionLevel.READER)
     {
         try
         {
-            var articleParticipantResult = ArticleParticipant.Create(accountId, articleId);
+            var articleParticipantResult = ArticleParticipant.Create(accountId, articleId, permissionLevel);
             
             if (!articleParticipantResult.onSuccess)
                 return articleParticipantResult.Error;
@@ -28,7 +31,8 @@ public class ArticleParticipantService(
                 Id: articleParticipant.Id,
                 AccountId: articleParticipant.AccountId,
                 IsAccepted: articleParticipant.IsAccepted,
-                ArticleId: articleParticipant.ArticleId);
+                ArticleId: articleParticipant.ArticleId,
+                PermissionLevel: articleParticipant.PermissionLevel);
         }
         catch (Exception ex)
         {
@@ -49,7 +53,8 @@ public class ArticleParticipantService(
                 Id: articleParticipant.Id,
                 AccountId: articleParticipant.AccountId,
                 IsAccepted: articleParticipant.IsAccepted,
-                ArticleId: articleParticipant.ArticleId);
+                ArticleId: articleParticipant.ArticleId,
+                PermissionLevel: articleParticipant.PermissionLevel);
         }
         catch (Exception ex)
         {
@@ -69,5 +74,15 @@ public class ArticleParticipantService(
             logger.LogError(ex, "Произошла ошибка удаления статьи");
             throw new Exception("Произошла ошибка удаления статьи");
         }
+    }
+
+    public Task<ArticlePermissionLevel> GetArticlePermissionLevelById(Guid id)
+    {
+        return articleParticipantRepository.GetArticlePermissionLevelById(id);
+    }
+
+    public Task<ArticlePermissionLevel> GetArticlePermissionLevelByAccountId(Guid id)
+    {
+        return articleParticipantRepository.GetArticlePermissionLevelByAccountId(id);
     }
 }

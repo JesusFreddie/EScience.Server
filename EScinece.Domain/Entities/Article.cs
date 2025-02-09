@@ -19,7 +19,7 @@ public class Article: BaseEntity
     
     public ICollection<ArticleBranch> ArticleBranches { get; set; } = new List<ArticleBranch>();
     public Guid TypeArticleId { get; set; }
-    public TypeArticle TypeArticle { get; set; }
+    public ArticleType ArticleType { get; set; }
 
     public Article() { }
     

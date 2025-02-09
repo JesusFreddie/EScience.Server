@@ -29,8 +29,8 @@ public class ArticleParticipantRepository(
             using var connection = await connectionFactory.CreateConnectionAsync();
             await connection.ExecuteAsync(
                 """
-                INSERT INTO article_participants (id, account_id, is_accepted, article_id, "article_Id")
-                VALUES (@Id, @AccountId, @IsAccepted, @ArticleId, @ArticleId)
+                INSERT INTO article_participants (id, account_id, is_accepted, article_id)
+                VALUES (@Id, @AccountId, @IsAccepted, @ArticleId)
                 """, articleParticipant);
 
             await cache.SetStringAsync("article_participants:", JsonSerializer.Serialize(articleParticipant),
@@ -72,6 +72,26 @@ public class ArticleParticipantRepository(
             return result > 0;
         });
 
+    public async Task<ArticlePermissionLevel> GetArticlePermissionLevelByAccountId(Guid id) =>
+        await ExecuteWithExceptionHandlingAsync(async () =>
+        {
+            using var connection = await connectionFactory.CreateConnectionAsync();
+            return await connection.QueryFirstOrDefaultAsync<ArticlePermissionLevel>(
+                """
+                SELECT permission_level FROM article_participants WHERE account_id = @id
+                """, new { id });
+        });
+
+    public async Task<ArticlePermissionLevel> GetArticlePermissionLevelById(Guid id) =>
+        await ExecuteWithExceptionHandlingAsync(async () =>
+        {
+            using var connection = await connectionFactory.CreateConnectionAsync();
+            return await connection.QueryFirstOrDefaultAsync<ArticlePermissionLevel>(
+                """
+                SELECT permission_level FROM article_participants WHERE id = @id
+                """, new { id });
+        });
+    
     private async Task<T> ExecuteWithExceptionHandlingAsync<T>(Func<Task<T>> func)
     {
         try
