@@ -31,7 +31,7 @@ public class AuthController(IAuthService authService): ControllerBase
         }
         catch (Exception ex)
         {
-            return StatusCode(500, ex.Message);
+            return StatusCode(500, "Internal Server Error");
         }
     }
     
@@ -49,7 +49,7 @@ public class AuthController(IAuthService authService): ControllerBase
         }
         catch (Exception ex)
         {
-            return StatusCode(500, ex.Message);
+            return StatusCode(500, "Internal Server Error");
         }
 
         if (string.IsNullOrEmpty(token))

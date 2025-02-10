@@ -43,9 +43,9 @@ public class ArticleService(
             try
             {
                 var creator = await articleParticipantService.Create(
-                    accountId, 
-                    typeArticleId,
-                    ArticlePermissionLevel.AUTHOR);
+                    accountId: accountId,
+                    articleId: article.Value.Id,
+                    permissionLevel: ArticlePermissionLevel.AUTHOR);
 
                 if (!creator.onSuccess)
                 {
@@ -83,9 +83,26 @@ public class ArticleService(
         throw new NotImplementedException();
     }
 
-    public Task<ArticleDto?> GetById(Guid id)
+    public async Task<ArticleDto?> GetById(Guid id)
     {
-        throw new NotImplementedException();
+        try
+        {
+            var article = await articleRepository.GetById(id);
+
+            if (article is null)
+                return null;
+            
+            return new ArticleDto(
+                Id: article.Id,
+                Title: article.Title,
+                Description: article.Description,
+                TypeArticleId: article.TypeArticleId);
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, ex.Message);
+            throw new Exception("Ошибка при получении статьи");
+        }
     }
 
     private static string IsValidate(string title, string description)

@@ -5,9 +5,10 @@ namespace EScience.Application.Configuration;
 
 public static class AuthorizationPolicyConfiguration
 {
+    public const string ARTICLE_READER_POLICY = nameof(ARTICLE_READER_POLICY);
     public static AuthorizationOptions AddArticlePolicies(this AuthorizationOptions options)
     {
-        options.AddPolicy("ArticleReaderPolicy", 
+        options.AddPolicy(ARTICLE_READER_POLICY, 
             policy => policy.Requirements.Add(new ArticlePermissionRequirement()
             {
                 RequiredPermissionLevel = ArticlePermissionLevel.READER

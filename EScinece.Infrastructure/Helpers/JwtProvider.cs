@@ -10,10 +10,10 @@ namespace EScinece.Infrastructure.Helpers;
 public class JwtProvider(IOptions<JwtOptions> options) : IJwtProvider
 {
     private readonly JwtOptions _options = options.Value;
-    public string GenerateToken(Guid userId)
+    public string GenerateToken(Guid accountId)
     {
         Claim[] claims = [
-            new(CustomClaims.UserId, userId.ToString())
+            new(CustomClaims.AccountId, accountId.ToString())
         ];
         var signingCredentials = new SigningCredentials(
             new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_options.SecretKey)),

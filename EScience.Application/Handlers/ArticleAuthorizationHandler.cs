@@ -8,29 +8,34 @@ namespace EScience.Application.Handlers;
 public class ArticleAuthorizationHandler : AuthorizationHandler<ArticlePermissionRequirement>
 {
     private readonly IServiceScopeFactory _serviceScopeFactory;
-    public ArticleAuthorizationHandler(IServiceScopeFactory serviceScopeFactory)
+    private readonly IHttpContextAccessor _httpContextAccessor;
+    public ArticleAuthorizationHandler(IServiceScopeFactory serviceScopeFactory, IHttpContextAccessor httpContextAccessor)
     {
         _serviceScopeFactory = serviceScopeFactory;
+        _httpContextAccessor = httpContextAccessor;
     }
     
     protected override async Task HandleRequirementAsync(AuthorizationHandlerContext context, ArticlePermissionRequirement requirement)
     {
-        var userId = context.User.Claims.FirstOrDefault(c => c.Type == CustomClaims.UserId);
-
-        if (userId is null || !Guid.TryParse(userId.Value, out var id))
+        var accountId = context.User.Claims.FirstOrDefault(c => c.Type == CustomClaims.AccountId);
+        
+        if (accountId is null || !Guid.TryParse(accountId.Value, out var id))
         {
             return;
         }
+
+        var httpContext = _httpContextAccessor.HttpContext;
+
+        if (httpContext is null)
+            return;
+
+        if (!httpContext.Request.RouteValues.TryGetValue("id", out var idValue)
+            || !Guid.TryParse(idValue?.ToString(), out var articleId))
+            return;
         
         using var scope = _serviceScopeFactory.CreateScope();
         var articleParticipantService = scope.ServiceProvider.GetRequiredService<IArticleParticipantService>();
-        var accountService = scope.ServiceProvider.GetRequiredService<IAccountService>();
-        
-        var account = await accountService.GetByUserId(id);
-        if (account is null)
-            return;
-
-        var permission = await articleParticipantService.GetArticlePermissionLevelByAccountId(account.Id);
+        var permission = await articleParticipantService.GetArticlePermissionLevelByIds(id, articleId);
 
         if (permission >= requirement.RequiredPermissionLevel)
         {

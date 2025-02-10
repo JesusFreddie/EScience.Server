@@ -76,13 +76,16 @@ public class ArticleParticipantService(
         }
     }
 
-    public Task<ArticlePermissionLevel> GetArticlePermissionLevelById(Guid id)
+    public Task<ArticlePermissionLevel> GetArticlePermissionLevelByIds(Guid accountId, Guid articleId)
     {
-        return articleParticipantRepository.GetArticlePermissionLevelById(id);
-    }
-
-    public Task<ArticlePermissionLevel> GetArticlePermissionLevelByAccountId(Guid id)
-    {
-        return articleParticipantRepository.GetArticlePermissionLevelByAccountId(id);
+        try
+        {
+            return articleParticipantRepository.GetArticlePermissionLevelByIds(accountId, articleId);
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, ex.Message);
+            throw new Exception("Ошибка получения персисий");
+        }
     }
 }

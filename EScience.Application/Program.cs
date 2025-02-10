@@ -20,6 +20,7 @@ services.AddApiAuthentication(services.BuildServiceProvider().GetRequiredService
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddControllers();
+builder.Services.AddHttpContextAccessor();
 
 builder.Services.AddScoped<IDbConnectionFactory, EScienceDbContext>(provider => 
     new EScienceDbContext(

@@ -1,3 +1,4 @@
+using EScience.Application.Configuration;
 using EScience.Application.Requests;
 using EScinece.Domain.Abstraction.Services;
 using EScinece.Domain.DTOs;
@@ -20,11 +21,9 @@ public class ArticleController(
     {
         try
         {
-            var userId = User.Claims.FirstOrDefault(claim => claim.Type == CustomClaims.UserId)!;
-            
-            Console.WriteLine(userId.Value);
-            
-            Guid.TryParse(userId.Value, out var id);
+            var accountId = User.Claims.FirstOrDefault(claim => claim.Type == CustomClaims.AccountId);
+            if (accountId is null || !Guid.TryParse(accountId.Value, out var id))
+                return Unauthorized();
             
             var article = await articleService.Create(
                 title: request.Title,
@@ -32,17 +31,27 @@ public class ArticleController(
                 accountId: id,
                 typeArticleId: request.ArticleTypeId);
             
-            if (!article.onSuccess)
-            {
-                return BadRequest(article.Error);
-            }
-
-            return article.Value;
+            return !article.onSuccess ? BadRequest(article.Error) : StatusCode(201, article.Value);
         }
         catch (Exception ex)
         {
             logger.LogError(ex, ex.Message);
-            return StatusCode(500, ex.Message);
+            return StatusCode(500, "Internal server error");
+        }
+    }
+
+    [HttpGet("{id}")]
+    [Authorize(Policy = AuthorizationPolicyConfiguration.ARTICLE_READER_POLICY)]
+    public async Task<ActionResult<ArticleDto?>> GetById(Guid id)
+    {
+        try
+        {
+            return await articleService.GetById(id);
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, ex.Message);
+            return StatusCode(500, "Internal server error");
         }
     }
 }

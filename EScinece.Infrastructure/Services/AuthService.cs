@@ -29,7 +29,12 @@ public class AuthService(
             if (userId is null)
                 return string.Empty;
 
-            var token = _jwtProvider.GenerateToken(userId.Value);
+            var account = await accountService.GetByUserId(userId.Value);
+
+            if (account is null)
+                return string.Empty;
+            
+            var token = _jwtProvider.GenerateToken(account.Id);
 
             return token;
         }

@@ -12,6 +12,5 @@ public interface IArticleParticipantService
     public Task<ArticleParticipantDto?> GetById(Guid id);
     public Task<bool> Delete(Guid id);
     
-    public Task<ArticlePermissionLevel> GetArticlePermissionLevelById(Guid id);
-    public Task<ArticlePermissionLevel> GetArticlePermissionLevelByAccountId(Guid id);
+    public Task<ArticlePermissionLevel> GetArticlePermissionLevelByIds(Guid accountId, Guid articleId);
 }

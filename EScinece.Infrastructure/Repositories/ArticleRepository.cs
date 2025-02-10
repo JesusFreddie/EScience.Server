@@ -50,8 +50,8 @@ public class ArticleRepository(
             using var connection = await connectionFactory.CreateConnectionAsync();
             await connection.ExecuteAsync(
                 """
-                INSERT INTO articles (id, title, description, is_private, creator_id, type_article_id)
-                VALUES (@Id, @Title, @Description, @IsPrivate, @CreatorId, @TypeArticleId)
+                INSERT INTO articles (id, title, description)
+                VALUES (@id, @title, @description)
                 """, entity);
 
             await cache.SetStringAsync("article:" + entity.Id, JsonSerializer.Serialize(entity),
