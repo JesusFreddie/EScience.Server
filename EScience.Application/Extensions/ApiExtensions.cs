@@ -1,6 +1,7 @@
 using System.Text;
 using EScience.Application.Configuration;
 using EScience.Application.Handlers;
+using EScience.Application.Policy;
 using EScinece.Domain.Entities;
 using EScinece.Infrastructure.Helpers;
 using Microsoft.AspNetCore.Authentication.JwtBearer;

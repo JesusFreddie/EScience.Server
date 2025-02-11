@@ -5,11 +5,11 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace EScience.Application.Handlers;
 
-public class ArticleAuthorizationHandler : AuthorizationHandler<ArticlePermissionRequirement>
+public class ArticlePolicyHandler : AuthorizationHandler<ArticlePermissionRequirement>
 {
     private readonly IServiceScopeFactory _serviceScopeFactory;
     private readonly IHttpContextAccessor _httpContextAccessor;
-    public ArticleAuthorizationHandler(IServiceScopeFactory serviceScopeFactory, IHttpContextAccessor httpContextAccessor)
+    public ArticlePolicyHandler(IServiceScopeFactory serviceScopeFactory, IHttpContextAccessor httpContextAccessor)
     {
         _serviceScopeFactory = serviceScopeFactory;
         _httpContextAccessor = httpContextAccessor;

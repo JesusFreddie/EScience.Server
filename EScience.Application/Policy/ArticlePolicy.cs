@@ -1,14 +1,15 @@
+using EScience.Application.Handlers;
 using EScinece.Domain.Entities;
 using Microsoft.AspNetCore.Authorization;
-using EScience.Application.Handlers;
-namespace EScience.Application.Configuration;
 
-public static class AuthorizationPolicyConfiguration
+namespace EScience.Application.Policy;
+
+public static class ArticlePolicy
 {
-    public const string ARTICLE_READER_POLICY = nameof(ARTICLE_READER_POLICY);
+    public const string ArticleReaderPolicy = nameof(ArticleReaderPolicy);
     public static AuthorizationOptions AddArticlePolicies(this AuthorizationOptions options)
     {
-        options.AddPolicy(ARTICLE_READER_POLICY, 
+        options.AddPolicy(ArticleReaderPolicy, 
             policy => policy.Requirements.Add(new ArticlePermissionRequirement()
             {
                 RequiredPermissionLevel = ArticlePermissionLevel.READER

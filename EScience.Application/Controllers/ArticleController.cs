@@ -1,4 +1,5 @@
 using EScience.Application.Configuration;
+using EScience.Application.Policy;
 using EScience.Application.Requests;
 using EScinece.Domain.Abstraction.Services;
 using EScinece.Domain.DTOs;
@@ -41,7 +42,7 @@ public class ArticleController(
     }
 
     [HttpGet("{id}")]
-    [Authorize(Policy = AuthorizationPolicyConfiguration.ARTICLE_READER_POLICY)]
+    [Authorize(Policy = ArticlePolicy.ArticleReaderPolicy)]
     public async Task<ActionResult<ArticleDto?>> GetById(Guid id)
     {
         try

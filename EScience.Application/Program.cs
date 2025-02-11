@@ -22,25 +22,13 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddControllers();
 builder.Services.AddHttpContextAccessor();
 
-builder.Services.AddScoped<IDbConnectionFactory, EScienceDbContext>(provider => 
-    new EScienceDbContext(
-        provider.GetRequiredService<ILogger<EScienceDbContext>>(),
-        configuration.GetConnectionString(nameof(EScienceDbContext))!));
-builder.Services.AddStackExchangeRedisCache(options => options.Configuration = "localhost:6380");
-Dapper.DefaultTypeMap.MatchNamesWithUnderscores = true;
-
-Log.Logger = new LoggerConfiguration()
-    .MinimumLevel.Debug()
-    .WriteTo.File("logs/escience.log", rollingInterval: RollingInterval.Day)
-    .CreateLogger();
-
-builder.Services.AddScoped<IAuthorizationHandler, ArticleAuthorizationHandler>();
+builder.Services.AddDbNpgsql(configuration);
+builder.Services.AddRedis(configuration);
 
 builder.Services.AddRepositories();
 builder.Services.AddServices();
-
-builder.Services.AddScoped<IPasswordHasher, PasswordHasher>();
-builder.Services.AddScoped<IJwtProvider, JwtProvider>();
+builder.Services.AddHelpers();
+builder.Services.AddPolicies();
 
 var app = builder.Build();
 
