@@ -4,7 +4,7 @@ using EScinece.Domain.Entities;
 
 namespace EScience.Application.Requests;
 
-public record struct RegisterRequestDto(
+public record RegisterRequestDto(
     [Required(ErrorMessage = AuthErrorMessage.EmailIsRequired)]
     [EmailAddress(ErrorMessage = AuthErrorMessage.InvalidEmail)]
     string Email, 

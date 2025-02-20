@@ -2,7 +2,6 @@ using EScience.Application.Requests;
 using EScinece.Domain.Abstraction.ErrorMessages;
 using EScinece.Domain.Abstraction.Services;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 
 namespace EScience.Application.Controllers;

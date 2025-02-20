@@ -19,7 +19,7 @@ public class ArticleService(
         string title, 
         string description, 
         Guid accountId, 
-        Guid typeArticleId)
+        Guid? typeArticleId)
     {
         try
         {
@@ -57,7 +57,8 @@ public class ArticleService(
                     Id: article.Value.Id,
                     Title: article.Value.Title,
                     Description: article.Value.Description,
-                    TypeArticleId: typeArticleId
+                    TypeArticleId: typeArticleId,
+                    IsPrivate: article.Value.IsPrivate
                 );
             }
             catch
@@ -96,7 +97,8 @@ public class ArticleService(
                 Id: article.Id,
                 Title: article.Title,
                 Description: article.Description,
-                TypeArticleId: article.TypeArticleId);
+                TypeArticleId: article.TypeArticleId,
+                IsPrivate: article.IsPrivate);
         }
         catch (Exception ex)
         {

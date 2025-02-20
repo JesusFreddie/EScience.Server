@@ -18,12 +18,12 @@ public class Article: BaseEntity
     public ICollection<ArticleParticipant> ArticleParticipants { get; set; } = new List<ArticleParticipant>();
     
     public ICollection<ArticleBranch> ArticleBranches { get; set; } = new List<ArticleBranch>();
-    public Guid TypeArticleId { get; set; }
+    public Guid? TypeArticleId { get; set; }
     public ArticleType ArticleType { get; set; }
 
     public Article() { }
     
-    private Article(string title, string description, Guid typeArticleId)
+    private Article(string title, string description, Guid? typeArticleId)
     {
         Id = Guid.NewGuid();
         Title = title;
@@ -31,7 +31,7 @@ public class Article: BaseEntity
         TypeArticleId = typeArticleId;
     }
 
-    public static Result<Article, string> Create(string title, string description, Guid typeArticleId)
+    public static Result<Article, string> Create(string title, string description, Guid? typeArticleId)
     {
         if (string.IsNullOrWhiteSpace(title) || string.IsNullOrWhiteSpace(description))
             return ArticleErrorMessage.TitleAndDescriptionCannotBeEmpty;

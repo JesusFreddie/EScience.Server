@@ -1,4 +1,3 @@
-using EScience.Application.Configuration;
 using EScience.Application.Policy;
 using EScience.Application.Requests;
 using EScinece.Domain.Abstraction.Services;
@@ -14,6 +13,7 @@ namespace EScience.Application.Controllers;
 [Route("articles")]
 public class ArticleController(
     IArticleService articleService,
+    IArticleParticipantService articleParticipantService,
     ILogger<ArticleController> logger) : ControllerBase
 {
     
@@ -41,13 +41,29 @@ public class ArticleController(
         }
     }
 
-    [HttpGet("{id}")]
+    [HttpGet("{articleId}")]
     [Authorize(Policy = ArticlePolicy.ArticleReaderPolicy)]
-    public async Task<ActionResult<ArticleDto?>> GetById(Guid id)
+    public async Task<ActionResult<ArticleDto?>> GetById(Guid articleId)
     {
         try
         {
-            return await articleService.GetById(id);
+            return await articleService.GetById(articleId);
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, ex.Message);
+            return StatusCode(500, "Internal server error");
+        }
+    }
+
+    [HttpGet("{articleId}")]
+    [Authorize(Policy = ArticlePolicy.ArticleAuthorPolicy)]
+    public async Task<IActionResult> SetParticipantForArticle(Guid articleId, [FromBody] SetParticipantRequest request)
+    {
+        try
+        {
+            await articleParticipantService.Create(articleId, request.AccountId, request.PermissionLevel);
+            return StatusCode(201, articleId);
         }
         catch (Exception ex)
         {

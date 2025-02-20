@@ -1,8 +1,6 @@
 using EScinece.Domain.Abstraction.Services;
 using EScinece.Domain.DTOs;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Serilog;
 
 namespace EScience.Application.Controllers;
 

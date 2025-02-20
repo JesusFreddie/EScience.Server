@@ -9,7 +9,7 @@ public interface IArticleService
         string title, 
         string description, 
         Guid accountId, 
-        Guid typeArticleId);
+        Guid? typeArticleId);
     public Task<ICollection<ArticleDto>> GetAllByArticleParticipantId(Guid id);
     public Task<ICollection<ArticleDto>> GetAllByArticleParticipantIdInCreator(Guid id);
     public Task<ArticleDto?> GetById(Guid id);

@@ -1,14 +1,8 @@
 using EScience.Application.Configuration;
 using EScience.Application.Extensions;
-using EScience.Application.Handlers;
-using EScinece.Domain.Abstraction.Helpers;
-using EScinece.Infrastructure.Data;
 using EScinece.Infrastructure.Helpers;
-using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.CookiePolicy;
 using Microsoft.Extensions.Options;
-using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
 var services = builder.Services;

@@ -29,14 +29,24 @@ public class ArticlePolicyHandler : AuthorizationHandler<ArticlePermissionRequir
         if (httpContext is null)
             return;
 
-        if (!httpContext.Request.RouteValues.TryGetValue("id", out var idValue)
+        if (!httpContext.Request.RouteValues.TryGetValue("articleId", out var idValue)
             || !Guid.TryParse(idValue?.ToString(), out var articleId))
             return;
         
         using var scope = _serviceScopeFactory.CreateScope();
         var articleParticipantService = scope.ServiceProvider.GetRequiredService<IArticleParticipantService>();
+        var articleService = scope.ServiceProvider.GetRequiredService<IArticleService>();
+
+        var article = await articleService.GetById(articleId);
+
+        if (article is null)
+            return;
+        
         var permission = await articleParticipantService.GetArticlePermissionLevelByIds(id, articleId);
 
+        if (!article.IsPrivate && requirement.RequiredPermissionLevel == ArticlePermissionLevel.READER)
+            context.Succeed(requirement);
+        
         if (permission >= requirement.RequiredPermissionLevel)
         {
             context.Succeed(requirement);
@@ -44,7 +54,7 @@ public class ArticlePolicyHandler : AuthorizationHandler<ArticlePermissionRequir
     }
 }
 
-public class ArticlePermissionRequirement : IAuthorizationRequirement
+public class ArticlePermissionRequirement(ArticlePermissionLevel permissionLevel) : IAuthorizationRequirement
 {
-    public ArticlePermissionLevel  RequiredPermissionLevel { get; set; }
+    public ArticlePermissionLevel RequiredPermissionLevel { get; set; } = permissionLevel;
 }
