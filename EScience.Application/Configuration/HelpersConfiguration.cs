@@ -8,7 +8,7 @@ public static class HelpersConfiguration
     public static IServiceCollection AddHelpers(this IServiceCollection services)
     {
         services.AddScoped<IPasswordHasher, PasswordHasher>();
-        services.AddScoped<IJwtProvider, JwtProvider>();
+        services.AddScoped<ITokenProvider, TokenProvider>();
         return services;
     }
 }
