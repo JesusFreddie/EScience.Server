@@ -38,25 +38,31 @@ public class AuthController(IAuthService authService): ControllerBase
     [HttpPost]
     public async Task<IActionResult> Login([FromBody] LoginRequestDto req)
     {
-        string token;
         try
         {
-            token = await authService.Login(
+            var tokens = await authService.Login(
                 email: req.Email,
                 password: req.Password
             );
+            if (tokens is null)
+                return BadRequest(AuthErrorMessage.InvalidDataLogin);
+
+            HttpContext.Response.Cookies.Append("access-token", tokens.AccessToken);
+            HttpContext.Response.Cookies.Append("refresh-token", tokens.RefreshToken);
+        
+            return Ok();
         }
         catch (Exception ex)
         {
+            
             return StatusCode(500, "Internal Server Error");
         }
+    }
 
-        if (string.IsNullOrEmpty(token))
-            return BadRequest(AuthErrorMessage.InvalidDataLogin);
-
-        HttpContext.Response.Cookies.Append("access-token", token);
-        
-        return Ok();
+    [Route("refresh")]
+    public async Task<IActionResult> RefreshToken()
+    {
+        throw new NotSupportedException();
     }
 
     [Route("logout")]

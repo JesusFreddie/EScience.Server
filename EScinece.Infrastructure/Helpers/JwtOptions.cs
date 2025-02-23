@@ -8,5 +8,6 @@ namespace EScinece.Infrastructure.Helpers;
 public class JwtOptions
 {
     public string SecretKey { get; set; } = string.Empty;
-    public int ExpitesHours { get; set; } = 0;
+    public int ExpiresHours { get; set; } = 0;
+    public int ExpiresDays { get; set; } = 0;
 }

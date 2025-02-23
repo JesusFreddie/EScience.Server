@@ -13,28 +13,34 @@ public class AuthService(
     IUserService userService, 
     IAccountService accountService, 
     IPasswordHasher passwordHasher, 
-    IJwtProvider jwtProvider,
+    ITokenProvider tokenProvider,
     ILogger<IAuthService> logger) : IAuthService
 {
     private readonly IUserService _userService = userService;
     private readonly IAccountService _accountService = accountService;
-    private readonly IJwtProvider _jwtProvider = jwtProvider;
+    private readonly ITokenProvider _tokenProvider = tokenProvider;
 
-    public async Task<string> Login(string email, string password)
+    public async Task<TokensDto?> Login(string email, string password)
     {
         try
         {
             var userId = await _userService.VerifyPass(email, password);
 
             if (userId is null)
-                return string.Empty;
+                return null;
 
             var account = await accountService.GetByUserId(userId.Value);
 
             if (account is null)
-                return string.Empty;
+            {
+                logger.LogError("Пользователь без аккаунта", [
+                    email,
+                    userId
+                ]);
+                return null;
+            }
             
-            var token = _jwtProvider.GenerateToken(account.Id);
+            var token = await _tokenProvider.GenerateToken(account.Id);
 
             return token;
         }
@@ -83,6 +89,15 @@ public class AuthService(
             logger.LogError(ex.Message);
             throw new Exception("Произошла серверная ошибка регитрации");
         }
+    }
+
+    public async Task<TokensDto?> RefreshToken(string refreshToken)
+    {
+        var accountId = await _tokenProvider.GetAccountIdByRefreshToken(refreshToken);
+        if (accountId is null)
+            return null;
+        
+        
     }
 
     private string ValidateRegisterData(string email, string password, string name)

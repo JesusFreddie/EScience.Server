@@ -11,6 +11,7 @@ public static class RepositoryConfiguration
         services.AddScoped<IAccountRepository, AccountRepository>();
         services.AddScoped<IArticleRepository, ArticleRepository>();
         services.AddScoped<IArticleParticipantRepository, ArticleParticipantRepository>();
+        services.AddScoped<ITokenRepository, TokenRepository>();
         return services;
     }
 }
