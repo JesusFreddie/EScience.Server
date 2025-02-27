@@ -14,9 +14,9 @@ namespace EScience.Application.Controllers;
 public class ArticleController(
     IArticleService articleService,
     IArticleParticipantService articleParticipantService,
-    ILogger<ArticleController> logger) : ControllerBase
+    ILogger<ArticleController> logger
+    ) : ControllerBase
 {
-    
     [HttpPost("create")]
     public async Task<ActionResult<ArticleDto>> Create([FromBody] CreateArticleRequest request)
     {
@@ -42,7 +42,7 @@ public class ArticleController(
     }
 
     [HttpGet("{articleId}")]
-    [Authorize(Policy = ArticlePolicy.ArticleReaderPolicy)]
+    // [Authorize(Policy = ArticlePolicy.ArticleReaderPolicy)]
     public async Task<ActionResult<ArticleDto?>> GetById(Guid articleId)
     {
         try
@@ -56,7 +56,7 @@ public class ArticleController(
         }
     }
 
-    [HttpGet("{articleId}")]
+    [HttpPost("set_participant_for_article/{articleId}")]
     [Authorize(Policy = ArticlePolicy.ArticleAuthorPolicy)]
     public async Task<IActionResult> SetParticipantForArticle(Guid articleId, [FromBody] SetParticipantRequest request)
     {
