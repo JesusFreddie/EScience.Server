@@ -52,20 +52,22 @@ public class ArticleService(
                     await articleRepository.Delete(article.Value.Id);
                     return creator.Error;
                 }
-
-                return new ArticleDto(
-                    Id: article.Value.Id,
-                    Title: article.Value.Title,
-                    Description: article.Value.Description,
-                    TypeArticleId: typeArticleId,
-                    IsPrivate: article.Value.IsPrivate
-                );
             }
             catch
             {
                 await articleRepository.Delete(article.Value.Id);
                 throw;
             }
+            
+            
+            
+            return new ArticleDto(
+                Id: article.Value.Id,
+                Title: article.Value.Title,
+                Description: article.Value.Description,
+                TypeArticleId: typeArticleId,
+                IsPrivate: article.Value.IsPrivate
+            );
         }
         catch (Exception e)
         {

@@ -33,6 +33,21 @@ public class UserRepository(
             return Task.CompletedTask;
         });
 
+    public async Task Update(User entity) =>
+        await ExecuteWithExceptionHandlingAsync(async () =>
+        {
+            var connection = await connectionFactory.CreateConnectionAsync();
+            await connection.ExecuteAsync(
+                """
+                UPDATE users
+                SET email = @email,
+                    updated_at = NOW()
+                WHERE id = @id
+                """, entity);
+            
+            return Task.CompletedTask;
+        });
+
     public async Task<User?> GetByEmail(string email) =>
         await ExecuteWithExceptionHandlingAsync(async () =>
         {

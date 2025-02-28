@@ -41,6 +41,20 @@ public class ArticleParticipantRepository(
             return Task.CompletedTask;
         });
 
+    public Task Update(ArticleParticipant entity) =>
+        ExecuteWithExceptionHandlingAsync(async () =>
+        {
+            var connection = await connectionFactory.CreateConnectionAsync();
+            await connection.ExecuteAsync(
+                """
+                UPDATE article_participants
+                SET is_accepted = @is_accepted, 
+                    updated_at = NOW()
+                WHERE id = @id
+                """, entity);
+            return Task.CompletedTask;
+        });
+
     public async Task<ArticleParticipant?> GetById(Guid id) =>
         await ExecuteWithExceptionHandlingAsync(async () =>
         {

@@ -34,7 +34,14 @@ public class ArticleRepository(
         {
             using var connection = await connectionFactory.CreateConnectionAsync();
             return await connection.QueryAsync<Article>(
-                "SELECT * FROM articles WHERE creator_id = @id AND deleted_at IS NULL", new { id });
+                """
+                    SELECT articles.*
+                    FROM articles
+                    JOIN public.article_participants ap on articles.id = ap.article_id
+                    WHERE ap.account_id = @id
+                    AND ap.permission_level = @permission_level
+                    AND articles.deleted_at IS NULL
+                    """, new { id, permission_level = ArticlePermissionLevel.AUTHOR });
         });
 
     public async Task<IEnumerable<Article>> GetAll() =>
@@ -60,6 +67,23 @@ public class ArticleRepository(
                     AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(1)
                 });
 
+            return Task.CompletedTask;
+        });
+
+    public async Task Update(Article entity) =>
+        await ExecuteWithExceptionHandlingAsync(async () =>
+        {
+            var connection = await connectionFactory.CreateConnectionAsync();
+            await connection.ExecuteAsync(
+                """
+                UPDATE articles
+                SET title = @title, 
+                    description = @description, 
+                    is_private = @is_private, 
+                    updated_at = NOW()
+                WHERE id = @id
+                """, entity);
+            
             return Task.CompletedTask;
         });
 

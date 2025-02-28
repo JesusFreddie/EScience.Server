@@ -42,7 +42,7 @@ public class ArticleController(
     }
 
     [HttpGet("{articleId}")]
-    // [Authorize(Policy = ArticlePolicy.ArticleReaderPolicy)]
+    [Authorize(Policy = ArticlePolicy.ArticleReaderPolicy)]
     public async Task<ActionResult<ArticleDto?>> GetById(Guid articleId)
     {
         try

@@ -9,11 +9,9 @@ public class ArticleBranch: BaseEntity
 
     public string Name { get; set; }
     
-    [ForeignKey("Article")]
     public Guid ArticleId { get; set; }
     public Article Article { get; set; }
     
-    [ForeignKey("ArticleParticipant")]
     public Guid CreatorId { get; set; }
     public ArticleParticipant Creator { get; set; }
     

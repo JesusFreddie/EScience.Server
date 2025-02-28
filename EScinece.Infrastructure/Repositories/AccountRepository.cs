@@ -42,27 +42,19 @@ public class AccountRepository(
             return Task.CompletedTask;
         });
 
-    public async Task<Guid?> Update(Guid id, string? name) =>
-        await ExecuteWithExceptionHandlingAsync<Guid?>(async () =>
+    public async Task Update(Account entity) =>
+        await ExecuteWithExceptionHandlingAsync(async () =>
         {
             using var connection = await connectionFactory.CreateConnectionAsync();
+            await connection.ExecuteAsync(
+                """
+                UPDATE accounts 
+                SET name = @name, 
+                    updated_at = NOW()
+                WHERE id = @id AND deleted_at IS NULL
+                """, entity);
 
-            var updateSet = new List<string>();
-            var parameters = new DynamicParameters();
-
-            if (!string.IsNullOrEmpty(name))
-            {
-                updateSet.Add("name = @name");
-                parameters.Add("name", name);
-            }
-
-            if (updateSet.Count == 0)
-                return null;
-
-            var sql = $"UPDATE accounts SET {string.Join(", ", updateSet)}  WHERE id = @id AND deleted_at IS NULL";
-            var result = await connection.ExecuteAsync(sql, new { id, name });
-
-            return result > 0 ? id : null;
+            return Task.CompletedTask;
         });
 
     public async Task<bool> Delete(Guid id) =>
