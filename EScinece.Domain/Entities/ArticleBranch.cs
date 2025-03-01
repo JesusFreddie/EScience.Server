@@ -1,4 +1,3 @@
-using System.ComponentModel.DataAnnotations.Schema;
 using EScinece.Domain.Abstraction;
 using EScinece.Domain.Abstraction.ErrorMessages;
 
@@ -19,18 +18,18 @@ public class ArticleBranch: BaseEntity
 
     public ArticleBranch() {}
     
-    private ArticleBranch(string name, Article article, ArticleParticipant creator)
+    private ArticleBranch(string name, Guid articleId, Guid creatorId)
     {
         Name = name;
-        Article = article;
-        Creator = creator;
+        ArticleId = articleId;
+        CreatorId = creatorId;
     }
 
-    public static Result<ArticleBranch?, string> Create(string name, Article article, ArticleParticipant creator)
+    public static Result<ArticleBranch, string> Create(string name, Guid articleId, Guid creatorId)
     {
         if (string.IsNullOrEmpty(name))
             return ArticleBranchErrorMessage.NameIsRequired;
 
-        return new ArticleBranch(name, article, creator);
+        return new ArticleBranch(name, articleId, creatorId);
     }
 }

@@ -8,4 +8,5 @@ public interface IAccountService
     public Task<AccountDto?> GetById(Guid id);
     public Task<AccountDto?> GetByEmail(string email);
     public Task<AccountDto?> GetByUserId(Guid id);
+    public Task<ProfileDto?> GetProfile(Guid accountId);
 }

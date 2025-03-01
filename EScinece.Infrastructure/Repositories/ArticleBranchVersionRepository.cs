@@ -1,90 +1,55 @@
-using System.Text.Json;
 using Dapper;
 using EScinece.Domain.Abstraction.Repositories;
 using EScinece.Domain.Entities;
 using EScinece.Infrastructure.Data;
-using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Logging;
 using Npgsql;
 using StackExchange.Redis;
 
 namespace EScinece.Infrastructure.Repositories;
 
-public class ArticleRepository(
-    IDbConnectionFactory connectionFactory, 
-    IDistributedCache cache,
-    ILogger<ArticleRepository> logger
-    ) : IArticleRepository
+public class ArticleBranchVersionRepository(
+    ILogger<ArticleBranchVersionRepository> logger,
+    IDbConnectionFactory connectionFactory
+    ) : IArticleBranchVersionRepository
 {
-    public async Task<Article?> GetById(Guid id) =>
+    public async Task<ArticleBranchVersion?> GetById(Guid id) =>
         await ExecuteWithExceptionHandlingAsync(async () =>
         {
             using var connection = await connectionFactory.CreateConnectionAsync();
-            return await connection.QueryFirstOrDefaultAsync<Article>(
-                "SELECT * FROM articles WHERE id = @id AND deleted_at IS NULL", new { id });
+            return await connection.QueryFirstOrDefaultAsync<ArticleBranchVersion>(
+                "SELECT * FROM article_branch_versions WHERE id = @id AND deleted_at IS NULL", new { id });
         });
 
-    public async Task<IEnumerable<Article>> GetAllByArticleParticipantId(Guid id)
-    {
-        throw new NotImplementedException();
-    }
-
-    public async Task<IEnumerable<Article>> GetAllByArticleParticipantIdInCreator(Guid id) =>
+    public async Task<IEnumerable<ArticleBranchVersion>> GetAll() =>
         await ExecuteWithExceptionHandlingAsync(async () =>
         {
             using var connection = await connectionFactory.CreateConnectionAsync();
-            return await connection.QueryAsync<Article>(
+            return await connection.QueryAsync<ArticleBranchVersion>("SELECT * FROM article_branch_versions WHERE deleted_at IS NULL");
+        });
+
+    public async Task Create(ArticleBranchVersion entity) =>
+        await ExecuteWithExceptionHandlingAsync(async () =>
+        {
+            using var connection = await connectionFactory.CreateConnectionAsync();
+            return await connection.ExecuteAsync(
                 """
-                    SELECT articles.*
-                    FROM articles
-                    JOIN public.article_participants ap on articles.id = ap.article_id
-                    WHERE ap.account_id = @id
-                    AND ap.permission_level = @permission_level
-                    AND articles.deleted_at IS NULL
-                    """, new { id, permission_level = ArticlePermissionLevel.AUTHOR });
-        });
-
-    public async Task<IEnumerable<Article>> GetAll() =>
-        await ExecuteWithExceptionHandlingAsync(async () =>
-        {
-            using var connection = await connectionFactory.CreateConnectionAsync();
-            return await connection.QueryAsync<Article>("SELECT * FROM articles WHERE deleted_at IS NULL");
-        });
-
-    public async Task Create(Article entity) =>
-        await ExecuteWithExceptionHandlingAsync(async () =>
-        {
-            using var connection = await connectionFactory.CreateConnectionAsync();
-            await connection.ExecuteAsync(
-                """
-                INSERT INTO articles (id, title, description)
-                VALUES (@id, @title, @description)
+                INSERT INTO article_branch_versions (id, creator_id, article_branch, created_at, text)
+                VALUES (@id, @creator_id, @article_branch, @created_at, @text)
                 """, entity);
-
-            await cache.SetStringAsync("article:" + entity.Id, JsonSerializer.Serialize(entity),
-                new DistributedCacheEntryOptions
-                {
-                    AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(1)
-                });
-
-            return Task.CompletedTask;
         });
 
-    public async Task Update(Article entity) =>
+    public async Task Update(ArticleBranchVersion entity) =>
         await ExecuteWithExceptionHandlingAsync(async () =>
         {
             using var connection = await connectionFactory.CreateConnectionAsync();
-            await connection.ExecuteAsync(
+            return await connection.ExecuteAsync(
                 """
-                UPDATE articles
-                SET title = @title, 
-                    description = @description, 
-                    is_private = @is_private, 
+                UPDATE article_branch_versions
+                SET text = @text,
                     updated_at = NOW()
                 WHERE id = @id
                 """, entity);
-            
-            return Task.CompletedTask;
         });
 
     public async Task<bool> Delete(Guid id) =>
@@ -92,7 +57,9 @@ public class ArticleRepository(
         {
             using var connection = await connectionFactory.CreateConnectionAsync();
             var result = await connection.ExecuteAsync(
-                "DELETE FROM articles WHERE id = @id", new { id });
+                """
+                DELETE FROM article_branch_versions WHERE id = @id
+                """, new { id });
             return result > 0;
         });
 
@@ -101,15 +68,14 @@ public class ArticleRepository(
         {
             using var connection = await connectionFactory.CreateConnectionAsync();
             var result = await connection.ExecuteAsync(
-                "UPDATE articles SET deleted_at = NOW() WHERE id = @id", new { id });
+                """
+                UPDATE article_branch_versions
+                SET deleted_at = NOW()
+                WHERE id = @id
+                """, new { id });
             return result > 0;
         });
-
-    public async Task<List<Article>> GetByPage(int pageNumber, int pageSize)
-    {
-        throw new NotImplementedException();
-    }
-
+    
     private async Task<T> ExecuteWithExceptionHandlingAsync<T>(Func<Task<T>> func)
     {
         try

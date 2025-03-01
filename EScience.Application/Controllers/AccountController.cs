@@ -14,7 +14,7 @@ public class AccountController(
 {
     [HttpGet]
     [Route("session")]
-    public async Task<ActionResult<AccountDto>> GetAccountSession()
+    public async Task<ActionResult<ProfileDto>> GetProfileSession()
     {
         try
         {
@@ -22,7 +22,7 @@ public class AccountController(
             if (accountId == null || !Guid.TryParse(accountId.Value, out var id))
                 return Unauthorized();
             
-            var account = await accountService.GetById(id);
+            var account = await accountService.GetProfile(id);
             if (account is null)
                 return Unauthorized();
 
@@ -34,21 +34,22 @@ public class AccountController(
             return StatusCode(500, "Internal server error");
         }
     }
-    
+
     [HttpGet]
-    public async Task<ActionResult<AccountDto>> GetAccount([FromQuery(Name = "id")] Guid id)
+    [Route("profile")]
+    public async Task<ActionResult<ProfileDto>> GetProfile([FromQuery(Name = "id")] Guid id)
     {
         try
         {
-            var account = await accountService.GetById(id);
-            
+            var account = await accountService.GetProfile(id);
             if (account is null)
                 return NotFound();
-            return account;
+            return Ok(account);
         }
         catch (Exception ex)
         {
-            return StatusCode(500, ex.Message);
+            logger.LogError(ex, ex.Message);
+            return StatusCode(500, "Internal server error");
         }
     }
 }

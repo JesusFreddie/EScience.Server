@@ -14,9 +14,6 @@ public class AccountService(
     ILogger<AccountService> logger
     ) : IAccountService
 {
-    private readonly IAccountRepository _accountRepository = accountRepository;
-    private readonly IUserService _userService = userService;
-
     public async Task<Result<AccountDto, string>> Create(Guid userId, string name)
     {
         if (string.IsNullOrWhiteSpace(name))
@@ -33,7 +30,7 @@ public class AccountService(
 
         try
         {
-            await _accountRepository.Create(account.Value);
+            await accountRepository.Create(account.Value);
         }
         catch (Exception ex)
         {
@@ -54,7 +51,7 @@ public class AccountService(
         Account? account;
         try
         {
-            account = await _accountRepository.GetById(id);
+            account = await accountRepository.GetById(id);
         }
         catch
         {
@@ -76,11 +73,11 @@ public class AccountService(
     {
         try
         {
-            var user = await _userService.GetByEmail(email);
+            var user = await userService.GetByEmail(email);
             if (user is null)
                 return null;
 
-            var account = await _accountRepository.GetByUserId(user.Id);
+            var account = await accountRepository.GetByUserId(user.Id);
 
             if (account is null)
                 return null;
@@ -103,7 +100,7 @@ public class AccountService(
     {
         try
         {
-            var account = await _accountRepository.GetByUserId(id);
+            var account = await accountRepository.GetByUserId(id);
             if (account is null)
                 return null;
             
@@ -116,6 +113,32 @@ public class AccountService(
         catch
         {
             throw new Exception(AccountErrorMessage.ServerErrorGetAccount);
+        }
+    }
+
+    public async Task<ProfileDto?> GetProfile(Guid accountId)
+    {
+        try
+        {
+            var account = await accountRepository.GetById(accountId);
+            if (account is null)
+                return null;
+            
+            var user = await userService.GetById(account.UserId);
+
+            if (user is null)
+                return null;
+
+            return new ProfileDto(
+                Id: account.Id,
+                Email: user.Email,
+                Name: account.Name
+                );
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, ex.Message);
+            throw new Exception("Server error getting profile");
         }
     }
 }

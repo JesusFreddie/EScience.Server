@@ -1,4 +1,3 @@
-using System.Data;
 using Dapper;
 using EScinece.Domain.Abstraction.Repositories;
 using EScinece.Domain.Entities;
@@ -9,59 +8,58 @@ using StackExchange.Redis;
 
 namespace EScinece.Infrastructure.Repositories;
 
-public class UserRepository(
-    IDbConnectionFactory connectionFactory, 
-    ILogger<UserRepository> logger
-    ) : IUserRepository
+public class ArticleBranchRepository(
+    ILogger<ArticleBranchRepository> logger,
+    IDbConnectionFactory connectionFactory
+    ) : IArticleBranchRepository
 {
-    public async Task<IEnumerable<User>> GetAll() =>
+    public async Task<ArticleBranch?> GetById(Guid id) =>
         await ExecuteWithExceptionHandlingAsync(async () =>
         {
             using var connection = await connectionFactory.CreateConnectionAsync();
-            return await connection.QueryAsync<User>("SELECT * FROM users WHERE deleted_at IS NULL");
+            return await connection.QueryFirstOrDefaultAsync<ArticleBranch>(
+                "SELECT * FROM article_branches WHERE id = @id AND deleted_at is not null", new { id });
         });
 
-    public async Task Create(User user) =>
+    public async Task<IEnumerable<ArticleBranch>> GetAll() =>
         await ExecuteWithExceptionHandlingAsync(async () =>
         {
             using var connection = await connectionFactory.CreateConnectionAsync();
-            await connection.ExecuteAsync(
-                """
-                INSERT INTO users (id, email, hashed_password)
-                VALUES (@Id, @Email, @HashedPassword)
-                """, user);
-            return Task.CompletedTask;
+            return await connection.QueryAsync<ArticleBranch>(
+                "SELECT * FROM article_branches WHERE deleted_at is not null");
         });
 
-    public async Task Update(User entity) =>
+    public async Task Create(ArticleBranch entity) =>
         await ExecuteWithExceptionHandlingAsync(async () =>
         {
             using var connection = await connectionFactory.CreateConnectionAsync();
-            await connection.ExecuteAsync(
+            return await connection.ExecuteAsync(
                 """
-                UPDATE users
-                SET email = @email,
+                INSERT INTO article_branches (id, name, creator_id, article_id)
+                VALUES (@id, @name, @creator_id, @article_id)
+                """, entity);
+        });
+
+    public async Task Update(ArticleBranch entity) =>
+        await ExecuteWithExceptionHandlingAsync(async () =>
+        {
+            using var connection = await connectionFactory.CreateConnectionAsync();
+            return await connection.ExecuteAsync(
+                """
+                UPDATE article_branches
+                SET name = @name,
                     updated_at = NOW()
                 WHERE id = @id
+                AND deleted_at is not null
                 """, entity);
-            
-            return Task.CompletedTask;
         });
 
-    public async Task<User?> GetByEmail(string email) =>
+    public async Task<bool> Delete(Guid id)=>
         await ExecuteWithExceptionHandlingAsync(async () =>
         {
             using var connection = await connectionFactory.CreateConnectionAsync();
-            var user = await connection.QueryFirstOrDefaultAsync<User>(
-                "SELECT * FROM users WHERE email = @email AND deleted_at IS NULL", new { email });
-            return user;
-        });
-
-    public async Task<bool> Delete(Guid id) => 
-        await ExecuteWithExceptionHandlingAsync(async () =>
-        {
-            using var connection = await connectionFactory.CreateConnectionAsync();
-            var result = await connection.ExecuteAsync("DELETE FROM users WHERE id = @id", new { id });
+            var result =  await connection.ExecuteAsync(
+                "DELETE FROM article_branches WHERE id = @id", new { id });
             return result > 0;
         });
 
@@ -69,19 +67,16 @@ public class UserRepository(
         await ExecuteWithExceptionHandlingAsync(async () =>
         {
             using var connection = await connectionFactory.CreateConnectionAsync();
-            var result = await connection.ExecuteAsync(
-                "UPDATE users SET deleted_at = NOW() WHERE id = @id", new { id });
+            var result =  await connection.ExecuteAsync(
+                """
+                UPDATE article_branches
+                SET deleted_at = NOW()
+                WHERE id = @id
+                AND deleted_at is not null
+                """, new { id });
             return result > 0;
         });
-
-    public async Task<User?> GetById(Guid id) =>
-        await ExecuteWithExceptionHandlingAsync(async () =>
-        {
-            using var connection = await connectionFactory.CreateConnectionAsync();
-            return await connection.QueryFirstOrDefaultAsync<User>(
-                "SELECT * FROM users WHERE id = @id AND deleted_at IS NULL", new { id });
-        });
-
+    
     private async Task<T> ExecuteWithExceptionHandlingAsync<T>(Func<Task<T>> func)
     {
         try
