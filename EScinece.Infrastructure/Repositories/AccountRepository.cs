@@ -82,6 +82,15 @@ public class AccountRepository(
                 "SELECT * FROM accounts WHERE user_id = @userId AND deleted_at IS NULL", new { userId = id });
         });
 
+    public async Task<Account?> GetByName(string name) =>
+        await ExecuteWithExceptionHandlingAsync(async () =>
+        {
+            using var connection = await connectionFactory.CreateConnectionAsync();
+            return await connection.QueryFirstOrDefaultAsync<Account>(
+                "SELECT * FROM accounts WHERE name = @name AND deleted_at IS NULL", new { name });
+        });
+
+
     public async Task<Account?> GetById(Guid id) =>
         await ExecuteWithExceptionHandlingAsync(async () =>
         {

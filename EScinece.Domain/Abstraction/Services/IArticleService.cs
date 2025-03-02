@@ -13,4 +13,5 @@ public interface IArticleService
     public Task<ICollection<ArticleDto>> GetAllByArticleParticipantId(Guid id);
     public Task<ICollection<ArticleDto>> GetAllByArticleParticipantIdInCreator(Guid id);
     public Task<ArticleDto?> GetById(Guid id);
+    public Task<ArticleDto?> GetByTitle(string title, Guid accountId);
 }

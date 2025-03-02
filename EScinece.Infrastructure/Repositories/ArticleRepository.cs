@@ -44,6 +44,19 @@ public class ArticleRepository(
                     """, new { id, permission_level = ArticlePermissionLevel.AUTHOR });
         });
 
+    public async Task<Article?> GetByTitle(string title, Guid accountId) =>
+        await ExecuteWithExceptionHandlingAsync(async () =>
+        {
+            using var connection = await connectionFactory.CreateConnectionAsync();
+            return await connection.QueryFirstOrDefaultAsync<Article>(
+                """
+                SELECT * 
+                FROM articles
+                WHERE title = @title
+                AND account_id = @accountId
+                """, new { title, accountId });
+        });
+
     public async Task<IEnumerable<Article>> GetAll() =>
         await ExecuteWithExceptionHandlingAsync(async () =>
         {
@@ -57,8 +70,8 @@ public class ArticleRepository(
             using var connection = await connectionFactory.CreateConnectionAsync();
             await connection.ExecuteAsync(
                 """
-                INSERT INTO articles (id, title, description)
-                VALUES (@id, @title, @description)
+                INSERT INTO articles (id, title, description, account_id)
+                VALUES (@id, @title, @description, @accountId)
                 """, entity);
 
             await cache.SetStringAsync("article:" + entity.Id, JsonSerializer.Serialize(entity),

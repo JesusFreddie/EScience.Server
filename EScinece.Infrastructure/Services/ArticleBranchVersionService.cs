@@ -10,8 +10,6 @@ namespace EScinece.Infrastructure.Services;
 
 public class ArticleBranchVersionService(
     IArticleBranchVersionRepository articleBranchVersionRepository,
-    IArticleBranchService articleBranchService,
-    IArticleParticipantService articleParticipantService,
     ILogger<ArticleBranchVersionService> logger
     ) : IArticleBranchVersionService
 {
@@ -19,13 +17,6 @@ public class ArticleBranchVersionService(
     {
         try
         {
-            var branch = await articleBranchService.GetById(articleBranchId);
-            if (branch is null)
-                return ArticleBranchErrorMessage.BranchNotFound;
-            var creator = await articleParticipantService.GetById(creatorId);
-            if (creator is null)
-                return ArticleParticipantErrorMessage.ParticipantNotFound;
-            
             var versionResult = ArticleBranchVersion.Create(
                 text, creatorId, articleBranchId);
 

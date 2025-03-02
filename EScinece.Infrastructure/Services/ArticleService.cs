@@ -28,9 +28,14 @@ public class ArticleService(
             if (!string.IsNullOrEmpty(validate))
                 return validate;
 
+            var articleExist = await GetByTitle(title, accountId);
+            if (articleExist is not null)
+                return ArticleErrorMessage.ArticleTitleExists;
+            
             var article = Article.Create(
                 title: title,
                 description: description,
+                creatorId: accountId,
                 typeArticleId: typeArticleId);
 
             if (!article.onSuccess)
@@ -59,13 +64,12 @@ public class ArticleService(
                 throw;
             }
             
-            
-            
             return new ArticleDto(
                 Id: article.Value.Id,
                 Title: article.Value.Title,
                 Description: article.Value.Description,
                 TypeArticleId: typeArticleId,
+                AccountId: accountId,
                 IsPrivate: article.Value.IsPrivate
             );
         }
@@ -100,6 +104,31 @@ public class ArticleService(
                 Title: article.Title,
                 Description: article.Description,
                 TypeArticleId: article.TypeArticleId,
+                AccountId: article.AccountId,
+                IsPrivate: article.IsPrivate);
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, ex.Message);
+            throw new Exception("Ошибка при получении статьи");
+        }
+    }
+
+    public async Task<ArticleDto?> GetByTitle(string title, Guid accountId)
+    {
+        try
+        {
+            var article = await articleRepository.GetByTitle(title, accountId);
+
+            if (article is null)
+                return null;
+            
+            return new ArticleDto(
+                Id: article.Id,
+                Title: article.Title,
+                Description: article.Description,
+                TypeArticleId: article.TypeArticleId,
+                AccountId: article.AccountId,
                 IsPrivate: article.IsPrivate);
         }
         catch (Exception ex)

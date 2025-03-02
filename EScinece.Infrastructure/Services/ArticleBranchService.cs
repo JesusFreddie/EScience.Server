@@ -12,7 +12,6 @@ namespace EScinece.Infrastructure.Services;
 public class ArticleBranchService(
     IArticleBranchRepository articleBranchRepository,
     IArticleBranchVersionService articleBranchVersionService,
-    IArticleParticipantService articleParticipantService,
     ILogger<ArticleBranchService> logger
     ) : IArticleBranchService
 {
@@ -28,10 +27,6 @@ public class ArticleBranchService(
         try
         {
             var articleBranch = articleBranchResult.Value;
-
-            var creator = await articleParticipantService.GetById(creatorId);
-            if (creator is null)
-                return ArticleParticipantErrorMessage.ParticipantNotFound;
             
             await articleBranchRepository.Create(articleBranch);
             await articleBranchVersionService.Create("", creatorId, articleBranch.Id);

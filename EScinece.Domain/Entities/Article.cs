@@ -13,7 +13,8 @@ public class Article: BaseEntity
     public string Description { get; set; }
     public bool IsPrivate { get; set; } =  false;
     
-    public ArticleParticipant Creator { get; set; }
+    public Guid AccountId { get; set; }
+    public Account Account { get; set; }
     
     public ICollection<ArticleParticipant> ArticleParticipants { get; set; } = new List<ArticleParticipant>();
     
@@ -23,7 +24,7 @@ public class Article: BaseEntity
 
     public Article() { }
     
-    private Article(string title, string description, Guid? typeArticleId)
+    private Article(string title, string description, Guid creatorId, Guid? typeArticleId)
     {
         Id = Guid.NewGuid();
         Title = title;
@@ -31,11 +32,11 @@ public class Article: BaseEntity
         TypeArticleId = typeArticleId;
     }
 
-    public static Result<Article, string> Create(string title, string description, Guid? typeArticleId)
+    public static Result<Article, string> Create(string title, string description, Guid creatorId, Guid? typeArticleId)
     {
         if (string.IsNullOrWhiteSpace(title) || string.IsNullOrWhiteSpace(description))
             return ArticleErrorMessage.TitleAndDescriptionCannotBeEmpty;
         
-        return new Article(title, description, typeArticleId);
+        return new Article(title, description, creatorId, typeArticleId);
     }
 }

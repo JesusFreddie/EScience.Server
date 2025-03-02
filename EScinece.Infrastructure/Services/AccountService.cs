@@ -141,4 +141,50 @@ public class AccountService(
             throw new Exception("Server error getting profile");
         }
     }
+
+    public async Task<ProfileDto?> GetProfile(string name)
+    {
+        try
+        {
+            var account = await accountRepository.GetByName(name);
+            if (account is null)
+                return null;
+            
+            var user = await userService.GetById(account.UserId);
+
+            if (user is null)
+                return null;
+
+            return new ProfileDto(
+                Id: account.Id,
+                Email: user.Email,
+                Name: account.Name
+                );
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, ex.Message);
+            throw new Exception("Server error getting profile");
+        }
+    }
+
+    public async Task<AccountDto?> GetByName(string name)
+    {
+        try
+        {
+            var account = await accountRepository.GetByName(name);
+            if (account is null)
+                return null;
+            
+            return new AccountDto(
+                Id: account.Id,
+                UserId: account.UserId,
+                Role: account.Role,
+                Name: account.Name);
+        }
+        catch
+        {
+            throw new Exception(AccountErrorMessage.ServerErrorGetAccount);
+        }
+    }
 }

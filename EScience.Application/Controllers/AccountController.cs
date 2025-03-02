@@ -35,13 +35,15 @@ public class AccountController(
         }
     }
 
+    
+    
     [HttpGet]
-    [Route("profile")]
-    public async Task<ActionResult<ProfileDto>> GetProfile([FromQuery(Name = "id")] Guid id)
+    [Route("{accountName}")]
+    public async Task<ActionResult<ProfileDto>> GetProfile(string name)
     {
         try
         {
-            var account = await accountService.GetProfile(id);
+            var account = await accountService.GetProfile(name);
             if (account is null)
                 return NotFound();
             return Ok(account);
