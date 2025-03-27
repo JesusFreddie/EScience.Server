@@ -76,7 +76,22 @@ public class ArticleBranchRepository(
                 """, new { id });
             return result > 0;
         });
-    
+
+    public async Task<ArticleBranch?> GetByTitle(string name, Guid articleId) =>
+        await ExecuteWithExceptionHandlingAsync(async () =>
+        {
+            using var connection = await connectionFactory.CreateConnectionAsync();
+            var result = await connection.QueryFirstAsync<ArticleBranch>(
+                """
+                SELECT *
+                FROM article_branches
+                WHERE name = @name
+                AND article_id = @articleId
+                """, new { name, articleId }
+                );
+            return result;
+        });
+
     private async Task<T> ExecuteWithExceptionHandlingAsync<T>(Func<Task<T>> func)
     {
         try

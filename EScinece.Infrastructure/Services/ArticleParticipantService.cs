@@ -12,7 +12,7 @@ public class ArticleParticipantService(
     IArticleParticipantRepository articleParticipantRepository,
     ILogger<ArticleParticipantRepository> logger) : IArticleParticipantService
 {
-    public async Task<Result<ArticleParticipantDto, string>> Create(
+    public async Task<Result<ArticleParticipant, string>> Create(
         Guid accountId, 
         Guid articleId, 
         ArticlePermissionLevel permissionLevel = ArticlePermissionLevel.READER)
@@ -26,13 +26,7 @@ public class ArticleParticipantService(
 
             var articleParticipant = articleParticipantResult.Value;
             await articleParticipantRepository.Create(articleParticipant);
-
-            return new ArticleParticipantDto(
-                Id: articleParticipant.Id,
-                AccountId: articleParticipant.AccountId,
-                IsAccepted: articleParticipant.IsAccepted,
-                ArticleId: articleParticipant.ArticleId,
-                PermissionLevel: articleParticipant.PermissionLevel);
+            return articleParticipantResult.Value;
         }
         catch (Exception ex)
         {
@@ -41,20 +35,11 @@ public class ArticleParticipantService(
         }
     }
 
-    public async Task<ArticleParticipantDto?> GetById(Guid id)
+    public async Task<ArticleParticipant?> GetById(Guid id)
     {
         try
         {
-            var articleParticipant = await articleParticipantRepository.GetById(id);
-            if (articleParticipant is null)
-                return null;
-            
-            return new ArticleParticipantDto(
-                Id: articleParticipant.Id,
-                AccountId: articleParticipant.AccountId,
-                IsAccepted: articleParticipant.IsAccepted,
-                ArticleId: articleParticipant.ArticleId,
-                PermissionLevel: articleParticipant.PermissionLevel);
+            return await articleParticipantRepository.GetById(id);
         }
         catch (Exception ex)
         {

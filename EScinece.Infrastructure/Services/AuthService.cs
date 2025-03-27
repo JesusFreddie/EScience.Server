@@ -45,7 +45,7 @@ public class AuthService(
         }
     }
 
-    public async Task<Result<AccountDto, string>> Register(string email, string password, string name)
+    public async Task<Result<Account, string>> Register(string email, string password, string name)
     {
         try
         {
@@ -54,6 +54,11 @@ public class AuthService(
             if (!string.IsNullOrWhiteSpace(validationResult))
                 return validationResult;
 
+            var account = await _accountService.GetByName(name);
+
+            if (account is not null)
+                return $"Имя {name} уже занято";
+            
             var user = await _userService.Create(email, password);
 
             if (!user.onSuccess)
@@ -73,7 +78,7 @@ public class AuthService(
             }
             catch (Exception ex)
             {
-                logger.LogError("Произошла ошибка регитрации аккаунта");
+                logger.LogError(ex, ex.Message);
                 await _userService.Delete(user.Value.Id);
                 throw;
             }

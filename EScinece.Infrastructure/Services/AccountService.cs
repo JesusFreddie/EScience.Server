@@ -14,7 +14,7 @@ public class AccountService(
     ILogger<AccountService> logger
     ) : IAccountService
 {
-    public async Task<Result<AccountDto, string>> Create(Guid userId, string name)
+    public async Task<Result<Account, string>> Create(Guid userId, string name)
     {
         if (string.IsNullOrWhiteSpace(name))
         {
@@ -38,38 +38,22 @@ public class AccountService(
             throw new Exception("Произошла серверная ошибка создания аккаунта");
         }
 
-        return new AccountDto(
-            Id: account.Value.Id,
-            Role: account.Value.Role,
-            UserId: userId,
-            Name: name
-            );
+        return account.Value;
     }
 
-    public async Task<AccountDto?> GetById(Guid id)
+    public async Task<Account?> GetById(Guid id)
     {
-        Account? account;
         try
         {
-            account = await accountRepository.GetById(id);
+            return await accountRepository.GetById(id);
         }
         catch
         {
             throw new Exception(AccountErrorMessage.ServerErrorGetAccount);
         }
-        
-        if (account is null)
-            return null;
-        
-        return new AccountDto(
-            Id: account.Id,
-            Role: account.Role,
-            UserId: account.UserId,
-            Name: account.Name
-            );
     }
 
-    public async Task<AccountDto?> GetByEmail(string email)
+    public async Task<Account?> GetByEmail(string email)
     {
         try
         {
@@ -77,17 +61,7 @@ public class AccountService(
             if (user is null)
                 return null;
 
-            var account = await accountRepository.GetByUserId(user.Id);
-
-            if (account is null)
-                return null;
-
-            return new AccountDto(
-                Id: account.Id,
-                Role: account.Role,
-                Name: account.Name,
-                UserId: user.Id
-            );
+            return await accountRepository.GetByUserId(user.Id);
         }
         catch (Exception ex)
         {
@@ -96,19 +70,11 @@ public class AccountService(
         }
     }
 
-    public async Task<AccountDto?> GetByUserId(Guid id)
+    public async Task<Account?> GetByUserId(Guid id)
     {
         try
         {
-            var account = await accountRepository.GetByUserId(id);
-            if (account is null)
-                return null;
-            
-            return new AccountDto(
-                Id: account.Id,
-                UserId: account.UserId,
-                Role: account.Role,
-                Name: account.Name);
+            return await accountRepository.GetByUserId(id);
         }
         catch
         {
@@ -168,19 +134,11 @@ public class AccountService(
         }
     }
 
-    public async Task<AccountDto?> GetByName(string name)
+    public async Task<Account?> GetByName(string name)
     {
         try
         {
-            var account = await accountRepository.GetByName(name);
-            if (account is null)
-                return null;
-            
-            return new AccountDto(
-                Id: account.Id,
-                UserId: account.UserId,
-                Role: account.Role,
-                Name: account.Name);
+            return await accountRepository.GetByName(name);
         }
         catch
         {

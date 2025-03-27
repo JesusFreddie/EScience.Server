@@ -1,4 +1,5 @@
 using EScience.Application.Requests;
+using EScience.Application.Responses;
 using EScinece.Domain.Abstraction.ErrorMessages;
 using EScinece.Domain.Abstraction.Services;
 using Microsoft.AspNetCore.Authorization;
@@ -9,11 +10,14 @@ namespace EScience.Application.Controllers;
 [AllowAnonymous]
 [ApiController]
 [Route("auth")]
-public class AuthController(IAuthService authService): ControllerBase
+public class AuthController(
+    IAuthService authService,
+    ILogger<AuthController> logger
+    ): ControllerBase
 {
     [Route("register")]
     [HttpPost]
-    public async Task<IActionResult> Register([FromBody] RegisterRequestDto req)
+    public async Task<ActionResult> Register([FromBody] RegisterRequestDto req)
     {
         try
         {
@@ -30,13 +34,14 @@ public class AuthController(IAuthService authService): ControllerBase
         }
         catch (Exception ex)
         {
+            logger.LogError(ex, ex.Message);
             return StatusCode(500, "Internal Server Error");
         }
     }
     
     [Route("login")]
     [HttpPost]
-    public async Task<IActionResult> Login([FromBody] LoginRequestDto req)
+    public async Task<ActionResult> Login([FromBody] LoginRequestDto req)
     {
         string token;
         try
@@ -48,6 +53,7 @@ public class AuthController(IAuthService authService): ControllerBase
         }
         catch (Exception ex)
         {
+            logger.LogError(ex, ex.Message);
             return StatusCode(500, "Internal Server Error");
         }
 
@@ -56,7 +62,7 @@ public class AuthController(IAuthService authService): ControllerBase
 
         HttpContext.Response.Cookies.Append("access-token", token);
         
-        return Ok();
+        return Ok("Login successful");
     }
 
     [Route("logout")]

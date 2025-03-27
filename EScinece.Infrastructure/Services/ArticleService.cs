@@ -11,14 +11,16 @@ namespace EScinece.Infrastructure.Services;
 public class ArticleService(
     IArticleRepository articleRepository,
     IArticleParticipantService articleParticipantService,
+    IAccountService accountService,
     ILogger<ArticleService> logger
     ) : IArticleService
 {
     
-    public async Task<Result<ArticleDto, string>> Create(
+    public async Task<Result<Article, string>> Create(
         string title, 
         string description, 
-        Guid accountId, 
+        Guid accountId,
+        bool isPrivate,
         Guid? typeArticleId)
     {
         try
@@ -35,7 +37,8 @@ public class ArticleService(
             var article = Article.Create(
                 title: title,
                 description: description,
-                creatorId: accountId,
+                accountId: accountId,
+                isPrivate: isPrivate,
                 typeArticleId: typeArticleId);
 
             if (!article.onSuccess)
@@ -57,21 +60,14 @@ public class ArticleService(
                     await articleRepository.Delete(article.Value.Id);
                     return creator.Error;
                 }
+
+                return article;
             }
             catch
             {
                 await articleRepository.Delete(article.Value.Id);
                 throw;
             }
-            
-            return new ArticleDto(
-                Id: article.Value.Id,
-                Title: article.Value.Title,
-                Description: article.Value.Description,
-                TypeArticleId: typeArticleId,
-                AccountId: accountId,
-                IsPrivate: article.Value.IsPrivate
-            );
         }
         catch (Exception e)
         {
@@ -80,32 +76,26 @@ public class ArticleService(
         }
     }
 
-    public Task<ICollection<ArticleDto>> GetAllByArticleParticipantId(Guid id)
+    public Task<IEnumerable<Article>> GetAllByArticleParticipantId(Guid id)
     {
         throw new NotImplementedException();
     }
 
-    public Task<ICollection<ArticleDto>> GetAllByArticleParticipantIdInCreator(Guid id)
+    public async Task<IEnumerable<Article>> GetAllByArticleParticipantIdAndAccountId(Guid id)
+    {
+        return await articleRepository.GetAllByArticleParticipantIdAndAccountId(id);
+    }
+
+    public Task<IEnumerable<Article>> GetAllByAccountId(Guid id)
     {
         throw new NotImplementedException();
     }
 
-    public async Task<ArticleDto?> GetById(Guid id)
+    public async Task<Article?> GetById(Guid id)
     {
         try
         {
-            var article = await articleRepository.GetById(id);
-
-            if (article is null)
-                return null;
-            
-            return new ArticleDto(
-                Id: article.Id,
-                Title: article.Title,
-                Description: article.Description,
-                TypeArticleId: article.TypeArticleId,
-                AccountId: article.AccountId,
-                IsPrivate: article.IsPrivate);
+            return await articleRepository.GetById(id);
         }
         catch (Exception ex)
         {
@@ -114,22 +104,11 @@ public class ArticleService(
         }
     }
 
-    public async Task<ArticleDto?> GetByTitle(string title, Guid accountId)
+    public async Task<Article?> GetByTitle(string title, Guid accountId)
     {
         try
         {
-            var article = await articleRepository.GetByTitle(title, accountId);
-
-            if (article is null)
-                return null;
-            
-            return new ArticleDto(
-                Id: article.Id,
-                Title: article.Title,
-                Description: article.Description,
-                TypeArticleId: article.TypeArticleId,
-                AccountId: article.AccountId,
-                IsPrivate: article.IsPrivate);
+            return await articleRepository.GetByTitle(title, accountId);
         }
         catch (Exception ex)
         {

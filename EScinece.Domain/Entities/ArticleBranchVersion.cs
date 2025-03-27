@@ -1,21 +1,25 @@
+using System.Text.Json.Serialization;
 using EScinece.Domain.Abstraction;
 
 namespace EScinece.Domain.Entities;
 
 public class ArticleBranchVersion: BaseEntity
 {
+    [JsonPropertyName("text")]
     public string Text { get; set; } = string.Empty;
-    public Guid CreatorId { get; set; }
-    public ArticleParticipant Creator { get; set; }
+    [JsonPropertyName("articleParticipantId")]
+    public Guid ArticleParticipantId { get; set; }
+    public ArticleParticipant ArticleParticipant { get; set; }
+    [JsonPropertyName("articleBranchId")]
     public Guid ArticleBranchId { get; set; }
     public ArticleBranch ArticleBranch { get; set; }
 
     public ArticleBranchVersion() {}
     
-    private ArticleBranchVersion(string text, Guid creatorId, Guid articleBranchId)
+    private ArticleBranchVersion(string text, Guid articleParticipantId, Guid articleBranchId)
     {
         Text = text;
-        CreatorId = creatorId;
+        ArticleParticipantId = articleParticipantId;
         ArticleBranchId = articleBranchId;
     }
 

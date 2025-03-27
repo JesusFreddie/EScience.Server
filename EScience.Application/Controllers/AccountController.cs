@@ -1,3 +1,4 @@
+using EScience.Application.Responses;
 using EScinece.Domain.Abstraction.Services;
 using EScinece.Domain.DTOs;
 using EScinece.Infrastructure.Helpers;
@@ -22,11 +23,11 @@ public class AccountController(
             if (accountId == null || !Guid.TryParse(accountId.Value, out var id))
                 return Unauthorized();
             
-            var account = await accountService.GetProfile(id);
-            if (account is null)
+            var profile = await accountService.GetProfile(id);
+            if (profile is null)
                 return Unauthorized();
 
-            return Ok(account);
+            return Ok(profile);
         }
         catch (Exception ex)
         {
@@ -34,19 +35,17 @@ public class AccountController(
             return StatusCode(500, "Internal server error");
         }
     }
-
-    
     
     [HttpGet]
     [Route("{accountName}")]
-    public async Task<ActionResult<ProfileDto>> GetProfile(string name)
+    public async Task<ActionResult<ProfileDto>> GetProfile(string accountName)
     {
         try
         {
-            var account = await accountService.GetProfile(name);
-            if (account is null)
+            var profile = await accountService.GetProfile(accountName);
+            if (profile is null)
                 return NotFound();
-            return Ok(account);
+            return Ok(profile);
         }
         catch (Exception ex)
         {

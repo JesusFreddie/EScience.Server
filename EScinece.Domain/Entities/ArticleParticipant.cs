@@ -1,10 +1,12 @@
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
 using EScinece.Domain.Abstraction;
 
 namespace EScinece.Domain.Entities;
 
 public class ArticleParticipant: BaseEntity
 {
+    [JsonPropertyName("accountId")]
     public Guid AccountId { get; set; }
     public Account Account { get; set; }
     public bool IsAccepted { get; set; } = false;

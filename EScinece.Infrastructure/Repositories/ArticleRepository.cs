@@ -20,48 +20,137 @@ public class ArticleRepository(
         await ExecuteWithExceptionHandlingAsync(async () =>
         {
             using var connection = await connectionFactory.CreateConnectionAsync();
-            return await connection.QueryFirstOrDefaultAsync<Article>(
-                "SELECT * FROM articles WHERE id = @id AND deleted_at IS NULL", new { id });
+            const string sql = 
+                """
+                    SELECT a.*, ac.*
+                    FROM articles as a
+                    INNER JOIN accounts as ac on a.account_id = ac.id
+                    WHERE a.id = @id
+                    AND a.deleted_at IS NULL
+                """;
+            var result = await connection.QueryAsync<Article, Account, Article>(
+                sql,
+                (article, account) => 
+                {
+                    article.Account = account;
+                    return article;
+                },
+                new { id },
+                splitOn: "id"
+            );
+            return result.FirstOrDefault();
         });
 
-    public async Task<IEnumerable<Article>> GetAllByArticleParticipantId(Guid id)
-    {
-        throw new NotImplementedException();
-    }
-
-    public async Task<IEnumerable<Article>> GetAllByArticleParticipantIdInCreator(Guid id) =>
+    public async Task<IEnumerable<Article>> GetAllByArticleParticipantId(Guid id) =>
         await ExecuteWithExceptionHandlingAsync(async () =>
         {
             using var connection = await connectionFactory.CreateConnectionAsync();
-            return await connection.QueryAsync<Article>(
+            return await connection.QueryAsync<Article, Account, Article>(
                 """
-                    SELECT articles.*
-                    FROM articles
-                    JOIN public.article_participants ap on articles.id = ap.article_id
-                    WHERE ap.account_id = @id
-                    AND ap.permission_level = @permission_level
-                    AND articles.deleted_at IS NULL
-                    """, new { id, permission_level = ArticlePermissionLevel.AUTHOR });
+                SELECT articles.*,  a.*
+                FROM articles
+                JOIN public.article_participants ap on articles.id = ap.article_id
+                JOIN accounts as a on articles.account_id = a.id
+                WHERE ap.account_id = @id
+                AND articles.deleted_at IS NULL
+                """, (article, account) => 
+                {
+                    article.Account = account;
+                    return article;
+                },
+                new { id });
         });
 
+    public async Task<IEnumerable<Article>> GetAllByAccountId(Guid id) =>
+        await ExecuteWithExceptionHandlingAsync(async () =>
+        {
+            using var connection = await connectionFactory.CreateConnectionAsync();
+            return await connection.QueryAsync<Article, Account, Article>(
+                """
+                    SELECT a.*, ac.*
+                    FROM articles as a
+                    INNER JOIN accounts as ac ON a.account_id = ac.id
+                    WHERE account_id = @id
+                    AND a.deleted_at IS NULL
+                    """, 
+                (article, account) => 
+                {
+                    article.Account = account;
+                    return article;
+                },
+                new { id },
+                splitOn: "id");
+        });
+
+    public async Task<IEnumerable<Article>> GetAllByArticleParticipantIdAndAccountId(Guid id) =>
+        await ExecuteWithExceptionHandlingAsync(async () =>
+        {
+            using var connection = await connectionFactory.CreateConnectionAsync();
+            return await connection.QueryAsync<Article, Account, Article>(
+                """
+                SELECT articles.*, a.*
+                FROM articles
+                JOIN public.article_participants ap on articles.id = ap.article_id
+                INNER JOIN accounts as a on articles.account_id = a.id
+                WHERE (ap.account_id = @id
+                OR articles.account_id = @id)
+                AND articles.deleted_at IS NULL
+                """, (article, account) => 
+                {
+                    article.Account = account;
+                    return article;
+                },
+                new { id },
+                splitOn: "id");
+        });
     public async Task<Article?> GetByTitle(string title, Guid accountId) =>
         await ExecuteWithExceptionHandlingAsync(async () =>
         {
             using var connection = await connectionFactory.CreateConnectionAsync();
-            return await connection.QueryFirstOrDefaultAsync<Article>(
-                """
-                SELECT * 
-                FROM articles
-                WHERE title = @title
-                AND account_id = @accountId
-                """, new { title, accountId });
+            const string sql = """
+                SELECT a.*, acc.* 
+                FROM articles a
+                INNER JOIN accounts acc ON a.account_id = acc.id
+                WHERE a.title = @title
+                AND a.account_id = @accountId
+                LIMIT 1
+                """;
+
+            var result = await connection.QueryAsync<Article, Account, Article>(
+                sql,
+                (article, account) => 
+                {
+                    article.Account = account;
+                    return article;
+                },
+                new { title, accountId },
+                splitOn: "id"
+            );
+            return result.FirstOrDefault();
         });
 
     public async Task<IEnumerable<Article>> GetAll() =>
         await ExecuteWithExceptionHandlingAsync(async () =>
         {
             using var connection = await connectionFactory.CreateConnectionAsync();
-            return await connection.QueryAsync<Article>("SELECT * FROM articles WHERE deleted_at IS NULL");
+            
+            const string sql = 
+                """
+                SELECT a.*, acc.* 
+                FROM articles a
+                INNER JOIN accounts acc ON a.account_id = acc.id
+                WHERE a.deleted_at IS NULL
+                """;
+
+            return await connection.QueryAsync<Article, Account, Article>(
+                sql,
+                (article, account) => 
+                {
+                    article.Account = account;
+                    return article;
+                },
+                splitOn: "id"
+            );
         });
 
     public async Task Create(Article entity) =>

@@ -5,13 +5,15 @@ namespace EScinece.Domain.Abstraction.Services;
 
 public interface IArticleService
 {
-    public Task<Result<ArticleDto, string>> Create(
+    public Task<Result<Article, string>> Create(
         string title, 
         string description, 
         Guid accountId, 
+        bool isPrivate,
         Guid? typeArticleId);
-    public Task<ICollection<ArticleDto>> GetAllByArticleParticipantId(Guid id);
-    public Task<ICollection<ArticleDto>> GetAllByArticleParticipantIdInCreator(Guid id);
-    public Task<ArticleDto?> GetById(Guid id);
-    public Task<ArticleDto?> GetByTitle(string title, Guid accountId);
+    public Task<IEnumerable<Article>> GetAllByArticleParticipantId(Guid id);
+    public Task<IEnumerable<Article>> GetAllByArticleParticipantIdAndAccountId(Guid id);
+    public Task<IEnumerable<Article>> GetAllByAccountId(Guid id);
+    public Task<Article?> GetById(Guid id);
+    public Task<Article?> GetByTitle(string title, Guid accountId);
 }

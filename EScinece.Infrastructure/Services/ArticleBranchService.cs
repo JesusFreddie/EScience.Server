@@ -15,7 +15,7 @@ public class ArticleBranchService(
     ILogger<ArticleBranchService> logger
     ) : IArticleBranchService
 {
-    public async Task<Result<ArticleBranchDto, string>> Create(string name, Guid creatorId, Guid articleId)
+    public async Task<Result<ArticleBranch, string>> Create(string name, Guid creatorId, Guid articleId)
     {
         if (string.IsNullOrWhiteSpace(name))
             return ArticleBranchErrorMessage.NameIsRequired;
@@ -31,13 +31,7 @@ public class ArticleBranchService(
             await articleBranchRepository.Create(articleBranch);
             await articleBranchVersionService.Create("", creatorId, articleBranch.Id);
 
-            return new ArticleBranchDto(
-                Id: articleBranch.Id,
-                Name: articleBranch.Name,
-                ArticleId: articleBranch.ArticleId,
-                CreatorId: creatorId,
-                CreatedAt: articleBranch.CreatedAt,
-                UpdatedAt: articleBranch.UpdatedAt);
+            return articleBranchResult.Value;
         }
         catch (Exception ex)
         {
@@ -46,18 +40,29 @@ public class ArticleBranchService(
         }
     }
 
-    public async Task<ArticleBranchDto?> GetById(Guid id)
+    public async Task<ArticleBranch?> GetById(Guid id)
     {
-        var articleBranch = await articleBranchRepository.GetById(id);
-        if (articleBranch is null)
-            return null;
-        
-        return new ArticleBranchDto(
-            Id: articleBranch.Id,
-            Name: articleBranch.Name,
-            ArticleId: articleBranch.ArticleId,
-            CreatorId: articleBranch.CreatorId,
-            CreatedAt: articleBranch.CreatedAt,
-            UpdatedAt: articleBranch.UpdatedAt);
+        try
+        {
+            return await articleBranchRepository.GetById(id);
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, ex.Message);
+            throw;
+        }
+    }
+
+    public async Task<ArticleBranch?> GetByTitle(string name, Guid articleId)
+    {
+        try
+        {
+            return await articleBranchRepository.GetByTitle(name, articleId);
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, ex.Message);
+            throw;
+        }
     }
 }

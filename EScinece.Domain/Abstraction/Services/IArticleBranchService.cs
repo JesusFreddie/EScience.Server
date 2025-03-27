@@ -1,10 +1,12 @@
 using EScinece.Domain.DTOs;
+using EScinece.Domain.Entities;
 
 namespace EScinece.Domain.Abstraction.Services;
 
 public interface IArticleBranchService
 {
-    public Task<Result<ArticleBranchDto, string>> Create(
+    public Task<Result<ArticleBranch, string>> Create(
         string name, Guid creatorId, Guid articleId);
-    public Task<ArticleBranchDto?> GetById(Guid id);
+    public Task<ArticleBranch?> GetById(Guid id);
+    public Task<ArticleBranch?> GetByTitle(string name, Guid articleId);
 }

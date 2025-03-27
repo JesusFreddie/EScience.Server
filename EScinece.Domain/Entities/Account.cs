@@ -1,5 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
 using EScinece.Domain.Abstraction;
 using EScinece.Domain.Abstraction.ErrorMessages;
 
@@ -10,11 +11,14 @@ public class Account: BaseEntity
     public const int NameMaxLength = 50;
     public const int NameMinLength = 2;
     
+    [JsonPropertyName("name")]
     public string Name { get; set; }
     
+    [JsonPropertyName("roleId")]
     public int RoleId { get; set; }
     public Role Role { get; set; }
  
+    [JsonPropertyName("userId")]
     public Guid UserId { get; set; }
     
     public User User { get; set; }

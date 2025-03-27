@@ -26,7 +26,7 @@ public class ArticleBranchVersionService(
             return new ArticleBranchVersionDto(
                 Id: version.Id,
                 Text: ParseHtml(version.Text),
-                CreatorId: version.CreatorId,
+                CreatorId: version.ArticleParticipantId,
                 ArticleBranchId: version.ArticleBranchId,
                 CreatedAt: version.CreatedAt,
                 UpdatedAt: version.UpdatedAt
@@ -48,7 +48,7 @@ public class ArticleBranchVersionService(
         return new ArticleBranchVersionDto(
             Id: version.Id,
             Text: ParseHtml(version.Text),
-            CreatorId: version.CreatorId,
+            CreatorId: version.ArticleParticipantId,
             ArticleBranchId: version.ArticleBranchId,
             CreatedAt: version.CreatedAt,
             UpdatedAt: version.UpdatedAt

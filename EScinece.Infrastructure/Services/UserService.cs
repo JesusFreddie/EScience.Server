@@ -46,7 +46,7 @@ public class UserService(
         catch (Exception ex)
         {
             logger.LogError(ex, "Непредвиденная ошибка при создании пользователя");
-            return "Произошла внутренняя ошибка сервера";
+            throw new Exception("Произошла внутренняя ошибка сервера");
         }
     }
 

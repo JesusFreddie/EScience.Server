@@ -23,7 +23,7 @@ public class JwtProvider(IOptions<JwtOptions> options) : IJwtProvider
         var token = new JwtSecurityToken(
             claims: claims,
             signingCredentials: signingCredentials,
-            expires: DateTime.UtcNow.AddHours(_options.ExpitesHours)
+            expires: DateTime.UtcNow.AddHours(1)
             );
         
         var tokenValue = new JwtSecurityTokenHandler().WriteToken(token);
