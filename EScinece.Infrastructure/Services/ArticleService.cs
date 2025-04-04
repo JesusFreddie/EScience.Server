@@ -12,6 +12,7 @@ public class ArticleService(
     IArticleRepository articleRepository,
     IArticleParticipantService articleParticipantService,
     IAccountService accountService,
+    IArticleBranchService articleBranchService,
     ILogger<ArticleService> logger
     ) : IArticleService
 {
@@ -54,13 +55,15 @@ public class ArticleService(
                     accountId: accountId,
                     articleId: article.Value.Id,
                     permissionLevel: ArticlePermissionLevel.AUTHOR);
-
+                
                 if (!creator.onSuccess)
                 {
                     await articleRepository.Delete(article.Value.Id);
                     return creator.Error;
                 }
-
+                Console.WriteLine(creator.Value.Id);
+                await articleBranchService.Create("main", creator.Value.Id, article.Value.Id);
+                
                 return article;
             }
             catch
@@ -104,7 +107,7 @@ public class ArticleService(
         }
     }
 
-    public async Task<Article?> GetByTitle(string title, Guid accountId)
+    public async Task<Article?> GetByTitle(string title, Guid accountId, string? branchName = null)
     {
         try
         {

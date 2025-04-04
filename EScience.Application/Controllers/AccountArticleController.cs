@@ -16,7 +16,11 @@ public class AccountArticleController(
     ) : ControllerBase
 {
     [HttpGet]
-    public async Task<ActionResult<Article>> GetArticle(string accountName, string articleName)
+    public async Task<ActionResult<Article>> GetArticle(
+        string accountName, 
+        string articleName,
+        [FromQuery(Name = "branchName")] string? branchName
+    )
     {
         try
         {
@@ -24,7 +28,7 @@ public class AccountArticleController(
             if (account is null)
                 return NotFound();
      
-            var article = await articleService.GetByTitle(articleName, account.Id);
+            var article = await articleService.GetByTitle(articleName, account.Id, branchName);
             return Ok(article);
         }
         catch (Exception ex)

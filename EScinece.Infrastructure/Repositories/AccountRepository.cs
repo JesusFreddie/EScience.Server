@@ -95,10 +95,10 @@ public class AccountRepository(
         await ExecuteWithExceptionHandlingAsync(async () =>
         {
             var accountCache = await cache.GetStringAsync("account:" + id);
-            if (accountCache is not null)
-            {
-                return JsonSerializer.Deserialize<Account>(accountCache);
-            }
+            // if (accountCache is not null)
+            // {
+            //     return JsonSerializer.Deserialize<Account>(accountCache);
+            // }
 
             using var connection = await connectionFactory.CreateConnectionAsync();
             var account = await connection

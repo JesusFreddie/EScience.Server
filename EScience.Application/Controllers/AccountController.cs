@@ -21,11 +21,15 @@ public class AccountController(
         {
             var accountId = User.Claims.FirstOrDefault(claim => claim.Type == CustomClaims.AccountId);
             if (accountId == null || !Guid.TryParse(accountId.Value, out var id))
+            {
                 return Unauthorized();
+            }
             
             var profile = await accountService.GetProfile(id);
             if (profile is null)
+            {
                 return Unauthorized();
+            }
 
             return Ok(profile);
         }

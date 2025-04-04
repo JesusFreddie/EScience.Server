@@ -11,25 +11,27 @@ namespace EScinece.Infrastructure.Services;
 
 public class ArticleBranchService(
     IArticleBranchRepository articleBranchRepository,
-    IArticleBranchVersionService articleBranchVersionService,
+    IArticleVersionService articleVersionService,
     ILogger<ArticleBranchService> logger
     ) : IArticleBranchService
 {
     public async Task<Result<ArticleBranch, string>> Create(string name, Guid creatorId, Guid articleId)
     {
+        Console.WriteLine("!@#");
+        Console.WriteLine(articleId);
         if (string.IsNullOrWhiteSpace(name))
             return ArticleBranchErrorMessage.NameIsRequired;
         
-        var articleBranchResult = ArticleBranch.Create(name, creatorId, articleId);
+        var articleBranchResult = ArticleBranch.Create(name, articleId, creatorId);
         if (!articleBranchResult.onSuccess)
             return articleBranchResult.Error;
-
+        Console.WriteLine(articleBranchResult.Value.Id);
         try
         {
-            var articleBranch = articleBranchResult.Value;
-            
-            await articleBranchRepository.Create(articleBranch);
-            await articleBranchVersionService.Create("", creatorId, articleBranch.Id);
+            // var articleBranch = articleBranchResult.Value;
+            Console.WriteLine(articleBranchResult.Value.Id);
+            await articleBranchRepository.Create(articleBranchResult.Value);
+            await articleVersionService.Create("Test text", creatorId, articleBranchResult.Value.Id);
 
             return articleBranchResult.Value;
         }

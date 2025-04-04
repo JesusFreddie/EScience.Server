@@ -14,19 +14,20 @@ public class ArticleBranch: BaseEntity
     public Guid ArticleId { get; set; }
     public Article Article { get; set; }
     
-    [JsonPropertyName("articleParticipantId")]
-    public Guid ArticleParticipantId { get; set; }
+    [JsonPropertyName("creatorId")]
+    public Guid CreatorId { get; set; }
     public ArticleParticipant Creator { get; set; }
     
-    public ICollection<ArticleBranchVersion> ArticleBranchVersions { get; set; } = new List<ArticleBranchVersion>();
+    public ICollection<ArticleVersion> ArticleBranchVersions { get; set; } = new List<ArticleVersion>();
 
     public ArticleBranch() {}
     
-    private ArticleBranch(string name, Guid articleId, Guid articleParticipantId)
+    private ArticleBranch(string name, Guid articleId, Guid creatorId)
     {
+        Id = Guid.NewGuid();
         Name = name;
         ArticleId = articleId;
-        ArticleParticipantId = articleParticipantId;
+        CreatorId = creatorId;
     }
 
     public static Result<ArticleBranch, string> Create(string name, Guid articleId, Guid creatorId)

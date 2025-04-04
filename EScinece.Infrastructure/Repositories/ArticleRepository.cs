@@ -95,6 +95,7 @@ public class ArticleRepository(
                 WHERE (ap.account_id = @id
                 OR articles.account_id = @id)
                 AND articles.deleted_at IS NULL
+                ORDER BY articles.created_at DESC
                 """, (article, account) => 
                 {
                     article.Account = account;
@@ -103,29 +104,45 @@ public class ArticleRepository(
                 new { id },
                 splitOn: "id");
         });
-    public async Task<Article?> GetByTitle(string title, Guid accountId) =>
+    public async Task<Article?> GetByTitle(string title, Guid accountId, string? branchName = null) =>
         await ExecuteWithExceptionHandlingAsync(async () =>
         {
             using var connection = await connectionFactory.CreateConnectionAsync();
-            const string sql = """
-                SELECT a.*, acc.* 
+        
+            string sql = """
+                SELECT 
+                    a.*, 
+                    acc.*,
+                    b.*
                 FROM articles a
                 INNER JOIN accounts acc ON a.account_id = acc.id
+                LEFT JOIN (
+                    SELECT ab.*,
+                           ROW_NUMBER() OVER (PARTITION BY ab.article_id 
+                                              ORDER BY ab.created_at ASC) as rn
+                    FROM article_branches ab
+                    WHERE @branchName IS NULL OR ab.name = @branchName
+                ) b ON b.article_id = a.id AND (b.rn = 1 OR @branchName IS NOT NULL)
                 WHERE a.title = @title
                 AND a.account_id = @accountId
-                LIMIT 1
+                LIMIT 1 
                 """;
 
-            var result = await connection.QueryAsync<Article, Account, Article>(
+            var result = await connection.QueryAsync<Article, Account, ArticleBranch, Article>(
                 sql,
-                (article, account) => 
+                (article, account, branch) => 
                 {
                     article.Account = account;
+                    if (branch != null)
+                    {
+                        article.ArticleBranches.Add(branch);
+                    }
                     return article;
                 },
-                new { title, accountId },
-                splitOn: "id"
+                new { title, accountId, branchName },
+                splitOn: "id,id"
             );
+
             return result.FirstOrDefault();
         });
 
@@ -140,6 +157,7 @@ public class ArticleRepository(
                 FROM articles a
                 INNER JOIN accounts acc ON a.account_id = acc.id
                 WHERE a.deleted_at IS NULL
+                ORDER BY a.created_at DESC
                 """;
 
             return await connection.QueryAsync<Article, Account, Article>(

@@ -20,7 +20,9 @@ public class ArticleController(
     ) : ControllerBase
 {
     [HttpPost("create")]
-    public async Task<ActionResult<Article>> Create([FromBody] CreateArticleRequest request)
+    public async Task<ActionResult<Article>> Create(
+        [FromBody] CreateArticleRequest request
+        )
     {
         try
         {

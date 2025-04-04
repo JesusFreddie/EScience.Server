@@ -36,7 +36,7 @@ public class ArticleBranchRepository(
             return await connection.ExecuteAsync(
                 """
                 INSERT INTO article_branches (id, name, creator_id, article_id)
-                VALUES (@id, @name, @creator_id, @article_id)
+                VALUES (@id, @name, @creatorId, @articleId)
                 """, entity);
         });
 

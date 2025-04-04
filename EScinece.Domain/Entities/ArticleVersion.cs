@@ -3,30 +3,31 @@ using EScinece.Domain.Abstraction;
 
 namespace EScinece.Domain.Entities;
 
-public class ArticleBranchVersion: BaseEntity
+public class ArticleVersion: BaseEntity
 {
     [JsonPropertyName("text")]
     public string Text { get; set; } = string.Empty;
     [JsonPropertyName("articleParticipantId")]
-    public Guid ArticleParticipantId { get; set; }
-    public ArticleParticipant ArticleParticipant { get; set; }
+    public Guid CreatorId { get; set; }
+    public ArticleParticipant Creator { get; set; }
     [JsonPropertyName("articleBranchId")]
     public Guid ArticleBranchId { get; set; }
     public ArticleBranch ArticleBranch { get; set; }
 
-    public ArticleBranchVersion() {}
+    public ArticleVersion() {}
     
-    private ArticleBranchVersion(string text, Guid articleParticipantId, Guid articleBranchId)
+    private ArticleVersion(string text, Guid creatorId, Guid articleBranchId)
     {
+        Id = Guid.NewGuid();
         Text = text;
-        ArticleParticipantId = articleParticipantId;
+        CreatorId = creatorId;
         ArticleBranchId = articleBranchId;
     }
 
-    public static Result<ArticleBranchVersion, string> Create(
+    public static Result<ArticleVersion, string> Create(
         string text, Guid creatorId, Guid articleBranchId)
     {
-        return new ArticleBranchVersion(text, creatorId, articleBranchId);
+        return new ArticleVersion(text, creatorId, articleBranchId);
     }
     
 }

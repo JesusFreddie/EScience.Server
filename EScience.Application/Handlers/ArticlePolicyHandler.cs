@@ -32,6 +32,12 @@ public class ArticlePolicyHandler : AuthorizationHandler<ArticlePermissionRequir
         if (!httpContext.Request.RouteValues.TryGetValue("articleId", out var idValue)
             || !Guid.TryParse(idValue?.ToString(), out var articleId))
             return;
+
+        httpContext.Request.RouteValues.TryGetValue("branchId", out var idValueBranch);
+        Guid.TryParse(idValueBranch?.ToString(), out var branchId);
+        
+        httpContext.Request.RouteValues.TryGetValue("versionId", out var idValueVersion);
+        Guid.TryParse(idValueBranch?.ToString(), out var versionId);
         
         using var scope = _serviceScopeFactory.CreateScope();
         var articleParticipantService = scope.ServiceProvider.GetRequiredService<IArticleParticipantService>();
@@ -41,6 +47,33 @@ public class ArticlePolicyHandler : AuthorizationHandler<ArticlePermissionRequir
 
         if (article is null)
             return;
+
+        if (branchId != Guid.Empty)
+        {
+            var articleBranchService = scope.ServiceProvider.GetRequiredService<IArticleBranchService>();
+            var branch = await articleBranchService.GetById(branchId);
+            if (branch is null)
+                return;
+            
+            if (branch.ArticleId != article.Id)
+                return;
+        }
+
+        if (versionId != Guid.Empty)
+        {
+            var versionService = scope.ServiceProvider.GetRequiredService<IArticleVersionService>();
+            var articleBranchService = scope.ServiceProvider.GetRequiredService<IArticleBranchService>();
+            var version = await versionService.GetById(versionId);
+            if (version is null)
+                return;
+            
+            var branch = await articleBranchService.GetById(branchId);
+            if (branch is null)
+                return;
+
+            if (branch.ArticleId != article.Id)
+                return;
+        }
         
         var permission = await articleParticipantService.GetArticlePermissionLevelByIds(id, articleId);
 

@@ -1,4 +1,3 @@
-using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json.Serialization;
 using EScinece.Domain.Abstraction;
@@ -18,6 +17,7 @@ public class Account: BaseEntity
     public int RoleId { get; set; }
     public Role Role { get; set; }
  
+    [Column("user_id")]
     [JsonPropertyName("userId")]
     public Guid UserId { get; set; }
     

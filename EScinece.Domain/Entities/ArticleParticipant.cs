@@ -17,7 +17,7 @@ public class ArticleParticipant: BaseEntity
     public ArticlePermissionLevel PermissionLevel { get; set; }
     
     public ICollection<ArticleBranch> ArticleBranches { get; set; } =  new List<ArticleBranch>();
-    public ICollection<ArticleBranchVersion> ArticleBranchVersions { get; set; } = new List<ArticleBranchVersion>();
+    public ICollection<ArticleVersion> ArticleBranchVersions { get; set; } = new List<ArticleVersion>();
 
     public ArticleParticipant() {}
     

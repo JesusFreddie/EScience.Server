@@ -8,38 +8,38 @@ using StackExchange.Redis;
 
 namespace EScinece.Infrastructure.Repositories;
 
-public class ArticleBranchVersionRepository(
-    ILogger<ArticleBranchVersionRepository> logger,
+public class ArticleVersionRepository(
+    ILogger<ArticleVersionRepository> logger,
     IDbConnectionFactory connectionFactory
-    ) : IArticleBranchVersionRepository
+    ) : IArticleVersionRepository
 {
-    public async Task<ArticleBranchVersion?> GetById(Guid id) =>
+    public async Task<ArticleVersion?> GetById(Guid id) =>
         await ExecuteWithExceptionHandlingAsync(async () =>
         {
             using var connection = await connectionFactory.CreateConnectionAsync();
-            return await connection.QueryFirstOrDefaultAsync<ArticleBranchVersion>(
+            return await connection.QueryFirstOrDefaultAsync<ArticleVersion>(
                 "SELECT * FROM article_branch_versions WHERE id = @id AND deleted_at IS NULL", new { id });
         });
 
-    public async Task<IEnumerable<ArticleBranchVersion>> GetAll() =>
+    public async Task<IEnumerable<ArticleVersion>> GetAll() =>
         await ExecuteWithExceptionHandlingAsync(async () =>
         {
             using var connection = await connectionFactory.CreateConnectionAsync();
-            return await connection.QueryAsync<ArticleBranchVersion>("SELECT * FROM article_branch_versions WHERE deleted_at IS NULL");
+            return await connection.QueryAsync<ArticleVersion>("SELECT * FROM article_branch_versions WHERE deleted_at IS NULL");
         });
 
-    public async Task Create(ArticleBranchVersion entity) =>
+    public async Task Create(ArticleVersion entity) =>
         await ExecuteWithExceptionHandlingAsync(async () =>
         {
             using var connection = await connectionFactory.CreateConnectionAsync();
             return await connection.ExecuteAsync(
                 """
-                INSERT INTO article_branch_versions (id, creator_id, article_branch, created_at, text)
-                VALUES (@id, @creator_id, @article_branch, @created_at, @text)
+                INSERT INTO article_branch_versions (id, creator_id, article_branch_id, created_at, text)
+                VALUES (@id, @creatorId, @articleBranchId, @createdAt, @text)
                 """, entity);
         });
 
-    public async Task Update(ArticleBranchVersion entity) =>
+    public async Task Update(ArticleVersion entity) =>
         await ExecuteWithExceptionHandlingAsync(async () =>
         {
             using var connection = await connectionFactory.CreateConnectionAsync();
@@ -75,7 +75,38 @@ public class ArticleBranchVersionRepository(
                 """, new { id });
             return result > 0;
         });
-    
+
+    public async Task<ArticleVersion?> GetLatestVersion(Guid branchId) =>
+        await ExecuteWithExceptionHandlingAsync(async () =>
+        {
+            using var connection = await connectionFactory.CreateConnectionAsync();
+
+            return await connection.QueryFirstOrDefaultAsync<ArticleVersion>(
+                """
+                SELECT *
+                FROM article_branch_versions
+                WHERE article_branch_id = @branchId
+                ORDER BY created_at DESC
+                LIMIT 1
+                """, new { branchId }
+                );
+        });
+
+    public async Task<bool> SaveText(Guid branchId, string text) =>
+        await ExecuteWithExceptionHandlingAsync(async () =>
+        {
+            using var connection = await connectionFactory.CreateConnectionAsync();
+            var result = await connection.ExecuteAsync(
+                """
+                UPDATE article_branch_versions
+                SET text = @text,
+                    updated_at = NOW()
+                WHERE article_branch_id = @branchId
+                """, new { branchId, text }
+                );
+            return result > 0;
+        });
+
     private async Task<T> ExecuteWithExceptionHandlingAsync<T>(Func<Task<T>> func)
     {
         try

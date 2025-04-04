@@ -13,7 +13,7 @@ public static class ServiceConfiguration
         services.AddScoped<IArticleParticipantService, ArticleParticipantService>();
         services.AddScoped<IArticleService, ArticleService>();
         services.AddScoped<IArticleBranchService, ArticleBranchService>();
-        services.AddScoped<IArticleBranchVersionService, ArticleBranchVersionService>();
+        services.AddScoped<IArticleVersionService, ArticleVersionService>();
         return services;
     }
 }

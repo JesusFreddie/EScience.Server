@@ -12,7 +12,7 @@ public static class RepositoryConfiguration
         services.AddScoped<IArticleRepository, ArticleRepository>();
         services.AddScoped<IArticleParticipantRepository, ArticleParticipantRepository>();
         services.AddScoped<IArticleBranchRepository, ArticleBranchRepository>();
-        services.AddScoped<IArticleBranchVersionRepository, ArticleBranchVersionRepository>();
+        services.AddScoped<IArticleVersionRepository, ArticleVersionRepository>();
         return services;
     }
 }
