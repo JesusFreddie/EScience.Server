@@ -1,3 +1,4 @@
+using EScinece.Domain.Abstraction;
 using EScinece.Domain.Abstraction.Services;
 using EScinece.Domain.Entities;
 using EScinece.Infrastructure.Helpers;
@@ -9,7 +10,11 @@ public class ArticlePolicyHandler : AuthorizationHandler<ArticlePermissionRequir
 {
     private readonly IServiceScopeFactory _serviceScopeFactory;
     private readonly IHttpContextAccessor _httpContextAccessor;
-    public ArticlePolicyHandler(IServiceScopeFactory serviceScopeFactory, IHttpContextAccessor httpContextAccessor)
+    public ArticlePolicyHandler(
+        IServiceScopeFactory serviceScopeFactory, 
+        IHttpContextAccessor httpContextAccessor,
+        ILogger<ArticlePolicyHandler> logger
+        )
     {
         _serviceScopeFactory = serviceScopeFactory;
         _httpContextAccessor = httpContextAccessor;

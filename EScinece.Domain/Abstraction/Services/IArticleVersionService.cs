@@ -7,8 +7,12 @@ public interface IArticleVersionService
 {
     public Task<Result<ArticleVersion, string>> Create(
         string text, Guid creatorId, Guid articleBranchId);
+
+    public Task<Result<ArticleVersion, string>> Copy(Guid versionId, Guid? creatorId = null, Guid? articleBranchId = null);
+    public Task<Result<ArticleVersion, string>> CopyByBranch(Guid branchId, Guid? creatorId = null, Guid? articleBranchId = null);
     
     public Task<ArticleVersion?> GetById(Guid id);
     public Task<ArticleVersion?> GetLast(Guid branchId);
     public Task<bool> Save(Guid branchId, string text);
+
 }

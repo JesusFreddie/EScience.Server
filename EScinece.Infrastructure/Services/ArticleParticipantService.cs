@@ -61,6 +61,19 @@ public class ArticleParticipantService(
         }
     }
 
+    public async Task<ArticleParticipant?> GetByAccount(Guid accountId, Guid articleId)
+    {
+        try
+        {
+            return await articleParticipantRepository.GetByAccount(accountId, articleId);
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, ex.Message);
+            throw new Exception("Ошибка получения персисий");
+        }
+    }
+
     public Task<ArticlePermissionLevel> GetArticlePermissionLevelByIds(Guid accountId, Guid articleId)
     {
         try
@@ -70,7 +83,7 @@ public class ArticleParticipantService(
         catch (Exception ex)
         {
             logger.LogError(ex, ex.Message);
-            throw new Exception("Ошибка получения персисий");
+            throw new Exception("Ошибка получения пермисий");
         }
     }
 }

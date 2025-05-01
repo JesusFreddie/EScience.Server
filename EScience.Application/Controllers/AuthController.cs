@@ -15,8 +15,7 @@ public class AuthController(
     ILogger<AuthController> logger
     ): ControllerBase
 {
-    [Route("register")]
-    [HttpPost]
+    [HttpPost("register", Name = "AuthRegister")]
     public async Task<ActionResult> Register([FromBody] RegisterRequestDto req)
     {
         try
@@ -39,8 +38,7 @@ public class AuthController(
         }
     }
     
-    [Route("login")]
-    [HttpPost]
+    [HttpPost("login", Name = "AuthLogin")]
     public async Task<ActionResult> Login([FromBody] LoginRequestDto req)
     {
         string token;
@@ -65,8 +63,7 @@ public class AuthController(
         return Ok("Login successful");
     }
 
-    [Route("logout")]
-    [HttpPost]
+    [HttpPost("logout", Name = "AuthLogout")]
     public IActionResult Logout()
     {
         return Ok();

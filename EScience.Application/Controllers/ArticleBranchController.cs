@@ -4,26 +4,43 @@ using EScience.Application.Responses;
 using EScinece.Domain.Abstraction.Services;
 using EScinece.Domain.DTOs;
 using EScinece.Domain.Entities;
+using EScinece.Infrastructure.Helpers;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace EScience.Application.Controllers;
 
 [ApiController]
-[Route("branch")]
+[Route("branch/{articleId}")]
 public class ArticleBranchController(
     IArticleBranchService articleBranchService,
     ILogger<ArticleBranchController> logger
     ) : ControllerBase
 {
-    [HttpPost("create")]
-    [Authorize(Policy = ArticlePolicy.ArticleEditorPolicy)]
-    public Task<ActionResult<ArticleBranchDto>> Create(string articleTitle)
+    [HttpPost("create", Name = "BranchCreate")]
+    // [Authorize(Policy = ArticlePolicy.ArticleEditorPolicy)]
+    public async Task<ActionResult<ArticleBranchDto>> Create(Guid articleId, [FromBody] CreateBranchDto req)
     {
-        throw new NotSupportedException();
+        try
+        {
+            var accountIdClaim = User.Claims.FirstOrDefault(c => c.Type == CustomClaims.AccountId);
+            if (accountIdClaim is null || !Guid.TryParse(accountIdClaim.Value, out Guid accountId))
+                return Unauthorized();
+
+            var result = await articleBranchService.Create(req.Name, accountId, articleId, req.ParentId);
+            if (!result.onSuccess)
+                return BadRequest(result.Error);
+            
+            return Ok(result.Value);
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, ex.Message);
+            return StatusCode(500, "Internal server error");
+        }
     }
 
-    [HttpGet("{articleId}/{branchName}")]
+    [HttpGet("{branchName}", Name = "BranchGet")]
     [Authorize(Policy = ArticlePolicy.ArticleReaderPolicy)]
     public async Task<ActionResult<ArticleBranch>> Get(Guid articleId, string branchName)
     {
@@ -39,12 +56,14 @@ public class ArticleBranchController(
         }
     }
 
-    [HttpGet("{articleId}")]
-    public async Task<ActionResult<List<ArticleBranch>>> GetAll(Guid articleId)
+    [HttpGet(Name = "BranchGetAll")]
+    [Authorize(Policy = ArticlePolicy.ArticleReaderPolicy)]
+    public async Task<ActionResult<IEnumerable<ArticleBranch>>> GetAll(Guid articleId)
     {
-        try
+        try 
         {
-            throw new Exception();
+            var result = await articleBranchService.GetAllByArticleId(articleId);
+            return Ok(result);
         }
         catch (Exception ex)
         {
@@ -53,5 +72,18 @@ public class ArticleBranchController(
         }
     }
 
-    
+    [HttpGet("id/{branchId}", Name = "BranchGetById")]
+    public async Task<ActionResult<ArticleBranch>> GetById(Guid branchId)
+    {
+        try 
+        {
+            var result = await articleBranchService.GetById(branchId);
+            return Ok(result);
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, ex.Message);
+            return StatusCode(500, "Internal server error");
+        }
+    }
 }

@@ -95,7 +95,16 @@ public class ArticleParticipantRepository(
                 SELECT permission_level FROM article_participants WHERE account_id = @id AND article_id = @articleId
                 """, new { id = accountId, articleId = articleId });
         });
-    
+
+    public async Task<ArticleParticipant?> GetByAccount(Guid accountId, Guid articleId) =>
+        await ExecuteWithExceptionHandlingAsync(async () =>
+        {
+            using var connection = await connectionFactory.CreateConnectionAsync();
+            return await connection.QueryFirstOrDefaultAsync<ArticleParticipant>(
+                "SELECT * FROM article_participants WHERE article_id = @articleId AND account_id = @accountId AND deleted_at IS NULL",
+                new { articleId, accountId });
+        });
+
     private async Task<T> ExecuteWithExceptionHandlingAsync<T>(Func<Task<T>> func)
     {
         try

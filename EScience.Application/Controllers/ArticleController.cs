@@ -19,7 +19,7 @@ public class ArticleController(
     ILogger<ArticleController> logger
     ) : ControllerBase
 {
-    [HttpPost("create")]
+    [HttpPost("create", Name = "ArticleCreate")]
     public async Task<ActionResult<Article>> Create(
         [FromBody] CreateArticleRequest request
         )
@@ -49,7 +49,7 @@ public class ArticleController(
         }
     }
 
-    [HttpGet]
+    [HttpGet(Name = "ArticleGetAll")]
     public async Task<ActionResult<IEnumerable<Article>>> GetAll()
     {
         try
@@ -69,7 +69,7 @@ public class ArticleController(
         }
     }
     
-    [HttpGet("{articleId}")]
+    [HttpGet("{articleId}", Name = "ArticleGet")]
     [Authorize(Policy = ArticlePolicy.ArticleReaderPolicy)]
     public async Task<ActionResult<Article?>> GetById(Guid articleId)
     {
@@ -87,7 +87,7 @@ public class ArticleController(
         }
     }
 
-    [HttpPost("set_participant_for_article/{articleId}")]
+    [HttpPost("set_participant_for_article/{articleId}", Name = "ArticleSetParticipant")]
     [Authorize(Policy = ArticlePolicy.ArticleAuthorPolicy)]
     public async Task<ActionResult<ArticleParticipant>> SetParticipantForArticle(Guid articleId, [FromBody] SetParticipantRequest request)
     {

@@ -15,7 +15,7 @@ public class AccountArticleController(
     ILogger<AccountArticleController> logger
     ) : ControllerBase
 {
-    [HttpGet]
+    [HttpGet(Name = "AccountArticleGet")]
     public async Task<ActionResult<Article>> GetArticle(
         string accountName, 
         string articleName,
@@ -27,7 +27,7 @@ public class AccountArticleController(
             var account = await accountService.GetByName(accountName);
             if (account is null)
                 return NotFound();
-     
+
             var article = await articleService.GetByTitle(articleName, account.Id, branchName);
             return Ok(article);
         }

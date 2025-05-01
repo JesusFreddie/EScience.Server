@@ -11,7 +11,6 @@ namespace EScinece.Infrastructure.Services;
 public class ArticleService(
     IArticleRepository articleRepository,
     IArticleParticipantService articleParticipantService,
-    IAccountService accountService,
     IArticleBranchService articleBranchService,
     ILogger<ArticleService> logger
     ) : IArticleService
@@ -61,13 +60,23 @@ public class ArticleService(
                     await articleRepository.Delete(article.Value.Id);
                     return creator.Error;
                 }
-                Console.WriteLine(creator.Value.Id);
-                await articleBranchService.Create("main", creator.Value.Id, article.Value.Id);
-                
-                return article;
+
+                try
+                {
+                    await articleBranchService.Create("main", accountId, article.Value.Id);
+
+                    return article;
+                }
+                catch (Exception e)
+                {
+                    logger.LogError(e, e.Message);
+                    await articleParticipantService.Delete(creator.Value.Id);
+                    throw;
+                }
             }
-            catch
+            catch (Exception e)
             {
+                logger.LogError(e, e.Message);
                 await articleRepository.Delete(article.Value.Id);
                 throw;
             }
@@ -111,7 +120,7 @@ public class ArticleService(
     {
         try
         {
-            return await articleRepository.GetByTitle(title, accountId);
+            return await articleRepository.GetByTitle(title, accountId, branchName);
         }
         catch (Exception ex)
         {

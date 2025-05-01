@@ -35,8 +35,8 @@ public class ArticleBranchRepository(
             using var connection = await connectionFactory.CreateConnectionAsync();
             return await connection.ExecuteAsync(
                 """
-                INSERT INTO article_branches (id, name, creator_id, article_id)
-                VALUES (@id, @name, @creatorId, @articleId)
+                INSERT INTO article_branches (id, name, creator_id, article_id, parent_id, is_main)
+                VALUES (@id, @name, @creatorId, @articleId, @parentId, @isMain)
                 """, entity);
         });
 
@@ -81,7 +81,7 @@ public class ArticleBranchRepository(
         await ExecuteWithExceptionHandlingAsync(async () =>
         {
             using var connection = await connectionFactory.CreateConnectionAsync();
-            var result = await connection.QueryFirstAsync<ArticleBranch>(
+            var result = await connection.QueryFirstOrDefaultAsync<ArticleBranch>(
                 """
                 SELECT *
                 FROM article_branches
@@ -92,6 +92,24 @@ public class ArticleBranchRepository(
             return result;
         });
 
+    public async Task<ArticleBranch?> GetMain(Guid articleId) =>
+        await ExecuteWithExceptionHandlingAsync(async () =>
+        {
+            var connection = await connectionFactory.CreateConnectionAsync();
+            return await connection.QueryFirstOrDefaultAsync<ArticleBranch>(
+                "SELECT * FROM article_branches WHERE article_id = @articleId AND is_main = true", 
+                new { articleId });
+        });
+
+    public async Task<IEnumerable<ArticleBranch>> GetAll(Guid articleId) =>
+        await ExecuteWithExceptionHandlingAsync(async () =>
+        {
+            using var connection = await connectionFactory.CreateConnectionAsync();
+            return await connection.QueryAsync<ArticleBranch>(
+                "SELECT * FROM article_branches WHERE article_id = @articleId", new { articleId }
+                );
+        });
+
     private async Task<T> ExecuteWithExceptionHandlingAsync<T>(Func<Task<T>> func)
     {
         try
@@ -100,22 +118,22 @@ public class ArticleBranchRepository(
         }
         catch (NpgsqlException ex)
         {
-            logger.LogError("Произошла ошибка SQL-запроса", ex);
+            logger.LogError(ex, "Произошла ошибка SQL-запроса");
             throw new Exception("Ошибка SQL-запроса: " + ex.Message, ex);
         }
         catch (RedisConnectionException ex)
         {
-            logger.LogError("Ошибка соединения с Redis", ex);
+            logger.LogError(ex, "Ошибка соединения с Redis");
             throw new Exception("Ошибка соединения с Redis: " + ex.Message, ex);
         }
         catch (DbConnectionException ex)
         {
-            logger.LogError("Ошибка соединения", ex);
+            logger.LogError(ex, "Ошибка соединения");
             throw new Exception("Ошибка соединения: " + ex.Message, ex);
         }
         catch (Exception ex)
         {
-            logger.LogError("Неизвестная ошибка", ex);
+            logger.LogError(ex, "Неизвестная ошибка");
             throw new Exception("Неизвестная ошибка: " + ex.Message, ex);
         }
     }

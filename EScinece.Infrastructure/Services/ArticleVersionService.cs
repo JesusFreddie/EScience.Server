@@ -30,6 +30,62 @@ public class ArticleVersionService(
         }
     }
 
+    public async Task<Result<ArticleVersion, string>> Copy(Guid versionId, Guid? creatorId = null, Guid? articleBranchId = null)
+    {
+        try
+        {
+            var original = await GetById(versionId);
+            if (original is null)
+                return "Version not found";
+
+            var version = ArticleVersion.Create(
+                articleBranchId: articleBranchId ?? original.ArticleBranchId,
+                creatorId: creatorId ?? original.CreatorId,
+                text: original.Text
+                );
+            
+            if (!version.onSuccess)
+                return version.Error;
+            
+            await articleVersionRepository.Create(version.Value);
+            
+            return version.Value;
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, ex.Message);
+            throw new Exception("An error occured while copying the article version");
+        }
+    }
+
+    public async Task<Result<ArticleVersion, string>> CopyByBranch(Guid branchId, Guid? creatorId = null, Guid? articleBranchId = null)
+    {
+        try
+        {
+            var original = await GetLast(branchId);
+            if (original is null)
+                return "Branch not found";
+
+            var version = ArticleVersion.Create(
+                articleBranchId: articleBranchId ?? branchId,
+                creatorId: creatorId ?? original.CreatorId,
+                text: original.Text
+            );
+            
+            if (!version.onSuccess)
+                return version.Error;
+
+            await articleVersionRepository.Create(version.Value);
+            
+            return version.Value;
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, ex.Message);
+            throw new Exception("An error occured while copying the article version");
+        }
+    }
+
     public async Task<ArticleVersion?> GetById(Guid id)
     {
         try
@@ -68,6 +124,7 @@ public class ArticleVersionService(
             throw;
         }
     }
+
 
     private string ParseHtml(string html)
     {

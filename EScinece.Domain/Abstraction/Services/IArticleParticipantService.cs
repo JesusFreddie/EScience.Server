@@ -11,6 +11,7 @@ public interface IArticleParticipantService
         ArticlePermissionLevel permissionLevel = ArticlePermissionLevel.READER);
     public Task<ArticleParticipant?> GetById(Guid id);
     public Task<bool> Delete(Guid id);
+    public Task<ArticleParticipant?> GetByAccount(Guid accountId, Guid articleId);
     
     public Task<ArticlePermissionLevel> GetArticlePermissionLevelByIds(Guid accountId, Guid articleId);
 }

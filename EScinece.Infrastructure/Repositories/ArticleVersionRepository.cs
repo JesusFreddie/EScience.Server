@@ -34,8 +34,8 @@ public class ArticleVersionRepository(
             using var connection = await connectionFactory.CreateConnectionAsync();
             return await connection.ExecuteAsync(
                 """
-                INSERT INTO article_branch_versions (id, creator_id, article_branch_id, created_at, text)
-                VALUES (@id, @creatorId, @articleBranchId, @createdAt, @text)
+                INSERT INTO article_branch_versions (id, creator_id, article_branch_id, text)
+                VALUES (@id, @creatorId, @articleBranchId, @text)
                 """, entity);
         });
 

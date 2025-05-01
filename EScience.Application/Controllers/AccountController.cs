@@ -13,8 +13,7 @@ public class AccountController(
     ILogger<AccountController> logger
     ) : ControllerBase
 {
-    [HttpGet]
-    [Route("session")]
+    [HttpGet("session",Name = "AccountSession")]
     public async Task<ActionResult<ProfileDto>> GetProfileSession()
     {
         try
@@ -40,8 +39,7 @@ public class AccountController(
         }
     }
     
-    [HttpGet]
-    [Route("{accountName}")]
+    [HttpGet("{accountName}", Name = "AccountGetProfile")]
     public async Task<ActionResult<ProfileDto>> GetProfile(string accountName)
     {
         try

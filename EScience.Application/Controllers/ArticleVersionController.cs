@@ -15,7 +15,7 @@ public class ArticleVersionController(
     IArticleVersionService articleVersionService
     ) : ControllerBase
 {
-    [HttpGet("last")]
+    [HttpGet("last", Name = "VersionGetLast")]
     public async Task<ActionResult<ArticleVersion>> GetLast(Guid branchId)
     {
         try
@@ -30,7 +30,7 @@ public class ArticleVersionController(
         }
     }
     
-    [HttpPost("save")]
+    [HttpPost("save", Name = "VersionSave")]
     public async Task<IActionResult> Save([FromBody] SaveArticleTextRequest request)
     {
         try

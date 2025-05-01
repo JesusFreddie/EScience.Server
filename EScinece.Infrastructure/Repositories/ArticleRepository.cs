@@ -108,25 +108,24 @@ public class ArticleRepository(
         await ExecuteWithExceptionHandlingAsync(async () =>
         {
             using var connection = await connectionFactory.CreateConnectionAsync();
-        
+    
             string sql = """
-                SELECT 
-                    a.*, 
-                    acc.*,
-                    b.*
-                FROM articles a
-                INNER JOIN accounts acc ON a.account_id = acc.id
-                LEFT JOIN (
-                    SELECT ab.*,
-                           ROW_NUMBER() OVER (PARTITION BY ab.article_id 
-                                              ORDER BY ab.created_at ASC) as rn
-                    FROM article_branches ab
-                    WHERE @branchName IS NULL OR ab.name = @branchName
-                ) b ON b.article_id = a.id AND (b.rn = 1 OR @branchName IS NOT NULL)
-                WHERE a.title = @title
-                AND a.account_id = @accountId
-                LIMIT 1 
-                """;
+                         SELECT 
+                             a.*, 
+                             acc.*,
+                             b.*
+                         FROM articles a
+                         INNER JOIN accounts acc ON a.account_id = acc.id
+                         LEFT JOIN article_branches b ON b.article_id = a.id
+                         WHERE a.title = @title
+                         AND a.account_id = @accountId
+                         AND (
+                             (@branchName IS NOT NULL AND b.name = @branchName)
+                             OR
+                             (@branchName IS NULL AND b.is_main = true)
+                         )
+                         LIMIT 1 
+                         """;
 
             var result = await connection.QueryAsync<Article, Account, ArticleBranch, Article>(
                 sql,
