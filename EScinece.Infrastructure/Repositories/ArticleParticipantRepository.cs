@@ -105,6 +105,20 @@ public class ArticleParticipantRepository(
                 new { articleId, accountId });
         });
 
+    public async Task<IEnumerable<ArticleParticipant>> GetByArticle(Guid articleId) =>
+        await ExecuteWithExceptionHandlingAsync(async () =>
+        {
+            using var connection = await connectionFactory.CreateConnectionAsync();
+            return await connection.QueryAsync<ArticleParticipant>(
+                """
+                SELECT *
+                FROM article_participants
+                WHERE article_id = @articleId 
+                  AND deleted_at IS NULL
+                  AND is_accepted = true
+                """, new { articleId });
+        });
+
     private async Task<T> ExecuteWithExceptionHandlingAsync<T>(Func<Task<T>> func)
     {
         try

@@ -15,7 +15,9 @@ public class ArticleParticipantService(
     public async Task<Result<ArticleParticipant, string>> Create(
         Guid accountId, 
         Guid articleId, 
-        ArticlePermissionLevel permissionLevel = ArticlePermissionLevel.READER)
+        ArticlePermissionLevel permissionLevel = ArticlePermissionLevel.READER,
+        bool isAccepted = false
+        )
     {
         try
         {
@@ -84,6 +86,19 @@ public class ArticleParticipantService(
         {
             logger.LogError(ex, ex.Message);
             throw new Exception("Ошибка получения пермисий");
+        }
+    }
+
+    public async Task<IEnumerable<ArticleParticipant>> GetAllByArticle(Guid articleId)
+    {
+        try
+        {
+            return await articleParticipantRepository.GetByArticle(articleId);
+        }
+        catch (Exception e)
+        {
+            logger.LogError(e, e.Message);
+            throw new Exception("Error Getting");
         }
     }
 }

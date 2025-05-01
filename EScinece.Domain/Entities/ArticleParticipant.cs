@@ -21,16 +21,27 @@ public class ArticleParticipant: BaseEntity
 
     public ArticleParticipant() {}
     
-    private ArticleParticipant(Guid accountId, Guid articleId, ArticlePermissionLevel permissionLevel = ArticlePermissionLevel.READER)
+    private ArticleParticipant(
+        Guid accountId, 
+        Guid articleId, 
+        ArticlePermissionLevel permissionLevel = ArticlePermissionLevel.READER,
+        bool isAccepted = false
+        )
     {
         Id = Guid.NewGuid();
         AccountId = accountId;
         ArticleId = articleId;
         PermissionLevel = permissionLevel;
+        IsAccepted = isAccepted;
     }
 
-    public static Result<ArticleParticipant, string> Create(Guid accountId, Guid articleId, ArticlePermissionLevel permissionLevel = ArticlePermissionLevel.READER)
+    public static Result<ArticleParticipant, string> Create(
+        Guid accountId, 
+        Guid articleId, 
+        ArticlePermissionLevel permissionLevel = ArticlePermissionLevel.READER,
+        bool isAccepted = false
+        )
     {
-        return new ArticleParticipant(accountId, articleId, permissionLevel);
+        return new ArticleParticipant(accountId, articleId, permissionLevel, isAccepted);
     }
 }

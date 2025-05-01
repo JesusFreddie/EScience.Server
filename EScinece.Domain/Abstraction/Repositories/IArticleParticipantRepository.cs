@@ -6,4 +6,5 @@ public interface IArticleParticipantRepository : IRepository<ArticleParticipant>
 {
     public Task<ArticlePermissionLevel> GetArticlePermissionLevelByIds(Guid accountId, Guid articleId);
     public Task<ArticleParticipant?> GetByAccount(Guid accountId, Guid articleId);
+    public Task<IEnumerable<ArticleParticipant>> GetByArticle(Guid articleId);
 }

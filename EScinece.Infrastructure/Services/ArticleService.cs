@@ -53,7 +53,9 @@ public class ArticleService(
                 var creator = await articleParticipantService.Create(
                     accountId: accountId,
                     articleId: article.Value.Id,
-                    permissionLevel: ArticlePermissionLevel.AUTHOR);
+                    permissionLevel: ArticlePermissionLevel.AUTHOR,
+                    isAccepted: true
+                    );
                 
                 if (!creator.onSuccess)
                 {
