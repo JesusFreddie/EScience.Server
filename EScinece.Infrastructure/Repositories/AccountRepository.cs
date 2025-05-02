@@ -74,6 +74,14 @@ public class AccountRepository(
             return result > 0;
         });
 
+    public async Task<bool> Exists(Guid id) =>
+        await ExecuteWithExceptionHandlingAsync(async () =>
+        {
+            using var connection = await connectionFactory.CreateConnectionAsync();
+            return await connection.ExecuteScalarAsync<bool>(
+                "SELECT EXISTS(SELECT 1 FROM accounts WHERE id = @id)", new { id });
+        });
+
     public async Task<Account?> GetByUserId(Guid id) =>
         await ExecuteWithExceptionHandlingAsync(async () =>
         {

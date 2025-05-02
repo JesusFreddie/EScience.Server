@@ -105,6 +105,14 @@ public class ArticleParticipantRepository(
                 new { articleId, accountId });
         });
 
+    public async Task<bool> Exists(Guid id) =>
+        await ExecuteWithExceptionHandlingAsync(async () =>
+        {
+            using var connection = await connectionFactory.CreateConnectionAsync();
+            return await connection.ExecuteScalarAsync<bool>(
+                "SELECT EXISTS(SELECT 1 FROM article_participants WHERE id = @id)", new { id });
+        });
+    
     public async Task<IEnumerable<ArticleParticipant>> GetByArticle(Guid articleId) =>
         await ExecuteWithExceptionHandlingAsync(async () =>
         {

@@ -90,6 +90,29 @@ public class ArticleService(
         }
     }
 
+    public async Task<Result<Article, string>> Update(Guid id, string? title, string? description, bool? isPrivate)
+    {
+        try
+        {
+            var article = await GetById(id);
+            if (article is null)
+                return ArticleErrorMessage.ArticleNotFound;
+            
+            article.Title = title ?? article.Title;
+            article.Description = description ?? article.Description;
+            article.IsPrivate = isPrivate ?? article.IsPrivate;
+            
+            await articleRepository.Update(article);
+            
+            return article;
+        }
+        catch (Exception e)
+        {
+            logger.LogError(e, e.Message);
+            throw new Exception("Error update article");
+        }
+    }
+
     public Task<IEnumerable<Article>> GetAllByArticleParticipantId(Guid id)
     {
         throw new NotImplementedException();

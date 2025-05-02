@@ -8,4 +8,5 @@ public interface IRepository<T> where T : BaseEntity
     public Task Update(T entity);
     public Task<bool> Delete(Guid id);
     public Task<bool> SoftDelete(Guid id);
+    public Task<bool> Exists(Guid id);
 }

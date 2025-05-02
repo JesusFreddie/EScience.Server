@@ -33,6 +33,14 @@ public class UserRepository(
             return Task.CompletedTask;
         });
 
+    public async Task<bool> Exists(Guid id) =>
+        await ExecuteWithExceptionHandlingAsync(async () =>
+        {
+            using var connection = await connectionFactory.CreateConnectionAsync();
+            return await connection.ExecuteScalarAsync<bool>(
+                "SELECT EXISTS(SELECT 1 FROM users WHERE id = @id)", new { id });
+        });
+    
     public async Task Update(User entity) =>
         await ExecuteWithExceptionHandlingAsync(async () =>
         {

@@ -63,6 +63,14 @@ public class ArticleVersionRepository(
             return result > 0;
         });
 
+    public async Task<bool> Exists(Guid id) =>
+        await ExecuteWithExceptionHandlingAsync(async () =>
+        {
+            using var connection = await connectionFactory.CreateConnectionAsync();
+            return await connection.ExecuteScalarAsync<bool>(
+                "SELECT EXISTS(SELECT 1 FROM article_branch_versions WHERE id = @id)", new { id });
+        });
+    
     public async Task<bool> SoftDelete(Guid id) =>
         await ExecuteWithExceptionHandlingAsync(async () =>
         {

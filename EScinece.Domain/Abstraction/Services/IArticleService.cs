@@ -11,6 +11,13 @@ public interface IArticleService
         Guid accountId, 
         bool isPrivate,
         Guid? typeArticleId);
+
+    public Task<Result<Article, string>> Update(
+        Guid id,
+        string? title,
+        string? description,
+        bool? isPrivate
+        );
     public Task<IEnumerable<Article>> GetAllByArticleParticipantId(Guid id);
     public Task<IEnumerable<Article>> GetAllByArticleParticipantIdAndAccountId(Guid id);
     public Task<IEnumerable<Article>> GetAllByAccountId(Guid id);

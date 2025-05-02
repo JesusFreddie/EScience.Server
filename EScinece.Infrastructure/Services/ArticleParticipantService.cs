@@ -21,7 +21,7 @@ public class ArticleParticipantService(
     {
         try
         {
-            var articleParticipantResult = ArticleParticipant.Create(accountId, articleId, permissionLevel);
+            var articleParticipantResult = ArticleParticipant.Create(accountId, articleId, permissionLevel, isAccepted);
             
             if (!articleParticipantResult.onSuccess)
                 return articleParticipantResult.Error;

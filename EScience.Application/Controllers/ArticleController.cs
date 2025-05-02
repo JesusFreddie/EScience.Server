@@ -49,6 +49,32 @@ public class ArticleController(
         }
     }
 
+    [HttpPatch("{articleId:guid}/update", Name = "ArticleUpdate")]
+    public async Task<ActionResult<Article>> Update(Guid articleId, [FromBody] UpdateArticleRequest req)
+    {
+        try
+        {
+            var result = await articleService.Update(
+                id: articleId,
+                title: req.Title,
+                description: req.Description,
+                isPrivate: req.IsPrivate
+            );
+
+            if (!result.onSuccess)
+            {
+                return BadRequest(result.Error);
+            }
+            
+            return StatusCode(200, result.Value);
+        }
+        catch (Exception e)
+        {
+            logger.LogError(e, e.Message);
+            return StatusCode(500, "Internal server error");
+        }
+    }
+    
     [HttpGet(Name = "ArticleGetAll")]
     public async Task<ActionResult<IEnumerable<Article>>> GetAll()
     {

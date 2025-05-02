@@ -189,6 +189,14 @@ public class ArticleRepository(
             return Task.CompletedTask;
         });
 
+    public async Task<bool> Exists(Guid id) =>
+        await ExecuteWithExceptionHandlingAsync(async () =>
+        {
+            using var connection = await connectionFactory.CreateConnectionAsync();
+            return await connection.ExecuteScalarAsync<bool>(
+                "SELECT EXISTS(SELECT 1 FROM articles WHERE id = @id)", new { id });
+        });
+    
     public async Task Update(Article entity) =>
         await ExecuteWithExceptionHandlingAsync(async () =>
         {
@@ -198,7 +206,7 @@ public class ArticleRepository(
                 UPDATE articles
                 SET title = @title, 
                     description = @description, 
-                    is_private = @is_private, 
+                    is_private = @isPrivate, 
                     updated_at = NOW()
                 WHERE id = @id
                 """, entity);

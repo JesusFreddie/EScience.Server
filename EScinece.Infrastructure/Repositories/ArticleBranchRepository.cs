@@ -29,6 +29,14 @@ public class ArticleBranchRepository(
                 "SELECT * FROM article_branches WHERE deleted_at is not null");
         });
 
+    public async Task<bool> Exists(Guid id) =>
+        await ExecuteWithExceptionHandlingAsync(async () =>
+        {
+            using var connection = await connectionFactory.CreateConnectionAsync();
+            return await connection.ExecuteScalarAsync<bool>(
+                "SELECT EXISTS(SELECT 1 FROM article_branches WHERE id = @id)", new { id });
+        });
+    
     public async Task Create(ArticleBranch entity) =>
         await ExecuteWithExceptionHandlingAsync(async () =>
         {
