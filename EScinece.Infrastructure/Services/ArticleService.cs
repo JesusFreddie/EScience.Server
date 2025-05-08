@@ -123,9 +123,18 @@ public class ArticleService(
         return await articleRepository.GetAllByArticleParticipantIdAndAccountId(id);
     }
 
-    public Task<IEnumerable<Article>> GetAllByAccountId(Guid id)
+    public async Task<IEnumerable<Article>> GetAllByAccountId(Guid id, int take)
     {
-        throw new NotImplementedException();
+        const int skip = 20;
+        try
+        {
+            return await articleRepository.GetAllByAccountId(id, skip, take);
+        }
+        catch (Exception e)
+        {
+            logger.LogError(e, e.Message);
+            throw new Exception("Error get all articles");
+        }
     }
 
     public async Task<Article?> GetById(Guid id)

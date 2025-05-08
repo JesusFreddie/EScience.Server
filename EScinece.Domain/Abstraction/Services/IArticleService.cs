@@ -20,7 +20,7 @@ public interface IArticleService
         );
     public Task<IEnumerable<Article>> GetAllByArticleParticipantId(Guid id);
     public Task<IEnumerable<Article>> GetAllByArticleParticipantIdAndAccountId(Guid id);
-    public Task<IEnumerable<Article>> GetAllByAccountId(Guid id);
+    public Task<IEnumerable<Article>> GetAllByAccountId(Guid id, int take);
     public Task<Article?> GetById(Guid id);
     public Task<Article?> GetByTitle(string title, Guid accountId, string? branchName = null);
 }

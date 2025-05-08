@@ -30,6 +30,21 @@ public class ArticleVersionController(
         }
     }
     
+    [HttpGet("first", Name = "VersionGetFist")]
+    public async Task<ActionResult<ArticleVersion>> GetFirst(Guid branchId)
+    {
+        try
+        {
+            var version = await articleVersionService.GetFirst(branchId);
+            return Ok(version);
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex.Message);
+            return StatusCode(500, "Internal server error");
+        }
+    }
+    
     [HttpPost("save", Name = "VersionSave")]
     public async Task<IActionResult> Save([FromBody] SaveArticleTextRequest request)
     {

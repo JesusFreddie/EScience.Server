@@ -99,11 +99,24 @@ public class ArticleVersionService(
         }
     }
 
-    public Task<ArticleVersion?> GetLast(Guid branchId)
+    public async Task<ArticleVersion?> GetLast(Guid branchId)
     {
         try
         {
-            return articleVersionRepository.GetLatestVersion(branchId);
+            return await articleVersionRepository.GetLatestVersion(branchId);
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, ex.Message);
+            throw;
+        }
+    }
+
+    public async Task<ArticleVersion?> GetFirst(Guid branchId)
+    {
+        try
+        {
+            return await articleVersionRepository.GetFirstVersion(branchId);
         }
         catch (Exception ex)
         {

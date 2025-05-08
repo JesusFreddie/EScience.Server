@@ -100,6 +100,22 @@ public class ArticleVersionRepository(
                 );
         });
 
+    public async Task<ArticleVersion?> GetFirstVersion(Guid branchId) => 
+        await ExecuteWithExceptionHandlingAsync(async () =>
+        {
+            using var connection = await connectionFactory.CreateConnectionAsync();
+
+            return await connection.QueryFirstOrDefaultAsync<ArticleVersion>(
+                """
+                SELECT *
+                FROM article_branch_versions
+                WHERE article_branch_id = @branchId
+                ORDER BY created_at
+                LIMIT 1
+                """, new { branchId }
+            );
+        });
+
     public async Task<bool> SaveText(Guid branchId, string text) =>
         await ExecuteWithExceptionHandlingAsync(async () =>
         {

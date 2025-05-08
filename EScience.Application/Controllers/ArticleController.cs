@@ -94,6 +94,24 @@ public class ArticleController(
             return StatusCode(500, "Internal server error");
         }
     }
+
+    [HttpGet("id/{accountId:guid}", Name = "ArticleGetByAccountId")]
+    public async Task<ActionResult<IEnumerable<Article>>> GetAllByAccountId(
+        Guid accountId,
+        [FromQuery(Name = "page")] int page = 1
+        )
+    {
+        try
+        {
+            var result = await articleService.GetAllByAccountId(accountId, page);
+            return Ok(result);
+        }
+        catch (Exception e)
+        {
+            logger.LogError(e, e.Message);
+            return StatusCode(500, "Internal server error");
+        }
+    }
     
     [HttpGet("{articleId}", Name = "ArticleGet")]
     [Authorize(Policy = ArticlePolicy.ArticleReaderPolicy)]

@@ -61,7 +61,7 @@ public class ArticleRepository(
                 new { id });
         });
 
-    public async Task<IEnumerable<Article>> GetAllByAccountId(Guid id) =>
+    public async Task<IEnumerable<Article>> GetAllByAccountId(Guid id, int page, int take) =>
         await ExecuteWithExceptionHandlingAsync(async () =>
         {
             using var connection = await connectionFactory.CreateConnectionAsync();
@@ -72,6 +72,8 @@ public class ArticleRepository(
                     INNER JOIN accounts as ac ON a.account_id = ac.id
                     WHERE account_id = @id
                     AND a.deleted_at IS NULL
+                    LIMIT @take
+                    OFFSET @offset
                     """, 
                 (article, account) => 
                 {
