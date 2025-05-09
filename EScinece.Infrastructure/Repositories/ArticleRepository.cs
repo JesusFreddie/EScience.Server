@@ -61,7 +61,7 @@ public class ArticleRepository(
                 new { id });
         });
 
-    public async Task<IEnumerable<Article>> GetAllByAccountId(Guid id, int page, int take) =>
+    public async Task<IEnumerable<Article>> GetAllByAccountId(Guid id, int limit, int skip) =>
         await ExecuteWithExceptionHandlingAsync(async () =>
         {
             using var connection = await connectionFactory.CreateConnectionAsync();
@@ -72,15 +72,15 @@ public class ArticleRepository(
                     INNER JOIN accounts as ac ON a.account_id = ac.id
                     WHERE account_id = @id
                     AND a.deleted_at IS NULL
-                    LIMIT @take
-                    OFFSET @offset
+                    LIMIT @limit
+                    OFFSET @skip
                     """, 
                 (article, account) => 
                 {
                     article.Account = account;
                     return article;
                 },
-                new { id },
+                new { id, limit, skip },
                 splitOn: "id");
         });
 
@@ -145,6 +145,17 @@ public class ArticleRepository(
             );
 
             return result.FirstOrDefault();
+        });
+
+    public async Task<int> GetCount(Guid accountId) =>
+        await ExecuteWithExceptionHandlingAsync(async () =>
+        {
+            using var connection = await connectionFactory.CreateConnectionAsync();
+            var result = await connection.QueryFirstOrDefaultAsync<int>(
+                """
+                SELECT count(*) FROM articles a WHERE a.account_id = @accountId AND a.deleted_at IS NULL
+                """, new { accountId });
+            return result;
         });
 
     public async Task<IEnumerable<Article>> GetAll() =>

@@ -15,6 +15,7 @@ public static class ServiceConfiguration
         services.AddScoped<IArticleBranchService, ArticleBranchService>();
         services.AddScoped<IArticleVersionService, ArticleVersionService>();
         services.AddScoped<IMergeService, MergeService>();
+        services.AddScoped<INotificationService, NotificationService>();
         return services;
     }
 }

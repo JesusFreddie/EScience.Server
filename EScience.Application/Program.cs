@@ -56,7 +56,7 @@ app.UseCors(x => x
         .AllowAnyMethod()
         .AllowAnyHeader()
         );
-
+app.AddNotificationHub();
 app.MapControllers();
 
 app.UseAuthentication();

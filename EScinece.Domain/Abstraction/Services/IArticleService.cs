@@ -18,6 +18,7 @@ public interface IArticleService
         string? description,
         bool? isPrivate
         );
+    public Task<int> GetCount(Guid accountId);
     public Task<IEnumerable<Article>> GetAllByArticleParticipantId(Guid id);
     public Task<IEnumerable<Article>> GetAllByArticleParticipantIdAndAccountId(Guid id);
     public Task<IEnumerable<Article>> GetAllByAccountId(Guid id, int take);

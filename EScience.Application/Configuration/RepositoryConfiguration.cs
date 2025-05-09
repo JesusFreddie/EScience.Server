@@ -13,6 +13,7 @@ public static class RepositoryConfiguration
         services.AddScoped<IArticleParticipantRepository, ArticleParticipantRepository>();
         services.AddScoped<IArticleBranchRepository, ArticleBranchRepository>();
         services.AddScoped<IArticleVersionRepository, ArticleVersionRepository>();
+        services.AddScoped<INotificationRepository, NotificationRepository>();
         return services;
     }
 }

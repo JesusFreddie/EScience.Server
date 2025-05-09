@@ -112,6 +112,21 @@ public class ArticleController(
             return StatusCode(500, "Internal server error");
         }
     }
+
+    [HttpGet("count/{accountId:guid}", Name = "ArticleGetCountByAccountId")]
+    public async Task<ActionResult<EntityCount>> GetCountByAccountId(Guid accountId)
+    {
+        try
+        {
+            var result = await articleService.GetCount(accountId);
+            return Ok(new EntityCount(result));
+        }
+        catch (Exception e)
+        {
+            logger.LogError(e, e.Message);
+            return StatusCode(500, "Internal server error");
+        }
+    }
     
     [HttpGet("{articleId}", Name = "ArticleGet")]
     [Authorize(Policy = ArticlePolicy.ArticleReaderPolicy)]

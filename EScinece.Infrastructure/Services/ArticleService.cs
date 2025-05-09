@@ -113,6 +113,19 @@ public class ArticleService(
         }
     }
 
+    public Task<int> GetCount(Guid accountId)
+    {
+        try
+        {
+            return articleRepository.GetCount(accountId);
+        }
+        catch (Exception e)
+        {
+            logger.LogError(e, e.Message);
+            throw new Exception("Error get count article");
+        }
+    }
+
     public Task<IEnumerable<Article>> GetAllByArticleParticipantId(Guid id)
     {
         throw new NotImplementedException();
@@ -125,10 +138,11 @@ public class ArticleService(
 
     public async Task<IEnumerable<Article>> GetAllByAccountId(Guid id, int take)
     {
-        const int skip = 20;
+        const int limit = 8;
+        var skip = limit * (take - 1);
         try
         {
-            return await articleRepository.GetAllByAccountId(id, skip, take);
+            return await articleRepository.GetAllByAccountId(id, limit, skip);
         }
         catch (Exception e)
         {
