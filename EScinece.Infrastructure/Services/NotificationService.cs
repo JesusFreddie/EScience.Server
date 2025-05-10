@@ -13,28 +13,36 @@ public class NotificationService(
     ILogger<NotificationService> logger
     ) : INotificationService
 {
-    public async Task SendNotification(Guid accountId, NotificationType type, string message)
+    public async Task SendNotification(Guid accountId, NotificationType type, string title, string message)
     {
-        var notification = new Notification
-        {
-            AccountId = accountId,
-            Type = type,
-            IsRead = false,
-            Message = message,
-        };
-        
         try
         {
-            await notificationRepository.Create(notification);
+            var notification = new Notification
+            {
+                Title = title,
+                AccountId = accountId,
+                Type = type,
+                IsRead = false,
+                Message = message,
+            };
+
+            try
+            {
+                await notificationRepository.Create(notification);
+            }
+            catch (Exception e)
+            {
+                logger.LogError(e, e.Message);
+                throw new Exception($"An error occured while sending notification: {e.Message}");
+            }
+
+            await hubContext.Clients.User(accountId.ToString())
+                .SendAsync("NewNotification", notification);
         }
         catch (Exception e)
         {
             logger.LogError(e, e.Message);
-            throw new Exception($"An error occured while sending notification: {e.Message}");
         }
-        
-        await hubContext.Clients.User(accountId.ToString())
-            .SendAsync("NewNotification", notification);
     }
 
     public async Task MarkAsReadAsync(int notificationId)
@@ -60,6 +68,19 @@ public class NotificationService(
         {
             logger.LogError(e, e.Message);
             throw new Exception($"An error occured while getting notifications: {e.Message}");
+        }
+    }
+
+    public async Task<int> CountUnreadNotificationsAsync(Guid accountId)
+    {
+        try
+        {
+            return await notificationRepository.GetCountNotificationsAsync(accountId);
+        }
+        catch (Exception e)
+        {
+            logger.LogError(e, e.Message);
+            throw new Exception($"An error occured while count unread notifications: {e.Message}");
         }
     }
 }

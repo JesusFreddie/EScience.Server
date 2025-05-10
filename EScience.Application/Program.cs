@@ -33,7 +33,12 @@ builder.Services.AddServices();
 builder.Services.AddHelpers();
 builder.Services.AddPolicies();
 
+builder.Services.AddSignal();
+
 var app = builder.Build();
+
+app.UseForwardedHeaders();
+app.UseRouting();
 
 if (app.Environment.IsDevelopment())
 {
@@ -52,9 +57,12 @@ app.UseCookiePolicy(new CookiePolicyOptions()
 });
 
 app.UseCors(x => x
-        .AllowAnyOrigin()
-        .AllowAnyMethod()
+        .WithOrigins("http://localhost:3000")
         .AllowAnyHeader()
+        .AllowAnyMethod()
+        .SetIsOriginAllowed(_ => true)
+        .AllowCredentials()
+        .WithExposedHeaders("Set-Cookie")
         );
 app.AddNotificationHub();
 app.MapControllers();

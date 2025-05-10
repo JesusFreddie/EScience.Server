@@ -13,6 +13,7 @@ public class AuthService(
     IUserService userService, 
     IAccountService accountService, 
     IPasswordHasher passwordHasher, 
+    INotificationService notificationService,
     IJwtProvider jwtProvider,
     ILogger<IAuthService> logger) : IAuthService
 {
@@ -36,6 +37,12 @@ public class AuthService(
             
             var token = _jwtProvider.GenerateToken(account.Id);
 
+            await notificationService.SendNotification(
+                account.Id,
+                NotificationType.Information,
+                "Login Successful",
+                "Your account has been successfully logged in"
+            );
             return token;
         }
         catch (Exception ex)

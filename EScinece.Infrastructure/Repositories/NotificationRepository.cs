@@ -18,7 +18,7 @@ public class NotificationRepository(
         {
             using var connection = await connectionFactory.CreateConnectionAsync();
             return await connection.QueryAsync<Notification>(
-                "SELECT * FROM notification WHERE account_id = @accountId");
+                "SELECT * FROM notification WHERE account_id = @accountId", new { accountId });
         });
 
     public async Task<Notification> Create(Notification notification) =>
@@ -27,8 +27,8 @@ public class NotificationRepository(
             using var connection = await connectionFactory.CreateConnectionAsync();
             await connection.ExecuteAsync(
                 """
-                INSERT INTO notification
-                VALUES (@accountId, @message, @type)
+                INSERT INTO notification (account_id, title, message, type)
+                VALUES (@accountId, @title, @message, @type)
                 """, notification);
             return notification;
         });
@@ -52,7 +52,7 @@ public class NotificationRepository(
         {
             using var connection = await connectionFactory.CreateConnectionAsync();
             return await connection.QueryFirstOrDefaultAsync<int>(
-                "SELECT count(*) FROM notification WHERE account_id = @accountId AND is_read = false");
+                "SELECT count(*) FROM notification WHERE account_id = @accountId AND is_read = false", new { accountId });
         });
     
     private async Task<T> ExecuteWithExceptionHandlingAsync<T>(Func<Task<T>> func)

@@ -7,16 +7,25 @@ public class Notification
 {
     [JsonPropertyName("id")]
     public int Id { get; set; }
+    
     [JsonPropertyName("account_id")]
     public Guid AccountId { get; set; }
+    
+    [JsonPropertyName("title")]
+    public string Title { get; set; } = string.Empty;
+    
     [JsonPropertyName("message")]
     public string Message { get; set; } = string.Empty;
+    
     [JsonPropertyName("type")]
     public NotificationType Type { get; set; }
+    
     [JsonPropertyName("is_read")]
     public bool IsRead { get; set; }
+    
     [JsonPropertyName("readed_date")]
     public DateTime ReadedDate { get; set; }
+    
     [JsonPropertyName("created_at")]
     public DateTime CreatedAt { get; set; }
 }

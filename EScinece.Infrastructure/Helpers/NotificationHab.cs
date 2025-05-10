@@ -1,4 +1,6 @@
+using System.Security.Claims;
 using EScinece.Domain.Entities;
+using EScinece.Infrastructure.Helpers;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SignalR;
 
@@ -9,19 +11,18 @@ public class NotificationHub : Hub
 {
     public override async Task OnConnectedAsync()
     {
-        var accountId = GetCurrentAccountId();
+        var accountId = GetAccountId(Context.User);
         await Groups.AddToGroupAsync(Context.ConnectionId, accountId.ToString());
-        // await SendPendingNotifications(accountId);
         await base.OnConnectedAsync();
     }
 
-    private Guid GetCurrentAccountId()
+    private static Guid GetAccountId(ClaimsPrincipal user)
     {
-        return Guid.Parse(Context.UserIdentifier);
-    }
-
-    private async Task SendPendingNotifications(Notification notification)
-    {
-        // Реализация будет добавлена после создания NotificationService
+        var accountIdClaim = user.FindFirst(CustomClaims.AccountId);
+        if (accountIdClaim == null || !Guid.TryParse(accountIdClaim.Value, out var accountId))
+        {
+            throw new InvalidOperationException("User account ID not found");
+        }
+        return accountId;
     }
 }

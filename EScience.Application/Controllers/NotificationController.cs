@@ -1,7 +1,7 @@
+using EScience.Application.Requests;
 using EScinece.Domain.Abstraction.Services;
 using EScinece.Domain.Entities;
 using EScinece.Infrastructure.Helpers;
-using EScinece.Infrastructure.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -42,6 +42,26 @@ public class NotificationController(
         {
             await notificationService.MarkAsReadAsync(id);
             return Ok();
+        }
+        catch (Exception e)
+        {
+            logger.LogError(e, e.Message);
+            return StatusCode(500, "Internal server error");
+        }
+    }
+
+    [HttpGet("count-unread", Name = "NotificationCountUnread")]
+    public async Task<ActionResult<EntityCount>> GetCountUnreadNotifications()
+    {
+        try
+        {
+            var accountId = User.Claims.FirstOrDefault(claim => claim.Type == CustomClaims.AccountId);
+            if (accountId is null || !Guid.TryParse(accountId.Value, out var id))
+                return Unauthorized();
+
+            var result = await notificationService.CountUnreadNotificationsAsync(id);
+
+            return Ok(new EntityCount(result));
         }
         catch (Exception e)
         {
