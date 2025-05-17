@@ -29,8 +29,8 @@ public class ArticleParticipantRepository(
             using var connection = await connectionFactory.CreateConnectionAsync();
             await connection.ExecuteAsync(
                 """
-                INSERT INTO article_participants (id, article_id, account_id, permission_level)
-                VALUES (@id, @articleId, @accountId, @permissionLevel)
+                INSERT INTO article_participants (id, article_id, account_id, permission_level, is_accepted)
+                VALUES (@id, @articleId, @accountId, @permissionLevel, @isAccepted)
                 """, articleParticipant);
 
             await cache.SetStringAsync("article_participants:", JsonSerializer.Serialize(articleParticipant),

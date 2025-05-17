@@ -47,6 +47,20 @@ public class NotificationRepository(
             return Task.CompletedTask;
         });
 
+    public async Task MarkAsReadAllAsync(Guid accountId) =>
+        await ExecuteWithExceptionHandlingAsync(async () =>
+        {
+            using var connection = await connectionFactory.CreateConnectionAsync();
+            await connection.ExecuteAsync(
+                """
+                UPDATE notification
+                SET is_read = true,
+                    readed_date = NOW()
+                WHERE account_id = @accountId
+                """, new { accountId });
+            return Task.CompletedTask;
+        });
+
     public async Task<int> GetCountNotificationsAsync(Guid accountId) =>
         await ExecuteWithExceptionHandlingAsync(async () =>
         {

@@ -58,6 +58,19 @@ public class NotificationService(
         }
     }
 
+    public async Task MarkAsReadAllAsync(Guid accountId)
+    {
+        try
+        {
+            await notificationRepository.MarkAsReadAllAsync(accountId);
+        }
+        catch (Exception e)
+        {
+            logger.LogError(e, e.Message);
+            throw new Exception($"An error occured while marking notification as read: {e.Message}");
+        }
+    }
+
     public async Task<IEnumerable<Notification>> GetNotificationsAsync(Guid accountId)
     {
         try

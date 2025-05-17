@@ -35,12 +35,30 @@ public class NotificationController(
         }
     }
 
-    [HttpPut("{id:int}/read", Name = "NotificationMarkRead")]
+    [HttpPut("read/{id:int}", Name = "NotificationMarkRead")]
     public async Task<IActionResult> MarkRead(int id)
     {
         try
         {
             await notificationService.MarkAsReadAsync(id);
+            return Ok();
+        }
+        catch (Exception e)
+        {
+            logger.LogError(e, e.Message);
+            return StatusCode(500, "Internal server error");
+        }
+    }
+
+    [HttpPut("read/all", Name = "NotificationMarkReadAll")]
+    public async Task<IActionResult> MarkReadAll()
+    {
+        try
+        {
+            var accountId = User.Claims.FirstOrDefault(claim => claim.Type == CustomClaims.AccountId);
+            if (accountId is null || !Guid.TryParse(accountId.Value, out var id))
+                return Unauthorized();
+            await notificationService.MarkAsReadAllAsync(id);
             return Ok();
         }
         catch (Exception e)

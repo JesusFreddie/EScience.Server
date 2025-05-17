@@ -6,6 +6,7 @@ public interface INotificationService
 {
     Task SendNotification(Guid accountId, NotificationType type, string title, string message);
     Task MarkAsReadAsync(int notificationId);
+    Task MarkAsReadAllAsync(Guid accountId);
     Task<IEnumerable<Notification>> GetNotificationsAsync(Guid accountId);
     public Task<int> CountUnreadNotificationsAsync(Guid accountId);
 }
