@@ -37,6 +37,10 @@ public static class ApiExtensions
                         return Task.CompletedTask;
                     }
                 };
+            }).AddCookie(options =>
+            {
+                options.Cookie.SameSite = SameSiteMode.Lax;
+                options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
             });
         
         services.AddAuthorization(options =>

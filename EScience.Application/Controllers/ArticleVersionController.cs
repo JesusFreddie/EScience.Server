@@ -9,13 +9,14 @@ namespace EScience.Application.Controllers;
 
 [ApiController]
 [Authorize]
-[Route("{articleId}/version/{branchId}")]
+[Route("{articleId}/version/{branchId:guid}")]
 public class ArticleVersionController(
     ILogger<ArticleVersionController> logger,
     IArticleVersionService articleVersionService
     ) : ControllerBase
 {
     [HttpGet("last", Name = "VersionGetLast")]
+    [Authorize(Policy = ArticlePolicy.BranchReaderPolicy)]
     public async Task<ActionResult<ArticleVersion>> GetLast(Guid branchId)
     {
         try
@@ -31,6 +32,7 @@ public class ArticleVersionController(
     }
     
     [HttpGet("first", Name = "VersionGetFist")]
+    [Authorize(Policy = ArticlePolicy.BranchReaderPolicy)]
     public async Task<ActionResult<ArticleVersion>> GetFirst(Guid branchId)
     {
         try
@@ -46,11 +48,12 @@ public class ArticleVersionController(
     }
     
     [HttpPost("save", Name = "VersionSave")]
-    public async Task<IActionResult> Save([FromBody] SaveArticleTextRequest request)
+    [Authorize(Policy = ArticlePolicy.BranchEditorBranchPolicy)]
+    public async Task<IActionResult> Save(Guid branchId, [FromBody] SaveArticleTextRequest request)
     {
         try
         {
-            var result = await articleVersionService.Save(request.BranchId, request.Text);
+            var result = await articleVersionService.Save(branchId, request.Text);
             if (!result)
                 return BadRequest();
             return Ok();

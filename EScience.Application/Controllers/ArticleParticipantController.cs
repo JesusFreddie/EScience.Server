@@ -31,6 +31,7 @@ public class ArticleParticipantController(
     }
     
     [HttpPost("invite", Name = "ParticipantInvite")]
+    [Authorize(Policy = ArticlePolicy.ArticleReaderPolicy)]
     public async Task<ActionResult> Invite(
         Guid articleId,
         [FromBody] ParticipantInviteRequest req,

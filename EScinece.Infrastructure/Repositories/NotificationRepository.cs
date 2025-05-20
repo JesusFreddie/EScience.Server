@@ -18,7 +18,7 @@ public class NotificationRepository(
         {
             using var connection = await connectionFactory.CreateConnectionAsync();
             return await connection.QueryAsync<Notification>(
-                "SELECT * FROM notification WHERE account_id = @accountId", new { accountId });
+                "SELECT * FROM notification WHERE account_id = @accountId ORDER BY id DESC", new { accountId });
         });
 
     public async Task<Notification> Create(Notification notification) =>
@@ -42,7 +42,7 @@ public class NotificationRepository(
                 UPDATE notification
                 SET is_read = true,
                     readed_date = NOW()
-                WHERE id = @id
+                WHERE id = @notificationId
                 """, new { notificationId });
             return Task.CompletedTask;
         });

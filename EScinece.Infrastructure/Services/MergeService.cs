@@ -1,91 +1,111 @@
-using System.Text;
-using DiffMatchPatch;
+using System.Text.RegularExpressions;
 using EScinece.Domain.Abstraction.Services;
 using EScinece.Domain.DTOs;
-using HtmlAgilityPack;
 
 namespace EScinece.Infrastructure.Services;
 
 public class MergeService : IMergeService
 {
-    
-    private const string Separator = "␟";
-
-    public List<TextDiff> GetAddedFragments(string original, string modified)
-{
-    var dmp = new diff_match_patch();
-    dmp.Diff_Timeout = 0;
-    dmp.Diff_EditCost = 4;
-    
-    var diffs = dmp.diff_main(original, modified);
-    dmp.diff_cleanupSemanticLossless(diffs);
-    
-    var blocks = new List<TextDiff>();
-    int oPos = 0, mPos = 0;
-
-    foreach (var diff in diffs)
+    public List<TextDiff> GetAddedFragments(string originalHtml, string newHtml)
     {
-        switch (diff.operation)
-        {
-            case Operation.INSERT:
-                blocks.Add(new TextDiff {
-                    Content = diff.text,
-                    IsOriginal = false,
-                    Start = mPos,
-                    End = mPos + diff.text.Length
-                });
-                mPos += diff.text.Length;
-                break;
-
-            case Operation.DELETE:
-                oPos += diff.text.Length;
-                break;
-
-            case Operation.EQUAL:
-                // Всегда добавляем EQUAL блоки как оригинальные
-                blocks.Add(new TextDiff {
-                    Content = diff.text,
-                    IsOriginal = true,
-                    Start = oPos,
-                    End = oPos + diff.text.Length
-                });
-                oPos += diff.text.Length;
-                mPos += diff.text.Length;
-                break;
-        }
+        var originalTree = ParseHtmlToTree(originalHtml);
+        var newTree = ParseHtmlToTree(newHtml);
+        return CompareTrees(originalTree, newTree);
     }
 
-    // Оптимизация: объединение смежных оригинальных блоков
-    return MergeAdjacentBlocks(blocks);
-}
-
-private List<TextDiff> MergeAdjacentBlocks(List<TextDiff> blocks)
-{
-    var merged = new List<TextDiff>();
-    TextDiff current = null;
-
-    foreach (var block in blocks)
+    private TextDiff ParseHtmlToTree(string html)
     {
-        if (current == null)
+        var root = new TextDiff();
+        var stack = new Stack<TextDiff>();
+        stack.Push(root);
+        int pos = 0;
+
+        while (pos < html.Length)
         {
-            current = block;
-            continue;
+            var tagMatch = Regex.Match(html.Substring(pos), @"<(/?)([^\s>]+)([^>]*)>");
+            if (tagMatch.Success && tagMatch.Index == 0)
+            {
+                // Handle text node before tag
+                if (pos > stack.Peek().End)
+                {
+                    var textContent = html.Substring(stack.Peek().End, pos - stack.Peek().End);
+                    if (!string.IsNullOrWhiteSpace(textContent))
+                    {
+                        stack.Peek().Children.Add(new TextDiff {
+                            Content = textContent,
+                            Start = pos - textContent.Length,
+                            End = pos
+                        });
+                    }
+                }
+
+                var isClosing = tagMatch.Groups[1].Value == "/";
+                var fullTag = html.Substring(pos, tagMatch.Length);
+                var node = new TextDiff {
+                    Content = fullTag,
+                    Start = pos,
+                    End = pos + tagMatch.Length
+                };
+
+                if (!isClosing)
+                {
+                    stack.Peek().Children.Add(node);
+                    stack.Push(node);
+                }
+                else
+                {
+                    while (stack.Count > 1 && stack.Peek().Content != $"<{tagMatch.Groups[2].Value}>")
+                        stack.Pop();
+
+                    if (stack.Count > 1)
+                    {
+                        var openedNode = stack.Pop();
+                        openedNode.Content = html.Substring(openedNode.Start, pos + tagMatch.Length - openedNode.Start);
+                        openedNode.End = pos + tagMatch.Length;
+                    }
+                }
+
+                pos += tagMatch.Length;
+            }
+            else
+            {
+                pos++;
+            }
         }
 
-        if (current.IsOriginal == block.IsOriginal && 
-            current.End == block.Start)
-        {
-            current.Content += block.Content;
-            current.End = block.End;
-        }
-        else
-        {
-            merged.Add(current);
-            current = block;
-        }
+        return root.Children.Count > 0 ? root.Children[0] : root;
     }
 
-    if (current != null) merged.Add(current);
-    return merged;
-}
+    private List<TextDiff> CompareTrees(TextDiff original, TextDiff modified)
+    {
+        var result = new List<TextDiff>();
+        CompareNodes(original, modified, result);
+        return result;
+    }
+
+    private void CompareNodes(TextDiff orig, TextDiff mod, List<TextDiff> result)
+    {
+        if (orig == null && mod == null) return;
+
+        var newNode = new TextDiff();
+        bool isModified = orig?.Content != mod?.Content;
+
+        if (mod != null)
+        {
+            newNode.Content = mod.Content;
+            newNode.Start = mod.Start;
+            newNode.End = mod.End;
+            newNode.IsOriginal = !isModified;
+
+            // Compare children recursively
+            for (int i = 0; i < mod.Children.Count; i++)
+            {
+                var origChild = orig?.Children.Count > i ? orig.Children[i] : null;
+                var modChild = mod.Children[i];
+                CompareNodes(origChild, modChild, newNode.Children);
+            }
+
+            result.Add(newNode);
+        }
+    }
 }

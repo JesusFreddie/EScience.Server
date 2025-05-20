@@ -1,3 +1,3 @@
 namespace EScience.Application.Requests;
 
-public record SaveArticleTextRequest(Guid BranchId, string Text);
+public record SaveArticleTextRequest(string Text);

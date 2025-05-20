@@ -1,4 +1,3 @@
-using EScinece.Domain.Abstraction;
 using EScinece.Domain.Abstraction.Services;
 using EScinece.Domain.Entities;
 using EScinece.Infrastructure.Helpers;
@@ -6,21 +5,21 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace EScience.Application.Handlers;
 
-public class ArticlePolicyHandler : AuthorizationHandler<ArticlePermissionRequirement>
+public class BranchPolicyHandler : AuthorizationHandler<BranchPermissionRequirement>
 {
     private readonly IServiceScopeFactory _serviceScopeFactory;
     private readonly IHttpContextAccessor _httpContextAccessor;
-    public ArticlePolicyHandler(
+    public BranchPolicyHandler(
         IServiceScopeFactory serviceScopeFactory, 
         IHttpContextAccessor httpContextAccessor,
         ILogger<ArticlePolicyHandler> logger
-        )
+    )
     {
         _serviceScopeFactory = serviceScopeFactory;
         _httpContextAccessor = httpContextAccessor;
     }
-    
-    protected override async Task HandleRequirementAsync(AuthorizationHandlerContext context, ArticlePermissionRequirement requirement)
+
+    protected async override Task HandleRequirementAsync(AuthorizationHandlerContext context, BranchPermissionRequirement requirement)
     {
         var accountId = context.User.Claims.FirstOrDefault(c => c.Type == CustomClaims.AccountId);
         
@@ -28,29 +27,36 @@ public class ArticlePolicyHandler : AuthorizationHandler<ArticlePermissionRequir
         {
             return;
         }
-
+        
         var httpContext = _httpContextAccessor.HttpContext;
 
         if (httpContext is null)
             return;
-
-        if (!httpContext.Request.RouteValues.TryGetValue("articleId", out var idValue)
-            || !Guid.TryParse(idValue?.ToString(), out var articleId))
+        
+        if (!httpContext.Request.RouteValues.TryGetValue("branchId", out var idValue)
+            || !Guid.TryParse(idValue?.ToString(), out var branchId))
             return;
         
         using var scope = _serviceScopeFactory.CreateScope();
         var articleParticipantService = scope.ServiceProvider.GetRequiredService<IArticleParticipantService>();
         var articleService = scope.ServiceProvider.GetRequiredService<IArticleService>();
+        var articleBranchService = scope.ServiceProvider.GetRequiredService<IArticleBranchService>();
+        
+        var branch = await articleBranchService.GetById(branchId);
+        if (branch is null)
+            return;
 
-        var article = await articleService.GetById(articleId);
-
+        var article = await articleService.GetById(branch.ArticleId);
         if (article is null)
             return;
         
-        var permission = await articleParticipantService.GetArticlePermissionLevelByIds(id, articleId);
-
         if (!article.IsPrivate && requirement.RequiredPermissionLevel == ArticlePermissionLevel.READER)
             context.Succeed(requirement);
+        
+        if (branch.CreatorId == id)
+            context.Succeed(requirement);
+        
+        var permission = await articleParticipantService.GetArticlePermissionLevelByIds(id, branch.ArticleId);
         
         if (permission >= requirement.RequiredPermissionLevel)
         {
@@ -59,7 +65,7 @@ public class ArticlePolicyHandler : AuthorizationHandler<ArticlePermissionRequir
     }
 }
 
-public class ArticlePermissionRequirement(ArticlePermissionLevel permissionLevel) : IAuthorizationRequirement
+public class BranchPermissionRequirement(ArticlePermissionLevel permissionLevel) : IAuthorizationRequirement
 {
     public ArticlePermissionLevel RequiredPermissionLevel { get; set; } = permissionLevel;
 }

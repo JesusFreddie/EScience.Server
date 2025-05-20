@@ -50,6 +50,7 @@ public class ArticleController(
     }
 
     [HttpPatch("{articleId:guid}/update", Name = "ArticleUpdate")]
+    [Authorize(Policy = ArticlePolicy.ArticleAuthorPolicy)]
     public async Task<ActionResult<Article>> Update(Guid articleId, [FromBody] UpdateArticleRequest req)
     {
         try

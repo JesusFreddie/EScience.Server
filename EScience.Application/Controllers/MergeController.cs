@@ -1,8 +1,10 @@
+using EScience.Application.Policy;
 using EScience.Application.Requests;
 using EScience.Application.Responses;
 using EScinece.Domain.Abstraction.Services;
 using EScinece.Domain.DTOs;
 using EScinece.Infrastructure.Helpers;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace EScience.Application.Controllers;
@@ -18,6 +20,7 @@ public class MergeController(
 {
     
     [HttpPost(Name = "Merge")]
+    [Authorize(Policy = ArticlePolicy.ArticleEditorPolicy)]
     public async Task<ActionResult<SuccessResponse>> MergeArticle(
         Guid articleId,
         Guid branchId,
@@ -54,6 +57,7 @@ public class MergeController(
     }
 
     [HttpPost("merge-request", Name = "GetMergeRequest")]
+    [Authorize(Policy = ArticlePolicy.ArticleEditorPolicy)]
     public async Task<ActionResult<List<TextDiff>>> GetMergeRequest(
         Guid branchId,
         [FromBody] GetMergeRequest req

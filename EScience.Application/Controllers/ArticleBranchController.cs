@@ -18,7 +18,7 @@ public class ArticleBranchController(
     ) : ControllerBase
 {
     [HttpPost("create", Name = "BranchCreate")]
-    // [Authorize(Policy = ArticlePolicy.ArticleEditorPolicy)]
+    [Authorize(Policy = ArticlePolicy.ArticleEditorBranchPolicy)]
     public async Task<ActionResult<ArticleBranchDto>> Create(Guid articleId, [FromBody] CreateBranchDto req)
     {
         try

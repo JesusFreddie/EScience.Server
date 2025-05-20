@@ -18,7 +18,7 @@ public class ArticleBranchRepository(
         {
             using var connection = await connectionFactory.CreateConnectionAsync();
             return await connection.QueryFirstOrDefaultAsync<ArticleBranch>(
-                "SELECT * FROM article_branches WHERE id = @id AND deleted_at is not null", new { id });
+                "SELECT * FROM article_branches WHERE id = @id AND deleted_at is null", new { id });
         });
 
     public async Task<IEnumerable<ArticleBranch>> GetAll() =>
