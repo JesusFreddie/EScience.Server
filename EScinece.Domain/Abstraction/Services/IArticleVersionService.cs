@@ -15,5 +15,6 @@ public interface IArticleVersionService
     public Task<ArticleVersion?> GetLast(Guid branchId);
     public Task<ArticleVersion?> GetFirst(Guid branchId);
     public Task<bool> Save(Guid branchId, string text);
+    public Task<IEnumerable<VersionInfo>> GetVersionInfo(Guid branchId);
 
 }

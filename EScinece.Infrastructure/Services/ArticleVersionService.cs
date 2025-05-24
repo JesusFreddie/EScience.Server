@@ -138,6 +138,19 @@ public class ArticleVersionService(
         }
     }
 
+    public async Task<IEnumerable<VersionInfo>> GetVersionInfo(Guid branchId)
+    {
+        try
+        {
+            return await articleVersionRepository.GetVersionInfo(branchId);
+        }
+        catch (Exception e)
+        {
+            logger.LogError(e, e.Message);
+            throw new Exception("An error occured while getting version info");
+        }
+    }
+
 
     private string ParseHtml(string html)
     {

@@ -1,6 +1,7 @@
 using EScience.Application.Policy;
 using EScience.Application.Requests;
 using EScinece.Domain.Abstraction.Services;
+using EScinece.Domain.DTOs;
 using EScinece.Domain.Entities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -61,6 +62,22 @@ public class ArticleVersionController(
         catch (Exception ex)
         {
             logger.LogError(ex, ex.Message);
+            return StatusCode(500, "Internal server error");
+        }
+    }
+
+    [HttpGet("get-all", Name = "VersionGetAllInfo")]
+    [Authorize(Policy = ArticlePolicy.BranchReaderPolicy)]
+    public async Task<ActionResult<IEnumerable<VersionInfo>>> GetAllInfo(Guid branchId)
+    {
+        try
+        {
+            var result = await articleVersionService.GetVersionInfo(branchId);
+            return Ok(result);
+        }
+        catch (Exception e)
+        {
+            logger.LogError(e, e.Message);
             return StatusCode(500, "Internal server error");
         }
     }

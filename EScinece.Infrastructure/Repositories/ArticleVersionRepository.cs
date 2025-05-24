@@ -1,5 +1,6 @@
 using Dapper;
 using EScinece.Domain.Abstraction.Repositories;
+using EScinece.Domain.DTOs;
 using EScinece.Domain.Entities;
 using EScinece.Infrastructure.Data;
 using Microsoft.Extensions.Logging;
@@ -129,6 +130,19 @@ public class ArticleVersionRepository(
                 """, new { branchId, text }
                 );
             return result > 0;
+        });
+
+    public async Task<IEnumerable<VersionInfo>> GetVersionInfo(Guid branchId) =>
+        await ExecuteWithExceptionHandlingAsync(async () =>
+        {
+            using var connection = await connectionFactory.CreateConnectionAsync();
+            return await connection.QueryAsync<VersionInfo>(
+                """
+                SELECT v.id, v.created_at, v.updated_at, v.article_branch_id
+                FROM article_branch_versions AS v
+                WHERE article_branch_id = @branchId
+                AND deleted_at IS NULL
+                """, new { branchId });
         });
 
     private async Task<T> ExecuteWithExceptionHandlingAsync<T>(Func<Task<T>> func)

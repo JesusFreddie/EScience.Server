@@ -66,6 +66,7 @@ public class AuthController(
     [HttpPost("logout", Name = "AuthLogout")]
     public IActionResult Logout()
     {
+        HttpContext.Response.Cookies.Delete("access-token");
         return Ok();
     }
     
