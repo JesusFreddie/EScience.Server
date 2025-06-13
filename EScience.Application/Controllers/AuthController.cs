@@ -58,7 +58,7 @@ public class AuthController(
         if (string.IsNullOrEmpty(token))
             return BadRequest(AuthErrorMessage.InvalidDataLogin);
 
-        HttpContext.Response.Cookies.Append("access-token", token);
+        HttpContext.Response.Headers.Add("access-token", token);
         
         return Ok("Login successful");
     }

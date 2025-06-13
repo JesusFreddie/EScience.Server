@@ -52,17 +52,17 @@ app.UseHttpsRedirection();
 app.UseCookiePolicy(new CookiePolicyOptions()
 {
     MinimumSameSitePolicy = SameSiteMode.Lax,
-    HttpOnly = HttpOnlyPolicy.Always,
+    HttpOnly = HttpOnlyPolicy.None,
     Secure = CookieSecurePolicy.Always
 });
 
 app.UseCors(x => x
         .WithOrigins("http://localhost:3000")
-        .AllowAnyHeader()
-        .AllowAnyMethod()
-        .SetIsOriginAllowed(_ => true)
-        .AllowCredentials()
-        .WithExposedHeaders("Set-Cookie")
+                                              .AllowAnyHeader()
+                                              .AllowAnyMethod()
+                                              .AllowCredentials()
+                                              .WithExposedHeaders("Set-Cookie")
+                                              .SetIsOriginAllowed(_ => true)
         );
 app.AddNotificationHub();
 app.MapControllers();

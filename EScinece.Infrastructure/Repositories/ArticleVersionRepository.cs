@@ -35,8 +35,8 @@ public class ArticleVersionRepository(
             using var connection = await connectionFactory.CreateConnectionAsync();
             return await connection.ExecuteAsync(
                 """
-                INSERT INTO article_branch_versions (id, creator_id, article_branch_id, text)
-                VALUES (@id, @creatorId, @articleBranchId, @text)
+                INSERT INTO article_branch_versions (id, creator_id, article_branch_id, text, updated_at)
+                VALUES (@id, @creatorId, @articleBranchId, @text, NOW())
                 """, entity);
         });
 
@@ -117,7 +117,7 @@ public class ArticleVersionRepository(
             );
         });
 
-    public async Task<bool> SaveText(Guid branchId, string text) =>
+    public async Task<bool> SaveText(Guid versionId, string text) =>
         await ExecuteWithExceptionHandlingAsync(async () =>
         {
             using var connection = await connectionFactory.CreateConnectionAsync();
@@ -126,22 +126,37 @@ public class ArticleVersionRepository(
                 UPDATE article_branch_versions
                 SET text = @text,
                     updated_at = NOW()
-                WHERE article_branch_id = @branchId
-                """, new { branchId, text }
+                WHERE id = @versionId
+                """, new { versionId, text }
                 );
             return result > 0;
         });
 
-    public async Task<IEnumerable<VersionInfo>> GetVersionInfo(Guid branchId) =>
+    public async Task<IEnumerable<VersionInfo>> GetAllVersionInfo(Guid branchId) =>
         await ExecuteWithExceptionHandlingAsync(async () =>
         {
             using var connection = await connectionFactory.CreateConnectionAsync();
             return await connection.QueryAsync<VersionInfo>(
                 """
-                SELECT v.id, v.created_at, v.updated_at, v.article_branch_id
+                SELECT v.id, v.created_at, v.updated_at, v.article_branch_id, v.creator_id
                 FROM article_branch_versions AS v
                 WHERE article_branch_id = @branchId
                 AND deleted_at IS NULL
+                ORDER BY v.created_at DESC
+                """, new { branchId });
+        });
+
+    public async Task<VersionInfo?> GetLastVersionInfoAsync(Guid branchId) =>
+        await ExecuteWithExceptionHandlingAsync(async () =>
+        {
+            using var connection = await connectionFactory.CreateConnectionAsync();
+            return await connection.QueryFirstOrDefaultAsync<VersionInfo>(
+                """
+                SELECT v.id, v.created_at, v.updated_at, v.article_branch_id, v.creator_id
+                FROM article_branch_versions AS v
+                WHERE v.article_branch_id = @branchId
+                ORDER BY v.created_at DESC
+                LIMIT 1
                 """, new { branchId });
         });
 

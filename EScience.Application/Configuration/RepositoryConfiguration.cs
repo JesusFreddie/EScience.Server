@@ -14,6 +14,8 @@ public static class RepositoryConfiguration
         services.AddScoped<IArticleBranchRepository, ArticleBranchRepository>();
         services.AddScoped<IArticleVersionRepository, ArticleVersionRepository>();
         services.AddScoped<INotificationRepository, NotificationRepository>();
+        services.AddScoped<IArticleFavoriteRepository, ArticleFavoriteRepository>();
+        services.AddScoped<IAccountInfoRepository, AccountInfoRepository>();
         return services;
     }
 }

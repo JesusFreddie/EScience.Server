@@ -4,7 +4,7 @@ public static class NotificationConfiguration
 {
     public static WebApplication AddNotificationHub(this WebApplication app)
     {
-        app.MapHub<NotificationHub>("hubs/notification").RequireCors("NuxtCorsPolicy");
+        app.MapHub<NotificationHub>("hubs/notification");
         return app;
     }
 

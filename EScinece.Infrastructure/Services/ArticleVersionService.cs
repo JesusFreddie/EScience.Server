@@ -125,11 +125,36 @@ public class ArticleVersionService(
         }
     }
 
-    public async Task<bool> Save(Guid branchId, string text)
+    public async Task<bool> Save(Guid branchId, string text, Guid? creatorId = null)
     {
         try
         {
-            return await articleVersionRepository.SaveText(branchId, text);
+            var lastVersion = await articleVersionRepository.GetLastVersionInfoAsync(branchId);
+            if (lastVersion is null)
+                return false;
+
+            DateTime dbTimeUtc = lastVersion.CreatedAt.Kind == DateTimeKind.Unspecified 
+                ? DateTime.SpecifyKind(lastVersion.CreatedAt, DateTimeKind.Utc) 
+                : lastVersion.CreatedAt.ToUniversalTime();
+    
+            TimeSpan difference = DateTime.UtcNow - dbTimeUtc;
+            
+            var lastVersionId = lastVersion.Id;
+            
+            if (difference.TotalMinutes > 10 || creatorId != lastVersion.CreatorId)
+            {
+                Console.WriteLine(difference.TotalMinutes);
+                Console.WriteLine(creatorId);
+                Console.WriteLine(lastVersion.CreatorId);
+                var newVersionResult = await Copy(lastVersion.Id, creatorId);
+
+                if (!newVersionResult.onSuccess)
+                    return false;
+                
+                lastVersionId = newVersionResult.Value.Id;
+            }
+            
+            return await articleVersionRepository.SaveText(lastVersionId, text);
         }
         catch (Exception ex)
         {
@@ -142,7 +167,7 @@ public class ArticleVersionService(
     {
         try
         {
-            return await articleVersionRepository.GetVersionInfo(branchId);
+            return await articleVersionRepository.GetAllVersionInfo(branchId);
         }
         catch (Exception e)
         {

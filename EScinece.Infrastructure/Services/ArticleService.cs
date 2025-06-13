@@ -113,11 +113,26 @@ public class ArticleService(
         }
     }
 
-    public Task<int> GetCount(Guid accountId)
+    public Task<int> GetCountFavoriteByAccountId(Guid accountId)
+    {
+        return articleRepository.GetCountFavoriteByAccountId(accountId);
+    }
+
+    public Task<int> GetCountCraetedByAccountId(Guid accountId)
+    {
+        return articleRepository.GetCountCraetedByAccountId(accountId);
+    }
+
+    public Task<int> GetCountParticipantByAccountId(Guid accountId)
+    {
+        return articleRepository.GetCountParticipantByAccountId(accountId);
+    }
+
+    public Task<int> GetCountByAccountId(Guid accountId)
     {
         try
         {
-            return articleRepository.GetCount(accountId);
+            return articleRepository.GetCountByAccountId(accountId);
         }
         catch (Exception e)
         {
@@ -134,6 +149,11 @@ public class ArticleService(
     public async Task<IEnumerable<Article>> GetAllByArticleParticipantIdAndAccountId(Guid id)
     {
         return await articleRepository.GetAllByArticleParticipantIdAndAccountId(id);
+    }
+
+    public async Task<IEnumerable<Article>> GetAllByArticleFavoriteParticipantIdAndAccountId(Guid id)
+    {
+        return await articleRepository.GetAllByArticleFavoriteParticipantIdAndAccountId(id);
     }
 
     public async Task<IEnumerable<Article>> GetAllByAccountId(Guid id, int take)

@@ -77,7 +77,10 @@ public class ArticleController(
     }
     
     [HttpGet(Name = "ArticleGetAll")]
-    public async Task<ActionResult<IEnumerable<Article>>> GetAll()
+    public async Task<ActionResult> GetAll(
+        [FromQuery] int? limit = null,
+        [FromQuery] int? offset = null
+        )
     {
         try
         {
@@ -86,8 +89,83 @@ public class ArticleController(
                 return Unauthorized();
 
             var articles = await articleService.GetAllByArticleParticipantIdAndAccountId(id);
+
+            if (limit is not null && offset is not null)
+            {
+                var take = limit * (offset - 1);
+                articles = articles
+                    .Skip(take.Value)
+                    .Take(limit.Value);
+            }
+
+            var pCount = await articleService.GetCountParticipantByAccountId(id);
+            var pCreate = await articleService.GetCountCraetedByAccountId(id);
+            
+            return Ok(new
+            {
+                articles,
+                allCount = pCount + pCreate,
+            });
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, ex.Message);
+            return StatusCode(500, "Internal server error");
+        }
+    }
+
+    [HttpGet("created", Name = "ArticleGetAllByCreated")]
+    public async Task<ActionResult<IEnumerable<Article>>> GetAllByCreated()
+    {
+        try
+        {
+            var accountId = User.Claims.FirstOrDefault(claim => claim.Type == CustomClaims.AccountId);
+            if (accountId is null || !Guid.TryParse(accountId.Value, out var id))
+                return Unauthorized();
+
+            var articles = await articleService.GetAllByArticleParticipantIdAndAccountId(id);
+
+            articles = articles
+                .Take(10);
             
             return Ok(articles);
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, ex.Message);
+            return StatusCode(500, "Internal server error");
+        }
+    }
+    
+    [HttpGet("favorite", Name = "ArticleGetAllFavorite")]
+    public async Task<ActionResult> GetAllFavorite(
+        [FromQuery] int? limit = null,
+        [FromQuery] int? offset = null
+        )
+    {
+        try
+        {
+            var accountId = User.Claims.FirstOrDefault(claim => claim.Type == CustomClaims.AccountId);
+            if (accountId is null || !Guid.TryParse(accountId.Value, out var id))
+                return Unauthorized();
+
+            var articles = await articleService.GetAllByArticleFavoriteParticipantIdAndAccountId(id);
+
+            if (limit is not null && offset is not null)
+            {
+                var take = limit * (offset - 1);
+                articles = articles
+                    .Skip(take.Value)
+                    .Take(limit.Value);
+            }
+            
+            var allCount = await articleService.GetCountFavoriteByAccountId(id);
+            
+            return Ok(new
+            {
+                articles, 
+                allCount,
+            });
         }
         catch (Exception ex)
         {
@@ -119,7 +197,7 @@ public class ArticleController(
     {
         try
         {
-            var result = await articleService.GetCount(accountId);
+            var result = await articleService.GetCountByAccountId(accountId);
             return Ok(new EntityCount(result));
         }
         catch (Exception e)

@@ -90,12 +90,42 @@ public class ArticleRepository(
             using var connection = await connectionFactory.CreateConnectionAsync();
             return await connection.QueryAsync<Article, Account, Article>(
                 """
+                SELECT DISTINCT articles.*, a.*
+                FROM articles
+                INNER JOIN accounts AS a ON articles.account_id = a.id
+                WHERE 
+                    articles.deleted_at IS NULL
+                    AND (
+                        articles.account_id = @id
+                        OR EXISTS (
+                            SELECT 1
+                            FROM article_participants AS ap
+                            WHERE ap.article_id = articles.id AND ap.account_id = @id
+                        )
+                    )
+                ORDER BY articles.created_at DESC
+                """,
+                (article, account) => 
+                {
+                    article.Account = account;
+                    return article;
+                },
+                new { id },
+                splitOn: "id"
+            );
+        });
+
+    public async Task<IEnumerable<Article>> GetAllByArticleFavoriteParticipantIdAndAccountId(Guid id) =>
+        await ExecuteWithExceptionHandlingAsync(async () =>
+        {
+            using var connection = await connectionFactory.CreateConnectionAsync();
+            return await connection.QueryAsync<Article, Account, Article>(
+                """
                 SELECT articles.*, a.*
                 FROM articles
-                JOIN public.article_participants ap on articles.id = ap.article_id
                 INNER JOIN accounts as a on articles.account_id = a.id
-                WHERE (ap.account_id = @id
-                OR articles.account_id = @id)
+                JOIN article_favorite as f ON f.article_id = a.id
+                WHERE articles.account_id = @id
                 AND articles.deleted_at IS NULL
                 ORDER BY articles.created_at DESC
                 """, (article, account) => 
@@ -106,6 +136,7 @@ public class ArticleRepository(
                 new { id },
                 splitOn: "id");
         });
+    
     public async Task<Article?> GetByTitle(string title, Guid accountId, string? branchName = null) =>
         await ExecuteWithExceptionHandlingAsync(async () =>
         {
@@ -147,13 +178,58 @@ public class ArticleRepository(
             return result.FirstOrDefault();
         });
 
-    public async Task<int> GetCount(Guid accountId) =>
+    public async Task<int> GetCountByAccountId(Guid accountId) =>
         await ExecuteWithExceptionHandlingAsync(async () =>
         {
             using var connection = await connectionFactory.CreateConnectionAsync();
             var result = await connection.QueryFirstOrDefaultAsync<int>(
                 """
                 SELECT count(*) FROM articles a WHERE a.account_id = @accountId AND a.deleted_at IS NULL
+                """, new { accountId });
+            return result;
+        });
+
+    public async Task<int> GetCountFavoriteByAccountId(Guid accountId) =>
+        await ExecuteWithExceptionHandlingAsync(async () =>
+        {
+            // TODO: добавьб фаворит
+            using var connection = await connectionFactory.CreateConnectionAsync();
+            var result = await connection.QueryFirstOrDefaultAsync<int>(
+                """
+                SELECT
+                count(*) 
+                FROM articles a
+                JOIN article_favorite as f ON f.article_id = a.id
+                WHERE a.account_id = @accountId 
+                  AND a.deleted_at IS NULL
+                """, new { accountId });
+            return result;
+        });
+
+    public async Task<int> GetCountCraetedByAccountId(Guid accountId) =>
+        await ExecuteWithExceptionHandlingAsync(async () =>
+        {
+            using var connection = await connectionFactory.CreateConnectionAsync();
+            var result = await connection.QueryFirstOrDefaultAsync<int>(
+                """
+                SELECT count(*) FROM articles a WHERE a.account_id = @accountId AND a.deleted_at IS NULL
+                """, new { accountId });
+            return result;
+        });
+
+    public async Task<int> GetCountParticipantByAccountId(Guid accountId) =>
+        await ExecuteWithExceptionHandlingAsync(async () =>
+        {
+            using var connection = await connectionFactory.CreateConnectionAsync();
+            var result = await connection.QueryFirstOrDefaultAsync<int>(
+                """
+                SELECT 
+                    count(*) 
+                FROM articles a
+                JOIN article_participants as ap ON ap.article_id = a.id
+                WHERE a.account_id = @accountId 
+                  AND a.deleted_at IS NULL
+                  AND ap.permission_level != 4
                 """, new { accountId });
             return result;
         });
